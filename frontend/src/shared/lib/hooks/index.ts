@@ -4,3 +4,5 @@ export * from './use-theme';
 export * from './use-theme-utils';
 export * from './theme-context';
 export * from './theme-provider';
+export * from './use-color-palettes';
+export * from './use-color-palettes-suspense';

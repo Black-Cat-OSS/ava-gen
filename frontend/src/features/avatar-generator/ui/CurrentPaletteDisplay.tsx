@@ -7,7 +7,7 @@ import { useColorPaletteContext } from '@/features/color-palette';
  */
 export const CurrentPaletteDisplay = () => {
   const { t } = useTranslation();
-  const { selectedScheme, palettes, formData } = useColorPaletteContext();
+  const { selectedScheme, palettes } = useColorPaletteContext();
 
   const currentPalette = palettes?.find(p => p.key === selectedScheme);
 
@@ -25,28 +25,28 @@ export const CurrentPaletteDisplay = () => {
         <div className="flex items-center gap-3">
           <div
             className="w-10 h-10 rounded-full border-2 border-border shadow-sm flex-shrink-0"
-            style={{ backgroundColor: formData.primaryColor }}
+            style={{ backgroundColor: currentPalette?.primaryColor || '#3b82f6' }}
           />
           <div className="text-sm min-w-0">
             <p className="font-medium text-foreground">
               {t('features.avatarGenerator.primaryColor')}
             </p>
             <p className="text-muted-foreground font-mono text-xs truncate">
-              {formData.primaryColor}
+              {currentPalette?.primaryColor || '#3b82f6'}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           <div
             className="w-10 h-10 rounded-full border-2 border-border shadow-sm flex-shrink-0"
-            style={{ backgroundColor: formData.foreignColor }}
+            style={{ backgroundColor: currentPalette?.foreignColor || '#ef4444' }}
           />
           <div className="text-sm min-w-0">
             <p className="font-medium text-foreground">
               {t('features.avatarGenerator.foreignColor')}
             </p>
             <p className="text-muted-foreground font-mono text-xs truncate">
-              {formData.foreignColor}
+              {currentPalette?.foreignColor || '#ef4444'}
             </p>
           </div>
         </div>
