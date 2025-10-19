@@ -1,3 +1,27 @@
+## [0.0.8](https://github.com/letnull19A/avatar-gen/compare/v0.0.7...v0.0.8) (2025-10-19)
+
+### Features
+
+- Added gradient generation
+  ([4b69330](https://github.com/letnull19A/avatar-gen/commit/4b69330e1d4b3389611ecb1d58b5512db60c42d9)),
+  closes [#62](https://github.com/letnull19A/avatar-gen/issues/62)
+- Apply changes from feature branch manually
+  ([4603af8](https://github.com/letnull19A/avatar-gen/commit/4603af8768e11536b06f9ca40774a0c8bc00dfe6))
+- Refactor color-palette feature structure
+  ([c46811e](https://github.com/letnull19A/avatar-gen/commit/c46811e1b5ac05b758ceeb9b22d18f736f79d19b))
+
+### Bug Fixes
+
+- Fix negative filter bug (issue
+  [#60](https://github.com/letnull19A/avatar-gen/issues/60))
+  ([6e861e8](https://github.com/letnull19A/avatar-gen/commit/6e861e87946a05a395715b9847e015bd030e1c5e))
+- Resolve encoding issues and TypeScript errors
+  ([8610419](https://github.com/letnull19A/avatar-gen/commit/86104197fe2db8ac6421e48fc6bc4d763d513981))
+- Restore gradient generator implementation
+  ([fd6d7c3](https://github.com/letnull19A/avatar-gen/commit/fd6d7c3cff17b1d686102cc14c52fd276f18145c))
+- Update footer to show current year automatically
+  ([dbb3a42](https://github.com/letnull19A/avatar-gen/commit/dbb3a42448877b771f07a4ef32f24a9b786d5e72))
+
 ## [0.0.7](https://github.com/letnull19A/avatar-gen/compare/v0.0.4...v0.0.7) (2025-10-16)
 
 ### Features
