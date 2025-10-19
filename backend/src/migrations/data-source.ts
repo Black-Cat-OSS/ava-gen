@@ -1,6 +1,7 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { Avatar } from '../modules/avatar/avatar.entity';
 import { AddGeneratorTypeToAvatar1739467273000 } from './1739467273000-AddGeneratorTypeToAvatar';
+import { IncreaseColorFieldLengths1760910691899 } from './1760910691899-IncreaseColorFieldLengths';
 import { YamlConfigService } from '../config/modules/yaml-driver/yaml-config.service';
 import { DatabaseDriverFactory } from '../modules/database/utils/driver-factory';
 import { SqliteDriverService } from '../modules/database/modules/sqlite-driver';
@@ -36,7 +37,7 @@ async function createDataSourceOptions(): Promise<DataSourceOptions> {
       database: typeormConfig.sqlite?.databasePath || './storage/database/avatars.db',
       entities: [Avatar],
       //TODO: create migration reader for reading all migrations files and import dynamically
-      migrations: [AddGeneratorTypeToAvatar1739467273000],
+      migrations: [AddGeneratorTypeToAvatar1739467273000, IncreaseColorFieldLengths1760910691899],
       migrationsTableName: 'migrations',
       logging: true,
       synchronize: false,
@@ -51,7 +52,7 @@ async function createDataSourceOptions(): Promise<DataSourceOptions> {
       database: typeormConfig.database,
       ssl: typeormConfig.ssl,
       entities: [Avatar],
-      migrations: [AddGeneratorTypeToAvatar1739467273000],
+      migrations: [AddGeneratorTypeToAvatar1739467273000, IncreaseColorFieldLengths1760910691899],
       migrationsTableName: 'migrations',
       logging: true,
       synchronize: false,
@@ -63,15 +64,18 @@ async function createDataSourceOptions(): Promise<DataSourceOptions> {
   return dataSourceOptions;
 }
 
-let dataSource: DataSource;
+let dataSourceInstance: DataSource;
 
 async function initializeDataSource(): Promise<DataSource> {
-  if (!dataSource) {
+  if (!dataSourceInstance) {
     const options = await createDataSourceOptions();
-    dataSource = new DataSource(options);
+    dataSourceInstance = new DataSource(options);
   }
-  return dataSource;
+  return dataSourceInstance;
 }
 
 export { initializeDataSource };
 export default initializeDataSource;
+
+// Export DataSource instance for TypeORM CLI
+export const dataSource = initializeDataSource();

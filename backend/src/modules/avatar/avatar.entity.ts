@@ -49,14 +49,14 @@ export class Avatar {
    * Основной цвет аватара
    * Опциональное поле
    */
-  @Column({ type: 'varchar', length: 7, nullable: true })
+  @Column({ type: 'varchar', length: 20, nullable: true })
   primaryColor?: string;
 
   /**
    * Дополнительный цвет аватара
    * Опциональное поле
    */
-  @Column({ type: 'varchar', length: 7, nullable: true })
+  @Column({ type: 'varchar', length: 20, nullable: true })
   foreignColor?: string;
 
   /**
