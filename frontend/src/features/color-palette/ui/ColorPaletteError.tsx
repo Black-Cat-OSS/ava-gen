@@ -7,7 +7,7 @@ import { Callout } from '@/shared/ui';
  */
 export const ColorPaletteError = () => {
   const { t } = useTranslation();
-
+  
   return (
     <Callout
       type="error"

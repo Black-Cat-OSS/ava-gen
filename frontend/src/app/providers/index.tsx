@@ -1,5 +1,6 @@
 import { type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ThemeProvider } from '../../shared/lib/hooks/use-theme';
 import { PopupProvider } from '../../shared/lib';
 import { MobileMenuProvider } from '../../shared/lib/contexts';
@@ -26,6 +27,7 @@ export const AppProviders = ({ children }: AppProvidersProps) => {
           <MobileMenuProvider>{children}</MobileMenuProvider>
         </PopupProvider>
       </ThemeProvider>
+      {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
     </QueryClientProvider>
   );
 };

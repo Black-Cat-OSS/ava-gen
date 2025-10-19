@@ -1,5 +1,5 @@
 import { Component, type ReactNode } from 'react';
-import { ErrorBoundaryFallback } from './ErrorBoundaryFallback';
+import { Callout } from '../Callout';
 
 /**
  * Props for the ErrorBoundary component
@@ -26,7 +26,7 @@ interface ErrorBoundaryState {
 /**
  * ErrorBoundary component that catches JavaScript errors anywhere in the child component tree,
  * logs those errors, and displays a fallback UI instead of the component tree that crashed.
- *
+ * 
  * @example
  * ```tsx
  * <ErrorBoundary fallback={<div>Something went wrong</div>}>
@@ -49,7 +49,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     // Log the error
     // eslint-disable-next-line no-console
     console.error('ErrorBoundary caught an error:', error, errorInfo);
-
+    
     // Call the onError callback if provided
     this.props.onError?.(error, errorInfo);
   }
@@ -68,10 +68,26 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
         return this.props.fallback;
       }
 
-      // Default fallback UI with translations
-      return <ErrorBoundaryFallback error={this.state.error} />;
+      // Default fallback UI
+      return (
+        <Callout
+          type="error"
+          title="Something went wrong"
+          subtitle="An error occurred while rendering this component"
+        >
+          <details className="mt-2">
+            <summary className="cursor-pointer text-sm font-medium">
+              Error details
+            </summary>
+            <pre className="mt-2 text-xs bg-muted p-2 rounded overflow-auto">
+              {this.state.error?.message || 'Unknown error'}
+            </pre>
+          </details>
+        </Callout>
+      );
     }
 
     return this.props.children;
   }
 }
+

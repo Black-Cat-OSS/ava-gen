@@ -1,20 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
 import { avatarApi } from '@/shared/api';
-import type { ColorPalette } from '@/features/color-palette/types/types';
 
 /**
- * Custom hook to fetch color palettes.
- * Uses TanStack Query to manage data fetching, caching, and revalidation.
- *
- * @returns {{ data: ColorPalette[] | undefined; isLoading: boolean; isError: boolean; error: Error | null }}
- *   An object containing the fetched data, loading state, error state, and error object.
+ * Hook for fetching color palettes from the API
  */
 export const useColorPalettes = () => {
-  const { data, isLoading, isError, error } = useQuery<ColorPalette[], Error>({
-    queryKey: ['colorPalettes'],
+  return useQuery({
+    queryKey: ['color-palettes'],
     queryFn: avatarApi.getColorPalettes,
-    staleTime: Infinity, // Palettes are static, no need to refetch often
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
   });
-
-  return { data, isLoading, isError, error };
 };

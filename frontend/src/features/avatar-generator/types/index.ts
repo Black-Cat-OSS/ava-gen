@@ -1,5 +1,5 @@
 /**
- * Props for the internal form component
+ * Props interface for AvatarGeneratorFormInternal component
  */
 export interface AvatarGeneratorFormInternalProps {
   formData: {
@@ -15,7 +15,7 @@ export interface AvatarGeneratorFormInternalProps {
 }
 
 /**
- * Props for CustomColorInputs component
+ * Props interface for CustomColorInputs component
  */
 export interface CustomColorInputsProps {
   primaryColor: string;
