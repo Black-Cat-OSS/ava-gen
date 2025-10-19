@@ -4,6 +4,8 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './modules/app/app.module';
 import { YamlConfigService } from './config/modules/yaml-driver/yaml-config.service';
 import { LoggerService } from './modules/logger/logger.service';
+import { EmptyResponseInterceptor } from './common/interceptors/empty-response.interceptor';
+import { Reflector } from '@nestjs/core';
 
 async function bootstrap() {
   const bootstrapLogger = new Logger('Bootstrap');
@@ -38,6 +40,9 @@ async function bootstrap() {
         forbidNonWhitelisted: true,
       }),
     );
+
+    loggerService.debug('Setting up global empty response interceptor...');
+    app.useGlobalInterceptors(new EmptyResponseInterceptor(app.get(Reflector)));
 
     //TODO: separate to OpenAPI-module
     loggerService.debug('Setting up Swagger documentation...');

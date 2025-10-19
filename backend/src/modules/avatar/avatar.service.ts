@@ -8,6 +8,7 @@ import {
   GetAvatarDto,
   ListAvatarsDto,
 } from './dto/generate-avatar.dto';
+import { ColorPaletteDto } from './dto/color-palette.dto';
 import { Avatar } from './avatar.entity';
 
 @Injectable()
@@ -206,5 +207,31 @@ export class AvatarService {
       database: dbHealth,
       status: dbHealth ? 'healthy' : 'unhealthy',
     };
+  }
+
+  async getColorPalettes(): Promise<{ palettes: ColorPaletteDto[] }> {
+    this.logger.log('Getting color palettes');
+
+    // Получаем палитры от всех генераторов
+    const pixelizePalettes = this.avatarGenerator.getColorSchemes('pixelize');
+    const wavePalettes = this.avatarGenerator.getColorSchemes('wave');
+    const gradientPalettes = this.avatarGenerator.getColorSchemes('gradient');
+
+    // Объединяем и дедуплицируем палитры
+    const allPalettes = [...pixelizePalettes, ...wavePalettes, ...gradientPalettes];
+    const uniquePalettes = allPalettes.filter((palette, index, self) => 
+      index === self.findIndex(p => p.name === palette.name)
+    );
+
+    const palettes = uniquePalettes.map(palette => ({
+      name: palette.name,
+      primaryColor: palette.primaryColor,
+      foreignColor: palette.foreignColor,
+      key: palette.name.toLowerCase(),
+    }));
+
+    this.logger.log(`Returning ${palettes.length} color palettes`);
+    
+    return { palettes };
   }
 }

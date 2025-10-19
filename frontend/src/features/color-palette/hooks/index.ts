@@ -1,0 +1,1 @@
+export { useColorPaletteContext } from './useColorPaletteContext';

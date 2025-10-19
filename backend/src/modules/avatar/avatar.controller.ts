@@ -20,6 +20,8 @@ import {
   GetAvatarDto,
   ListAvatarsDto,
 } from './dto/generate-avatar.dto';
+import { GenerateAvatarV2Dto } from './dto/generate-avatar-v2.dto';
+import { ColorPaletteDto } from './dto/color-palette.dto';
 
 @ApiTags('Avatar')
 @Controller()
@@ -29,25 +31,17 @@ export class AvatarController {
   @Post('v1/generate')
   @ApiOperation({ summary: 'Generate a new avatar (API v1)' })
   @ApiResponse({ status: 201, description: 'Avatar generated successfully' })
-  @ApiResponse({ status: 400, description: 'Bad request - invalid parameters' })
   @UsePipes(new ValidationPipe({ transform: true }))
   async generateAvatarV1(@Body() dto: GenerateAvatarDto) {
-    try {
-      const result = await this.avatarService.generateAvatar(dto);
-      return {
-        statusCode: HttpStatus.CREATED,
-        message: 'Avatar generated successfully',
-        data: result,
-      };
-    } catch (error) {
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: error.message,
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    return await this.avatarService.generateAvatar(dto);
+  }
+
+  @Post('v2/generate')
+  @ApiOperation({ summary: 'Generate gradient avatar (API v2)' })
+  @ApiResponse({ status: 201, description: 'Gradient avatar generated successfully' })
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async generateAvatarV2(@Body() dto: GenerateAvatarV2Dto) {
+    return await this.avatarService.generateAvatarV2(dto);
   }
 
   @Get('health')
@@ -85,47 +79,31 @@ export class AvatarController {
     description: 'Number of records to skip (default: 0)',
   })
   @ApiResponse({ status: 200, description: 'Avatar list retrieved successfully' })
-  @ApiResponse({ status: 400, description: 'Bad request - invalid parameters' })
+  @ApiResponse({ status: 204, description: 'No avatars found' })
   @UsePipes(new ValidationPipe({ transform: true }))
   async listAvatars(@Query() dto: ListAvatarsDto) {
-    try {
-      const result = await this.avatarService.listAvatars(dto);
-      return {
-        statusCode: HttpStatus.OK,
-        message: 'Avatar list retrieved successfully',
-        data: result,
-      };
-    } catch (error) {
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: error.message,
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    return await this.avatarService.listAvatars(dto);
   }
 
   @Get('color-schemes')
   @ApiOperation({ summary: 'Get available color schemes' })
   @ApiResponse({ status: 200, description: 'Color schemes retrieved successfully' })
+  @ApiResponse({ status: 204, description: 'No color schemes available' })
   async getColorSchemes() {
-    try {
-      const schemes = await this.avatarService.getColorSchemes();
-      return {
-        statusCode: HttpStatus.OK,
-        message: 'Color schemes retrieved successfully',
-        data: schemes,
-      };
-    } catch (error) {
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: error.message,
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    return await this.avatarService.getColorSchemes();
+  }
+
+  @Get('palettes')
+  @ApiOperation({ summary: 'Get available color palettes' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Color palettes retrieved successfully',
+    type: [ColorPaletteDto]
+  })
+  @ApiResponse({ status: 204, description: 'No color palettes available' })
+  async getColorPalettes() {
+    const result = await this.avatarService.getColorPalettes();
+    return result.palettes;
   }
 
   @Get(':id')
@@ -170,23 +148,7 @@ export class AvatarController {
   @ApiOperation({ summary: 'Delete avatar by ID' })
   @ApiParam({ name: 'id', description: 'Avatar ID (UUID)' })
   @ApiResponse({ status: 200, description: 'Avatar deleted successfully' })
-  @ApiResponse({ status: 404, description: 'Avatar not found' })
   async deleteAvatar(@Param('id') id: string) {
-    try {
-      const result = await this.avatarService.deleteAvatar(id);
-      return {
-        statusCode: HttpStatus.OK,
-        message: result.message,
-      };
-    } catch (error) {
-      const status = error.status || HttpStatus.INTERNAL_SERVER_ERROR;
-      throw new HttpException(
-        {
-          statusCode: status,
-          message: error.message,
-        },
-        status,
-      );
-    }
+    return await this.avatarService.deleteAvatar(id);
   }
 }

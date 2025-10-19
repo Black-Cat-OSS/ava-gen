@@ -2,6 +2,7 @@ export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 
 export interface ApiResponse<T> {
   data: T;
+  status: number;
   message?: string;
   success: boolean;
 }
@@ -34,12 +35,17 @@ export class ApiClient {
     try {
       const response = await fetch(url, config);
 
-      if (!response.ok) {
+      if (!response.ok && response.status !== 204) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
+      // Handle 204 No Content
+      if (response.status === 204) {
+        return { data: (Array.isArray([]) ? [] : {}) as T, status: 204, success: true };
+      }
+
       const data = await response.json();
-      return data;
+      return { data, status: response.status, success: true };
     } catch (error) {
       throw new Error(
         `API request failed: ${error instanceof Error ? error.message : 'Unknown error'}`,

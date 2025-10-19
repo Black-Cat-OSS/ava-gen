@@ -33,6 +33,7 @@ export interface GenerateAvatarParams {
   colorScheme?: string;
   seed?: string;
   type?: string;
+  angle?: number;
 }
 
 export interface GenerateAvatarResponse {
@@ -62,7 +63,20 @@ export const avatarApi = {
   },
 
   generate: async (params: GenerateAvatarParams): Promise<GenerateAvatarResponse> => {
-    const response = await apiClient.post<GenerateAvatarResponse>('/api/v1/generate', params);
+    const endpoint = params.type === 'gradient' ? '/api/v2/generate' : '/api/v1/generate';
+    
+    let requestParams: Omit<GenerateAvatarParams, 'type'> | Omit<GenerateAvatarParams, 'angle'>;
+    if (params.type === 'gradient') {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { type, seed, ...v2Params } = params;
+      requestParams = v2Params;
+    } else {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { angle, ...v1Params } = params;
+      requestParams = v1Params;
+    }
+    
+    const response = await apiClient.post<GenerateAvatarResponse>(endpoint, requestParams);
     return response.data;
   },
 
@@ -84,6 +98,22 @@ export const avatarApi = {
 
   delete: async (id: string): Promise<{ message: string }> => {
     const response = await apiClient.delete<{ message: string }>(`/api/${id}`);
+    return response.data;
+  },
+
+  getColorPalettes: async (): Promise<Array<{
+    name: string;
+    primaryColor: string;
+    foreignColor: string;
+    key: string;
+  }>> => {
+    const response = await apiClient.get<Array<{
+      name: string;
+      primaryColor: string;
+      foreignColor: string;
+      key: string;
+    }>>('/api/palettes');
+    
     return response.data;
   },
 };
