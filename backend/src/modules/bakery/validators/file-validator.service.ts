@@ -1,5 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { AVATAR_CONSTANTS } from '../utils/constants';
+import { 
+  FileValidationException, 
+  InvalidFileSizeException, 
+  CorruptedFileException 
+} from '../exceptions/bakery.exception';
 
 /**
  * Validates file integrity and format
@@ -12,27 +17,37 @@ export class FileValidatorService {
     this.logger.log('Validating file integrity');
 
     try {
-      // Check file size
-      if (!this.isValidFileSize(file)) {
-        throw new Error('Invalid file size');
-      }
-
       // Check if file is not empty
       if (file.length === 0) {
-        throw new Error('File is empty');
+        throw new FileValidationException('File is empty');
+      }
+
+      // Check file size
+      if (!this.isValidFileSize(file)) {
+        throw new InvalidFileSizeException(
+          file.length, 
+          AVATAR_CONSTANTS.FILE_LIMITS.MIN_SIZE, 
+          AVATAR_CONSTANTS.FILE_LIMITS.MAX_SIZE
+        );
       }
 
       // Check if file can be parsed (basic format validation)
       if (!this.canBeParsed(file)) {
-        throw new Error('File cannot be parsed');
+        throw new CorruptedFileException('File cannot be parsed or has invalid format');
       }
 
       this.logger.log('File validation passed');
       return true;
 
     } catch (error) {
+      if (error instanceof FileValidationException || 
+          error instanceof InvalidFileSizeException || 
+          error instanceof CorruptedFileException) {
+        throw error;
+      }
+      
       this.logger.error(`File validation failed: ${error.message}`);
-      return false;
+      throw new FileValidationException(error.message);
     }
   }
 

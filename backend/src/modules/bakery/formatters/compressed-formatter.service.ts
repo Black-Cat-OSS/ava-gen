@@ -6,6 +6,12 @@ import { AvatarObject } from '../types/avatar-object.type';
 import { FileFormat } from '../types/file-format.type';
 import { BufferUtils } from '../utils/buffer.utils';
 import { AVATAR_CONSTANTS } from '../utils/constants';
+import { 
+  BakingException, 
+  UnbakingException, 
+  CompressionException, 
+  InvalidMagicNumberException 
+} from '../exceptions/bakery.exception';
 
 const gzipAsync = promisify(gzip);
 const gunzipAsync = promisify(gunzip);
@@ -26,8 +32,9 @@ export class CompressedFormatterService implements IFileFormatter {
   async bake(avatarObject: AvatarObject, _options: BakingOptions): Promise<Buffer> {
     this.logger.log('Baking object to compressed format');
 
-    // Create JSON structure first (reuse JSON formatter logic)
-    const jsonStructure = this.createJsonStructure(avatarObject);
+    try {
+      // Create JSON structure first (reuse JSON formatter logic)
+      const jsonStructure = this.createJsonStructure(avatarObject);
     
     // Compress the JSON data
     const compressedData = await gzipAsync(Buffer.from(jsonStructure, 'utf8'));
@@ -50,8 +57,14 @@ export class CompressedFormatterService implements IFileFormatter {
       compressedData,
     ]);
 
-    this.logger.log(`Compressed format baked, original: ${jsonStructure.length} bytes, compressed: ${compressedData.length} bytes`);
-    return result;
+      this.logger.log(`Compressed format baked, original: ${jsonStructure.length} bytes, compressed: ${compressedData.length} bytes`);
+      return result;
+    } catch (error) {
+      if (error instanceof CompressionException) {
+        throw error;
+      }
+      throw new BakingException(`Failed to bake object to compressed format: ${error.message}`, error);
+    }
   }
 
   async unbake(file: Buffer, _options: UnbakingOptions): Promise<AvatarObject> {
@@ -67,7 +80,7 @@ export class CompressedFormatterService implements IFileFormatter {
       const header = JSON.parse(headerBuffer.toString('utf8'));
       
       if (header.magic !== this.magicNumber) {
-        throw new Error('Invalid magic number in compressed file');
+        throw new InvalidMagicNumberException(this.magicNumber, header.magic);
       }
       
       // Decompress data
@@ -81,7 +94,13 @@ export class CompressedFormatterService implements IFileFormatter {
       return avatarObject;
 
     } catch (error) {
-      throw new Error(`Error unbaking compressed file: ${error.message}`);
+      if (error instanceof InvalidMagicNumberException) {
+        throw error;
+      }
+      if (error.code === 'Z_DATA_ERROR' || error.code === 'Z_BUF_ERROR') {
+        throw new CompressionException(`Decompression failed: ${error.message}`, error);
+      }
+      throw new UnbakingException(`Failed to unbake compressed file: ${error.message}`, error);
     }
   }
 

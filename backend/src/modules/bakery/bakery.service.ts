@@ -9,6 +9,11 @@ import { CompressedFormatterService } from './formatters/compressed-formatter.se
 import { FileValidatorService } from './validators/file-validator.service';
 import { StructureValidatorService } from './validators/structure-validator.service';
 import { AVATAR_CONSTANTS } from './utils/constants';
+import { 
+  UnsupportedFormatException, 
+  BakingException, 
+  UnbakingException 
+} from './exceptions/bakery.exception';
 
 /**
  * Bakery service - bakes avatar objects into files and unbakes them back
@@ -77,8 +82,12 @@ export class BakeryService implements IBakeryService {
       return result;
 
     } catch (error) {
+      if (error instanceof BakingException || 
+          error instanceof UnsupportedFormatException) {
+        throw error;
+      }
       this.logger.error(`💥 Baking failed: ${error.message}`, error);
-      throw error;
+      throw new BakingException(`Unexpected error during baking: ${error.message}`, error);
     }
   }
 
@@ -119,8 +128,12 @@ export class BakeryService implements IBakeryService {
       return ingredients;
 
     } catch (error) {
+      if (error instanceof UnbakingException || 
+          error instanceof UnsupportedFormatException) {
+        throw error;
+      }
       this.logger.error(`💥 Unbaking failed: ${error.message}`, error);
-      throw error;
+      throw new UnbakingException(`Unexpected error during unbaking: ${error.message}`, error);
     }
   }
 
@@ -131,7 +144,7 @@ export class BakeryService implements IBakeryService {
    */
   detectFormat(file: Buffer): FileFormat {
     if (file.length < 10) {
-      throw new Error('File too small to determine format');
+      throw new UnsupportedFormatException('File too small to determine format');
     }
 
     const beginning = file.subarray(0, 10).toString('utf8');
@@ -148,7 +161,7 @@ export class BakeryService implements IBakeryService {
       return 'compressed';
     }
     
-    throw new Error('Unknown file format');
+    throw new UnsupportedFormatException('Unknown file format');
   }
 
   /**
@@ -178,7 +191,7 @@ export class BakeryService implements IBakeryService {
       case 'compressed':
         return this.compressedFormatter;
       default:
-        throw new Error(`Unsupported format: ${format}`);
+        throw new UnsupportedFormatException(format);
     }
   }
 }

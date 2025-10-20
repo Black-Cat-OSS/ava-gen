@@ -4,6 +4,7 @@ import { AvatarObject } from '../types/avatar-object.type';
 import { FileFormat, FileStructure } from '../types/file-format.type';
 import { BufferUtils } from '../utils/buffer.utils';
 import { AVATAR_CONSTANTS } from '../utils/constants';
+import { BakingException, UnbakingException, CorruptedFileException } from '../exceptions/bakery.exception';
 
 /**
  * JSON formatter for avatar objects
@@ -20,8 +21,9 @@ export class JsonFormatterService implements IFileFormatter {
   async bake(avatarObject: AvatarObject, _options: BakingOptions): Promise<Buffer> {
     this.logger.log('Baking object to JSON format');
 
-    // Create file structure
-    const fileStructure: FileStructure = {
+    try {
+      // Create file structure
+      const fileStructure: FileStructure = {
       header: {
         version: AVATAR_CONSTANTS.VERSIONS.CURRENT,
         type: 'avatar-object',
@@ -60,10 +62,13 @@ export class JsonFormatterService implements IFileFormatter {
       },
     };
 
-    // Serialize to JSON
-    const jsonString = JSON.stringify(fileStructure, null, 2);
-    
-    return Buffer.from(jsonString, 'utf8');
+      // Serialize to JSON
+      const jsonString = JSON.stringify(fileStructure, null, 2);
+      
+      return Buffer.from(jsonString, 'utf8');
+    } catch (error) {
+      throw new BakingException(`Failed to bake object to JSON: ${error.message}`, error);
+    }
   }
 
   async unbake(file: Buffer, _options: UnbakingOptions): Promise<AvatarObject> {
@@ -96,7 +101,10 @@ export class JsonFormatterService implements IFileFormatter {
       return avatarObject;
 
     } catch (error) {
-      throw new Error(`Error unbaking JSON file: ${error.message}`);
+      if (error instanceof SyntaxError) {
+        throw new CorruptedFileException(`Invalid JSON format: ${error.message}`);
+      }
+      throw new UnbakingException(`Failed to unbake JSON file: ${error.message}`, error);
     }
   }
 

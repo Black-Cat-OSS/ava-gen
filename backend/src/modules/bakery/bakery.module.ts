@@ -5,6 +5,7 @@ import { BinaryFormatterService } from './formatters/binary-formatter.service';
 import { CompressedFormatterService } from './formatters/compressed-formatter.service';
 import { FileValidatorService } from './validators/file-validator.service';
 import { StructureValidatorService } from './validators/structure-validator.service';
+import { BakeryExceptionFilter, GlobalExceptionFilter } from './filters/bakery-exception.filter';
 
 /**
  * Bakery module - independent module for baking and unbaking avatar objects
@@ -18,9 +19,13 @@ import { StructureValidatorService } from './validators/structure-validator.serv
     CompressedFormatterService,
     FileValidatorService,
     StructureValidatorService,
+    BakeryExceptionFilter,
+    GlobalExceptionFilter,
   ],
   exports: [
     BakeryService,
+    BakeryExceptionFilter,
+    GlobalExceptionFilter,
   ],
 })
 export class BakeryModule {}

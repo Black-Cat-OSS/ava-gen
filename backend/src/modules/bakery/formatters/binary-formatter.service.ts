@@ -4,6 +4,11 @@ import { AvatarObject } from '../types/avatar-object.type';
 import { FileFormat } from '../types/file-format.type';
 // import { BufferUtils } from '../utils/buffer.utils'; // Not used in binary formatter
 import { AVATAR_CONSTANTS } from '../utils/constants';
+import { 
+  BakingException, 
+  UnbakingException, 
+  InvalidMagicNumberException 
+} from '../exceptions/bakery.exception';
 
 /**
  * Binary formatter for avatar objects
@@ -21,8 +26,9 @@ export class BinaryFormatterService implements IFileFormatter {
   async bake(avatarObject: AvatarObject, _options: BakingOptions): Promise<Buffer> {
     this.logger.log('Baking object to binary format');
 
-    // Create header
-    const header = this.createHeader(avatarObject);
+    try {
+      // Create header
+      const header = this.createHeader(avatarObject);
     
     // Serialize metadata
     const metadataBuffer = this.serializeMetadata(avatarObject.metadata);
@@ -40,8 +46,11 @@ export class BinaryFormatterService implements IFileFormatter {
       buffersData,
     ]);
 
-    this.logger.log(`Binary format baked, size: ${binaryData.length} bytes`);
-    return binaryData;
+      this.logger.log(`Binary format baked, size: ${binaryData.length} bytes`);
+      return binaryData;
+    } catch (error) {
+      throw new BakingException(`Failed to bake object to binary: ${error.message}`, error);
+    }
   }
 
   async unbake(file: Buffer, _options: UnbakingOptions): Promise<AvatarObject> {
@@ -85,7 +94,10 @@ export class BinaryFormatterService implements IFileFormatter {
       return avatarObject;
 
     } catch (error) {
-      throw new Error(`Error unbaking binary file: ${error.message}`);
+      if (error instanceof InvalidMagicNumberException) {
+        throw error;
+      }
+      throw new UnbakingException(`Failed to unbake binary file: ${error.message}`, error);
     }
   }
 
@@ -114,7 +126,7 @@ export class BinaryFormatterService implements IFileFormatter {
     const header = JSON.parse(headerJson);
     
     if (header.magic !== this.magicNumber) {
-      throw new Error('Invalid magic number in binary file');
+      throw new InvalidMagicNumberException(this.magicNumber, header.magic);
     }
     
     return header;

@@ -1,5 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { AvatarObject } from '../types/avatar-object.type';
+import { 
+  StructureValidationException, 
+  MissingRequiredFieldsException 
+} from '../exceptions/bakery.exception';
 
 /**
  * Validates AvatarObject structure and data integrity
@@ -13,49 +17,61 @@ export class StructureValidatorService {
 
     try {
       // Validate basic structure
-      if (!this.hasRequiredFields(avatarObject)) {
-        throw new Error('Missing required fields');
+      const missingFields = this.getMissingRequiredFields(avatarObject);
+      if (missingFields.length > 0) {
+        throw new MissingRequiredFieldsException(missingFields);
       }
 
       // Validate metadata
       if (!this.isValidMetadata(avatarObject.metadata)) {
-        throw new Error('Invalid metadata structure');
+        throw new StructureValidationException('Invalid metadata structure');
       }
 
       // Validate images
       if (!this.isValidImages(avatarObject.images)) {
-        throw new Error('Invalid images structure');
+        throw new StructureValidationException('Invalid images structure');
       }
 
       // Validate filtered images (if present)
       if (avatarObject.filtered_images && !this.isValidFilteredImages(avatarObject.filtered_images)) {
-        throw new Error('Invalid filtered images structure');
+        throw new StructureValidationException('Invalid filtered images structure');
       }
 
       // Validate build stages
       if (!this.isValidBuildStages(avatarObject.build_stages)) {
-        throw new Error('Invalid build stages');
+        throw new StructureValidationException('Invalid build stages');
       }
 
       this.logger.log('Structure validation passed');
       return true;
 
     } catch (error) {
+      if (error instanceof StructureValidationException || 
+          error instanceof MissingRequiredFieldsException) {
+        throw error;
+      }
+      
       this.logger.error(`Structure validation failed: ${error.message}`);
-      return false;
+      throw new StructureValidationException(error.message);
     }
   }
 
-  private hasRequiredFields(avatarObject: AvatarObject): boolean {
-    return !!(
-      avatarObject.template_id &&
-      avatarObject.build_stages &&
-      avatarObject.images &&
-      avatarObject.metadata &&
-      avatarObject.metadata.id &&
-      avatarObject.metadata.createdAt &&
-      avatarObject.metadata.version
-    );
+  private getMissingRequiredFields(avatarObject: AvatarObject): string[] {
+    const missing: string[] = [];
+    
+    if (!avatarObject.template_id) missing.push('template_id');
+    if (!avatarObject.build_stages) missing.push('build_stages');
+    if (!avatarObject.images) missing.push('images');
+    if (!avatarObject.metadata) {
+      missing.push('metadata');
+      return missing; // Can't check nested fields if metadata is missing
+    }
+    
+    if (!avatarObject.metadata.id) missing.push('metadata.id');
+    if (!avatarObject.metadata.createdAt) missing.push('metadata.createdAt');
+    if (!avatarObject.metadata.version) missing.push('metadata.version');
+    
+    return missing;
   }
 
   private isValidMetadata(metadata: AvatarObject['metadata']): boolean {
@@ -101,3 +117,4 @@ export class StructureValidatorService {
            buildStages.every(stage => typeof stage === 'string' && stage.length > 0);
   }
 }
+
