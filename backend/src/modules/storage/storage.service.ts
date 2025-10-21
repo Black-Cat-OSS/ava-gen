@@ -54,7 +54,21 @@ export class StorageService {
    * @throws {Error} Если сохранение не удалось
    */
   async saveAvatar(avatarObject: AvatarObject): Promise<string> {
-    return this.strategy.saveAvatar(avatarObject);
+    const result = await this.strategy.saveAvatar(avatarObject);
+    
+    // Кешируем сохраненный аватар
+    if (this.cacheService) {
+      const cacheKey = `avatar:object:${avatarObject.meta_data_name}`;
+      try {
+        await this.cacheService.set(cacheKey, avatarObject, 'avatars');
+        this.logger.debug(`Avatar cached after save: ${avatarObject.meta_data_name}`);
+      } catch (error) {
+        this.logger.warn(`Failed to cache avatar after save: ${error.message}`);
+        // Не выбрасываем ошибку - сохранение прошло успешно
+      }
+    }
+    
+    return result;
   }
 
   /**
