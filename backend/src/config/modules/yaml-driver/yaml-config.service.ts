@@ -91,6 +91,10 @@ export class YamlConfigService implements OnModuleDestroy {
     return this.config.app.logging;
   }
 
+  getCacheConfig() {
+    return this.config.app.cache;
+  }
+
   getCorsConfig() {
     return {
       enabled: this.config.app.cors || false,

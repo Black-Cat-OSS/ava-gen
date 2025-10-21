@@ -60,6 +60,47 @@ const configSchema = z
           verbose: false,
           pretty: true,
         }),
+      cache: z
+        .object({
+          type: z.enum(['redis', 'memcached', 'memory', 'disabled']),
+          warn_memory_level: z.number().min(0).max(100).optional(),
+          ttl: z
+            .object({
+              avatars: z.number().min(1).optional(),
+              metadata: z.number().min(1).optional(),
+              lists: z.number().min(1).optional(),
+              default: z.number().min(1).optional(),
+            })
+            .optional(),
+          redis: z
+            .object({
+              host: z.string().min(1),
+              port: z.number().min(1).max(65535),
+              password: z.string().optional(),
+              db: z.number().min(0).max(15).optional(),
+              max_memory: z.string().optional(),
+              connection: z
+                .object({
+                  maxRetries: z.number().min(1).max(10).default(3),
+                  retryDelay: z.number().min(100).max(10000).default(2000),
+                })
+                .optional(),
+            })
+            .optional(),
+          memcached: z
+            .object({
+              hosts: z.array(z.string().min(1)),
+              max_memory: z.number().min(1).optional(),
+            })
+            .optional(),
+          memory: z
+            .object({
+              max_items: z.number().min(1).optional(),
+              max_memory: z.number().min(1).optional(),
+            })
+            .optional(),
+        })
+        .optional(),
       cors: z.boolean().default(false).optional(),
       corsEnabled: z.array(z.string()).optional(),
     }),
@@ -79,6 +120,32 @@ const configSchema = z
         message: `Storage configuration for type "s3" is required`,
         path: ['app', 'storage', 's3'],
       });
+    }
+
+    // Cache validation
+    if (data.app.cache) {
+      const cacheType = data.app.cache.type;
+      if (cacheType === 'redis' && !data.app.cache.redis) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Redis configuration is required when cache type is "redis"',
+          path: ['app', 'cache', 'redis'],
+        });
+      }
+      if (cacheType === 'memcached' && !data.app.cache.memcached) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Memcached configuration is required when cache type is "memcached"',
+          path: ['app', 'cache', 'memcached'],
+        });
+      }
+      if (cacheType === 'memory' && !data.app.cache.memory) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Memory configuration is required when cache type is "memory"',
+          path: ['app', 'cache', 'memory'],
+        });
+      }
     }
 
     // CORS validation
