@@ -4,11 +4,7 @@ import { Repository } from 'typeorm';
 import { StorageService } from '../storage/storage.service';
 import { GeneratorService } from './modules/generator/generator.service';
 import { FilterService } from './pipelines/filters/filter.service';
-import {
-  GenerateAvatarDto,
-  GetAvatarDto,
-  ListAvatarsDto,
-} from './dto/generate-avatar.dto';
+import { GenerateAvatarDto, GetAvatarDto, ListAvatarsDto } from './dto/generate-avatar.dto';
 import { GenerateAvatarV2Dto } from './dto/generate-avatar-v2.dto';
 import { ColorPaletteDto } from './dto/color-palette.dto';
 import { Avatar } from './avatar.entity';
