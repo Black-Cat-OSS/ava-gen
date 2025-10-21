@@ -44,12 +44,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/letnull19A/avatar-gen.git"
+    "url": "https://github.com/Black-Cat-OSS/ava-gen.git"
   },
   "bugs": {
-    "url": "https://github.com/letnull19A/avatar-gen/issues"
+    "url": "https://github.com/Black-Cat-OSS/ava-gen/issues"
   },
-  "homepage": "https://github.com/letnull19A/avatar-gen#readme",
+  "homepage": "https://github.com/Black-Cat-OSS/ava-gen#readme",
   "devDependencies": {
     "@commitlint/cli": "^19.6.0",
     "@commitlint/config-conventional": "^19.6.0",
