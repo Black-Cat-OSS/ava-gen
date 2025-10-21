@@ -1,6 +1,6 @@
 app:
   storage:
-    type: 's3' # используем S3 для production
+    type: 's3'
     s3:
       endpoint: 'https://your-s3-endpoint.com'
       bucket: 'your-bucket-name'
@@ -9,24 +9,46 @@ app:
       region: 'us-east-1'
       force_path_style: true
       connection:
-        maxRetries: 3
+        maxRetries: 5
         retryDelay: 3000
+  
+  # Production режим с Redis кешированием
+  cache:
+    type: 'redis'
+    warn_memory_level: 85
+    ttl:
+      avatars: 86400      # 24 часа
+      metadata: 3600      # 1 час
+      lists: 300          # 5 минут
+      exists: 300         # 5 минут
+    redis:
+      host: 'redis'
+      port: 6379
+      password: 'your-redis-password'
+      db: 0
+      max_memory: '512mb'
+      connection:
+        maxRetries: 5
+        retryDelay: 3000
+  
   server:
     host: '0.0.0.0'
-    port: 3000 # Стандартный порт для backend API
+    port: 3000
+  
   database:
-    driver: 'postgresql' # PostgreSQL для production
+    driver: 'postgresql'
     connection:
-      maxRetries: 3 # Стандартное количество попыток
-      retryDelay: 3000 # Больше задержка для продакшена
+      maxRetries: 5
+      retryDelay: 3000
     network:
-      host: 'postgres' # имя сервиса в docker-compose
+      host: 'postgres'
       port: 5432
       database: 'avatar_gen'
       username: 'postgres'
-      password: 'password'
-      ssl: false
+      password: 'your-secure-password'
+      ssl: true
+  
   logging:
-    level: 'warn' # только предупреждения и ошибки в продакшене
-    verbose: false # отключить детальное логирование
-    pretty: false # JSON формат для продакшена
+    level: 'info'
+    verbose: false
+    pretty: false
