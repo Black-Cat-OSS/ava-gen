@@ -28,6 +28,14 @@ export class MemcachedCacheService implements ICacheStrategy, OnModuleInit, OnMo
    * @throws {CacheConnectionException} Если подключение не удалось установить
    */
   async onModuleInit(): Promise<void> {
+    const config = this.configService.getCacheConfig();
+    
+    // Проверяем, нужен ли Memcached драйвер
+    if (!config || config.type !== 'memcached') {
+      this.logger.log('Memcached cache driver skipped - not configured or not selected');
+      return;
+    }
+
     this.logger.log('Initializing Memcached cache connection...');
     await this.connect();
   }
@@ -131,6 +139,10 @@ export class MemcachedCacheService implements ICacheStrategy, OnModuleInit, OnMo
    * @throws {CacheOperationException} Если операция не удалась
    */
   async get<T>(key: string): Promise<T | null> {
+    if (!this.isConnected || !this.client) {
+      return null;
+    }
+
     try {
       return new Promise((resolve, reject) => {
         this.client.get(key, (err, data) => {
@@ -177,6 +189,10 @@ export class MemcachedCacheService implements ICacheStrategy, OnModuleInit, OnMo
    * @throws {CacheOperationException} Если операция не удалась
    */
   async set<T>(key: string, value: T, ttl?: number): Promise<void> {
+    if (!this.isConnected || !this.client) {
+      return; // No-op if not connected
+    }
+
     try {
       const serializedValue = JSON.stringify(value);
       const lifetime = ttl || 0; // 0 = no expiration
@@ -214,6 +230,10 @@ export class MemcachedCacheService implements ICacheStrategy, OnModuleInit, OnMo
    * @throws {CacheOperationException} Если операция не удалась
    */
   async del(key: string): Promise<void> {
+    if (!this.isConnected || !this.client) {
+      return; // No-op if not connected
+    }
+
     try {
       return new Promise((resolve, reject) => {
         this.client.del(key, (err) => {
@@ -248,6 +268,10 @@ export class MemcachedCacheService implements ICacheStrategy, OnModuleInit, OnMo
    * @throws {CacheOperationException} Если операция не удалась
    */
   async clear(pattern?: string): Promise<void> {
+    if (!this.isConnected || !this.client) {
+      return; // No-op if not connected
+    }
+
     try {
       if (pattern) {
         // Memcached не поддерживает pattern-based deletion
@@ -292,6 +316,10 @@ export class MemcachedCacheService implements ICacheStrategy, OnModuleInit, OnMo
    * @throws {CacheOperationException} Если операция не удалась
    */
   async has(key: string): Promise<boolean> {
+    if (!this.isConnected || !this.client) {
+      return false; // No-op if not connected
+    }
+
     try {
       const value = await this.get(key);
       return value !== null;
@@ -315,6 +343,10 @@ export class MemcachedCacheService implements ICacheStrategy, OnModuleInit, OnMo
    * @throws {CacheOperationException} Если операция не удалась
    */
   async mget<T>(keys: string[]): Promise<(T | null)[]> {
+    if (!this.isConnected || !this.client) {
+      return keys.map(() => null); // No-op if not connected
+    }
+
     try {
       return new Promise((resolve, reject) => {
         this.client.getMulti(keys, (err, data) => {
@@ -359,6 +391,10 @@ export class MemcachedCacheService implements ICacheStrategy, OnModuleInit, OnMo
    * @throws {CacheOperationException} Если операция не удалась
    */
   async mset<T>(entries: Array<{key: string; value: T; ttl?: number}>): Promise<void> {
+    if (!this.isConnected || !this.client) {
+      return; // No-op if not connected
+    }
+
     try {
       const promises = entries.map((entry) => 
         this.set(entry.key, entry.value, entry.ttl)
@@ -382,6 +418,15 @@ export class MemcachedCacheService implements ICacheStrategy, OnModuleInit, OnMo
    * @throws {CacheOperationException} Если операция не удалась
    */
   async getMemoryUsage(): Promise<CacheMemoryStats> {
+    if (!this.isConnected || !this.client) {
+      return {
+        used: 0,
+        limit: 0,
+        percentage: 0,
+        itemCount: 0,
+      };
+    }
+
     try {
       return new Promise((resolve, reject) => {
         this.client.stats((err, stats) => {

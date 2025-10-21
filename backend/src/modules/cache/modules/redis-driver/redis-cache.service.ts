@@ -28,6 +28,14 @@ export class RedisCacheService implements ICacheStrategy, OnModuleInit, OnModule
    * @throws {CacheConnectionException} Если подключение не удалось установить после всех попыток
    */
   async onModuleInit(): Promise<void> {
+    const config = this.configService.getCacheConfig();
+    
+    // Проверяем, нужен ли Redis драйвер
+    if (!config || config.type !== 'redis') {
+      this.logger.log('Redis cache driver skipped - not configured or not selected');
+      return;
+    }
+
     this.logger.log('Initializing Redis cache connection...');
     await this.connectWithRetry();
   }
@@ -151,6 +159,10 @@ export class RedisCacheService implements ICacheStrategy, OnModuleInit, OnModule
    * @throws {CacheOperationException} Если операция не удалась
    */
   async get<T>(key: string): Promise<T | null> {
+    if (!this.isConnected || !this.client) {
+      return null;
+    }
+
     try {
       const value = await this.client.get(key);
       if (value === null) {
@@ -176,6 +188,10 @@ export class RedisCacheService implements ICacheStrategy, OnModuleInit, OnModule
    * @throws {CacheOperationException} Если операция не удалась
    */
   async set<T>(key: string, value: T, ttl?: number): Promise<void> {
+    if (!this.isConnected || !this.client) {
+      return; // No-op if not connected
+    }
+
     try {
       const serializedValue = JSON.stringify(value);
       if (ttl) {
@@ -200,6 +216,10 @@ export class RedisCacheService implements ICacheStrategy, OnModuleInit, OnModule
    * @throws {CacheOperationException} Если операция не удалась
    */
   async del(key: string): Promise<void> {
+    if (!this.isConnected || !this.client) {
+      return; // No-op if not connected
+    }
+
     try {
       await this.client.del(key);
     } catch (error) {
@@ -219,6 +239,10 @@ export class RedisCacheService implements ICacheStrategy, OnModuleInit, OnModule
    * @throws {CacheOperationException} Если операция не удалась
    */
   async clear(pattern?: string): Promise<void> {
+    if (!this.isConnected || !this.client) {
+      return; // No-op if not connected
+    }
+
     try {
       if (pattern) {
         const keys = await this.client.keys(pattern);
@@ -245,6 +269,10 @@ export class RedisCacheService implements ICacheStrategy, OnModuleInit, OnModule
    * @throws {CacheOperationException} Если операция не удалась
    */
   async has(key: string): Promise<boolean> {
+    if (!this.isConnected || !this.client) {
+      return false; // No-op if not connected
+    }
+
     try {
       const result = await this.client.exists(key);
       return result === 1;
@@ -265,6 +293,10 @@ export class RedisCacheService implements ICacheStrategy, OnModuleInit, OnModule
    * @throws {CacheOperationException} Если операция не удалась
    */
   async mget<T>(keys: string[]): Promise<(T | null)[]> {
+    if (!this.isConnected || !this.client) {
+      return keys.map(() => null); // No-op if not connected
+    }
+
     try {
       const values = await this.client.mget(...keys);
       return values.map((value) => (value ? JSON.parse(value) : null)) as (T | null)[];
@@ -284,6 +316,10 @@ export class RedisCacheService implements ICacheStrategy, OnModuleInit, OnModule
    * @throws {CacheOperationException} Если операция не удалась
    */
   async mset<T>(entries: Array<{key: string; value: T; ttl?: number}>): Promise<void> {
+    if (!this.isConnected || !this.client) {
+      return; // No-op if not connected
+    }
+
     try {
       const pipeline = this.client.pipeline();
       
@@ -312,6 +348,15 @@ export class RedisCacheService implements ICacheStrategy, OnModuleInit, OnModule
    * @throws {CacheOperationException} Если операция не удалась
    */
   async getMemoryUsage(): Promise<CacheMemoryStats> {
+    if (!this.isConnected || !this.client) {
+      return {
+        used: 0,
+        limit: 0,
+        percentage: 0,
+        itemCount: 0,
+      };
+    }
+
     try {
       const info = await this.client.memory('usage');
       const config = this.configService.getCacheConfig();

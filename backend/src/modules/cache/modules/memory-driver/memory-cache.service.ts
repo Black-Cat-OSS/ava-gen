@@ -11,7 +11,18 @@ export class MemoryCacheService implements ICacheStrategy, OnModuleInit, OnModul
   private readonly logger = new Logger(MemoryCacheService.name);
 
   async onModuleInit(): Promise<void> {
-    this.logger.log('Memory cache service initialized (stub)');
+    const config = this.configService.getCacheConfig();
+    
+    // Проверяем, нужен ли Memory драйвер
+    if (!config || config.type !== 'memory') {
+      this.logger.log('Memory cache driver skipped - not configured or not selected');
+      return;
+    }
+
+    this.logger.log(`Memory cache initialized with max ${this.maxItems} items and ${this.maxMemory / 1024 / 1024}MB memory`);
+    
+    // Запускаем периодическую очистку истекших элементов
+    this.startCleanupInterval();
   }
 
   async onModuleDestroy(): Promise<void> {
