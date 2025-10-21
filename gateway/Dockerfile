@@ -23,6 +23,7 @@ RUN for i in 1 2 3; do \
     /var/cache/nginx/fastcgi_temp \
     /var/cache/nginx/uwsgi_temp \
     /var/cache/nginx/scgi_temp \
+    /var/cache/nginx/avatars \
     /tmp \
     && chown -R nginx:nginx /var/www/certbot \
     && chown -R nginx:nginx /etc/letsencrypt \
