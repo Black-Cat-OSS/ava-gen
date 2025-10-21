@@ -81,16 +81,32 @@ export class AvatarController {
   @ApiResponse({ status: 200, description: 'Avatar list retrieved successfully' })
   @ApiResponse({ status: 204, description: 'No avatars found' })
   @UsePipes(new ValidationPipe({ transform: true }))
-  async listAvatars(@Query() dto: ListAvatarsDto) {
-    return await this.avatarService.listAvatars(dto);
+  async listAvatars(@Query() dto: ListAvatarsDto, @Res() res: Response) {
+    const result = await this.avatarService.listAvatars(dto);
+    
+    // Устанавливаем заголовки кеширования для списков
+    res.set({
+      'Cache-Control': 'public, max-age=300', // 5 минут для списков
+      'Content-Type': 'application/json',
+    });
+    
+    res.json(result);
   }
 
   @Get('color-schemes')
   @ApiOperation({ summary: 'Get available color schemes' })
   @ApiResponse({ status: 200, description: 'Color schemes retrieved successfully' })
   @ApiResponse({ status: 204, description: 'No color schemes available' })
-  async getColorSchemes() {
-    return await this.avatarService.getColorSchemes();
+  async getColorSchemes(@Res() res: Response) {
+    const result = await this.avatarService.getColorSchemes();
+    
+    // Устанавливаем заголовки кеширования для цветовых схем
+    res.set({
+      'Cache-Control': 'public, max-age=1800', // 30 минут для цветовых схем
+      'Content-Type': 'application/json',
+    });
+    
+    res.json(result);
   }
 
   @Get('palettes')
@@ -101,9 +117,16 @@ export class AvatarController {
     type: [ColorPaletteDto]
   })
   @ApiResponse({ status: 204, description: 'No color palettes available' })
-  async getColorPalettes() {
+  async getColorPalettes(@Res() res: Response) {
     const result = await this.avatarService.getColorPalettes();
-    return result.palettes;
+    
+    // Устанавливаем заголовки кеширования для палитр
+    res.set({
+      'Cache-Control': 'public, max-age=1800', // 30 минут для палитр
+      'Content-Type': 'application/json',
+    });
+    
+    res.json(result.palettes);
   }
 
   @Get(':id')
@@ -123,9 +146,24 @@ export class AvatarController {
     try {
       const result = await this.avatarService.getAvatar(id, dto);
 
+      // Генерируем ETag на основе ID и версии аватара
+      const etag = `"${result.id}-${result.version}"`;
+      
+      // Проверяем If-None-Match заголовок для условного запроса
+      const ifNoneMatch = res.req.headers['if-none-match'];
+      if (ifNoneMatch === etag) {
+        res.status(HttpStatus.NOT_MODIFIED);
+        res.end();
+        return;
+      }
+
+      // Устанавливаем HTTP заголовки кеширования
       res.set({
         'Content-Type': result.contentType,
         'Content-Length': result.image.length.toString(),
+        'Cache-Control': 'public, max-age=86400, immutable', // 24 часа, immutable для статических изображений
+        'ETag': etag,
+        'Last-Modified': result.createdAt.toUTCString(),
         'X-Avatar-ID': result.id,
         'X-Created-At': result.createdAt.toISOString(),
         'X-Version': result.version,
