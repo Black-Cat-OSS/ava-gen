@@ -4,6 +4,7 @@ export { BurgerIcon } from './BurgerIcon';
 export { LanguagePopup } from './LanguagePopup';
 export { FlagIcon } from './FlagIcon';
 export type { FlagIconProps } from './FlagIcon';
+export { RefreshIcon } from './RefreshIcon';
 export { NavigationLink } from './NavigationLink';
 export { Callout } from './Callout';
 export type { CalloutProps } from './Callout';

@@ -33,7 +33,21 @@ export class ApiClient {
     };
 
     try {
-      const response = await fetch(url, config);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
+      
+      // Minimum delay to show loading animation (500ms)
+      const minDelayPromise = new Promise(resolve => setTimeout(resolve, 500));
+      
+      const fetchPromise = fetch(url, {
+        ...config,
+        signal: controller.signal,
+      });
+      
+      // Wait for both minimum delay and fetch to complete
+      const response = await Promise.all([minDelayPromise, fetchPromise]).then(([, response]) => response);
+      
+      clearTimeout(timeoutId);
 
       if (!response.ok && response.status !== 204) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -47,6 +61,9 @@ export class ApiClient {
       const data = await response.json();
       return { data, status: response.status, success: true };
     } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new Error('Request timeout: The request took longer than 3 seconds');
+      }
       throw new Error(
         `API request failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
