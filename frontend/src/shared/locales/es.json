@@ -32,7 +32,7 @@
   "pages": {
     "home": {
       "title": "Galería de Avatares",
-      "subtitle": "Lista de avatares de la API backend",
+      "subtitle": "Solución para ti",
       "loading": "Cargando avatares...",
       "error": "Error de carga",
       "unknownError": "Error desconocido",

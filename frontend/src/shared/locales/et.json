@@ -32,7 +32,7 @@
   "pages": {
     "home": {
       "title": "Avatarite galerii",
-      "subtitle": "Avatarite nimekiri backend API-st",
+      "subtitle": "Lahendus teile",
       "loading": "Avatarite laadimine...",
       "error": "Laadimise viga",
       "unknownError": "Tundmatu viga",
