@@ -150,10 +150,11 @@ export class AvatarService {
 
       let imageBuffer: Buffer;
 
-      // Если есть фильтр, проверяем кеш отфильтрованного изображения
+      // Если есть фильтр, сначала проверяем кеш отфильтрованного изображения
       if (dto.filter) {
         const filteredCacheKey = `avatar:image:${id}:${size}:${dto.filter}`;
 
+        // Если кеширование включено, проверяем кеш отфильтрованного изображения
         if (this.cacheService) {
           try {
             const cached = await this.cacheService.getBuffer(filteredCacheKey);
@@ -182,13 +183,9 @@ export class AvatarService {
             );
             this.logger.warn(`Failed to get filtered image from cache: ${error.message}`);
           }
-        } else {
-          this.logger.debug(
-            `[CACHE] Cache service not available, will apply filter to ${id}:${size}`,
-          );
         }
 
-        // Загружаем оригинальное изображение
+        // Загружаем оригинальное изображение из хранилища
         this.logger.debug(`[STORAGE] Getting original image ${id}:${size} for filtering...`);
         imageBuffer = await this.storageService.loadImage(id, size);
 
@@ -210,7 +207,7 @@ export class AvatarService {
           `Filtered image ${id}:${size}:${dto.filter} generated from original (${imageBuffer.length} bytes)`,
         );
 
-        // Кешируем отфильтрованное изображение
+        // Если кеширование включено, кешируем отфильтрованное изображение
         if (this.cacheService) {
           try {
             this.logger.debug(
@@ -226,7 +223,30 @@ export class AvatarService {
           }
         }
       } else {
+        // Нет фильтра - загружаем оригинальное изображение из хранилища
         this.logger.log('No filter specified, returning original image');
+        
+        // Загружаем оригинальное изображение из хранилища
+        this.logger.debug(`[STORAGE] Getting original image ${id}:${size}...`);
+        imageBuffer = await this.storageService.loadImage(id, size);
+        this.logger.log(`Original image ${id}:${size} loaded from storage (${imageBuffer.length} bytes)`);
+
+        // Если кеширование включено, кешируем оригинальное изображение
+        if (this.cacheService) {
+          try {
+            const originalCacheKey = `avatar:image:${id}:${size}`;
+            this.logger.debug(
+              `[CACHE] Saving original ${id}:${size} to cache (${imageBuffer.length} bytes)...`,
+            );
+            await this.cacheService.setBuffer(originalCacheKey, imageBuffer, 'original');
+            this.logger.debug(`[CACHE] Original ${id}:${size} successfully cached`);
+          } catch (error) {
+            this.logger.debug(
+              `[CACHE] Failed to cache original ${id}:${size}: ${error.message}`,
+            );
+            this.logger.warn(`Failed to cache original image: ${error.message}`);
+          }
+        }
       }
 
       this.logger.log(`Avatar retrieved successfully: ${id}`);
