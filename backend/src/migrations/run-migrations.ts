@@ -5,14 +5,14 @@ import { initializeDataSource } from './data-source';
  * Простая функция логирования для standalone скрипта
  */
 const log = (message: string, level: 'info' | 'error' | 'success' = 'info') => {
-  const prefix = level === 'error' ? '❌' : level === 'success' ? '✅' : '🔄';
-   
-  log(`${prefix} ${message}`);
+  const prefix = level === 'error' ? '[ERROR]' : level === 'success' ? '[SUCCESS]' : '[INFO]';
+
+  console.log(`${prefix} ${message}`);
 };
 
 /**
  * Скрипт для запуска миграций базы данных
- * 
+ *
  * Использование:
  * - npm run migration:run - применить все миграции
  * - npm run migration:revert - откатить последнюю миграцию
@@ -38,7 +38,6 @@ async function runMigrations() {
         log(`  - ${migration.name}`);
       });
     }
-
   } catch (error) {
     console.error('❌ Ошибка при выполнении миграций:', error);
     process.exit(1);
@@ -66,8 +65,7 @@ async function revertMigrations() {
     log('🔄 Откат последней миграции...');
     await connection.undoLastMigration();
 
-    log('✅ Миграция откачена');
-
+    log(' Миграция откачена');
   } catch (error) {
     console.error('❌ Ошибка при откате миграции:', error);
     process.exit(1);

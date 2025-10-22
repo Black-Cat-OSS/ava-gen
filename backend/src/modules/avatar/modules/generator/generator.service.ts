@@ -56,5 +56,4 @@ export class GeneratorService {
         throw new BadRequestException(`Unsupported generator type: ${type}`);
     }
   }
-
 }

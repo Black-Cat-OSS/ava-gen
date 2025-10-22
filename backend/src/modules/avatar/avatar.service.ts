@@ -1,9 +1,15 @@
-import { Injectable, Logger, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { StorageService } from '../storage/storage.service';
 import { GeneratorService } from './modules/generator/generator.service';
 import { FilterService } from './pipelines/filters/filter.service';
+import { CacheService } from '../cache/cache.service';
 import { GenerateAvatarDto, GetAvatarDto, ListAvatarsDto } from './dto/generate-avatar.dto';
 import { GenerateAvatarV2Dto } from './dto/generate-avatar-v2.dto';
 import { ColorPaletteDto } from './dto/color-palette.dto';
@@ -19,6 +25,7 @@ export class AvatarService {
     private readonly avatarGenerator: GeneratorService,
     private readonly storageService: StorageService,
     private readonly filterService: FilterService,
+    private readonly cacheService: CacheService,
   ) {}
 
   async generateAvatar(dto: GenerateAvatarDto) {
@@ -118,7 +125,8 @@ export class AvatarService {
 
     try {
       // Validate UUID format
-      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      const uuidRegex =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
       if (!uuidRegex.test(id)) {
         throw new BadRequestException(`Invalid avatar ID format: ${id}. Expected UUID format.`);
       }
@@ -137,18 +145,86 @@ export class AvatarService {
         throw new NotFoundException(`Avatar with ID ${id} not found`);
       }
 
-      // Load avatar object from file
-      const avatarObject = await this.storageService.loadAvatar(id);
+      // Определяем размер изображения
+      const size = dto.size || 6;
 
-      // Determine which image size to use
-      const sizeKey = dto.size ? `image_${dto.size}n` : 'image_6n';
-      let imageBuffer = avatarObject[sizeKey as keyof typeof avatarObject] as Buffer;
+      let imageBuffer: Buffer;
 
-      // Apply filter if specified
+      // Если есть фильтр, проверяем кеш отфильтрованного изображения
       if (dto.filter) {
-        this.logger.log(`Applying filter: ${dto.filter}, original image size: ${imageBuffer.length} bytes`);
+        const filteredCacheKey = `avatar:image:${id}:${size}:${dto.filter}`;
+
+        if (this.cacheService) {
+          try {
+            const cached = await this.cacheService.getBuffer(filteredCacheKey);
+            if (cached) {
+              this.logger.debug(
+                `[CACHE] FILTERED HIT: ${id}:${size}:${dto.filter} loaded from cache (${cached.length} bytes)`,
+              );
+              this.logger.log(
+                `Filtered image ${id}:${size}:${dto.filter} loaded from cache (${cached.length} bytes)`,
+              );
+              return {
+                id: avatar.id,
+                image: cached,
+                contentType: 'image/png',
+                createdAt: avatar.createdAt,
+                version: avatar.version,
+              };
+            } else {
+              this.logger.debug(
+                `[CACHE] FILTERED MISS: ${id}:${size}:${dto.filter} not found in cache, will apply filter`,
+              );
+            }
+          } catch (error) {
+            this.logger.debug(
+              `[CACHE] FILTERED ERROR: Failed to get ${id}:${size}:${dto.filter} from cache: ${error.message}`,
+            );
+            this.logger.warn(`Failed to get filtered image from cache: ${error.message}`);
+          }
+        } else {
+          this.logger.debug(
+            `[CACHE] Cache service not available, will apply filter to ${id}:${size}`,
+          );
+        }
+
+        // Загружаем оригинальное изображение
+        this.logger.debug(`[STORAGE] Getting original image ${id}:${size} for filtering...`);
+        imageBuffer = await this.storageService.loadImage(id, size);
+
+        // Применяем фильтр
+        this.logger.debug(
+          `[FILTER] Applying ${dto.filter} to image ${id}:${size} (${imageBuffer.length} bytes)...`,
+        );
+        this.logger.log(
+          `Applying filter: ${dto.filter}, original image size: ${imageBuffer.length} bytes`,
+        );
         imageBuffer = await this.filterService.applyFilter(imageBuffer, dto.filter);
+        this.logger.debug(
+          `[FILTER] ${dto.filter} completed, new size: ${imageBuffer.length} bytes`,
+        );
         this.logger.log(`Filter applied, new image size: ${imageBuffer.length} bytes`);
+
+        // Логируем источник отфильтрованного изображения
+        this.logger.log(
+          `Filtered image ${id}:${size}:${dto.filter} generated from original (${imageBuffer.length} bytes)`,
+        );
+
+        // Кешируем отфильтрованное изображение
+        if (this.cacheService) {
+          try {
+            this.logger.debug(
+              `[CACHE] Saving filtered ${id}:${size}:${dto.filter} to cache (${imageBuffer.length} bytes)...`,
+            );
+            await this.cacheService.setBuffer(filteredCacheKey, imageBuffer, 'filtered');
+            this.logger.debug(`[CACHE] Filtered ${id}:${size}:${dto.filter} successfully cached`);
+          } catch (error) {
+            this.logger.debug(
+              `[CACHE] Failed to cache filtered ${id}:${size}:${dto.filter}: ${error.message}`,
+            );
+            this.logger.warn(`Failed to cache filtered image: ${error.message}`);
+          }
+        }
       } else {
         this.logger.log('No filter specified, returning original image');
       }
@@ -176,7 +252,8 @@ export class AvatarService {
 
     try {
       // Validate UUID format
-      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      const uuidRegex =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
       if (!uuidRegex.test(id)) {
         throw new BadRequestException(`Invalid avatar ID format: ${id}. Expected UUID format.`);
       }
@@ -274,8 +351,8 @@ export class AvatarService {
 
     // Объединяем и дедуплицируем палитры
     const allPalettes = [...pixelizePalettes, ...wavePalettes, ...gradientPalettes];
-    const uniquePalettes = allPalettes.filter((palette, index, self) => 
-      index === self.findIndex(p => p.name === palette.name)
+    const uniquePalettes = allPalettes.filter(
+      (palette, index, self) => index === self.findIndex(p => p.name === palette.name),
     );
 
     const palettes = uniquePalettes.map(palette => ({
@@ -286,7 +363,7 @@ export class AvatarService {
     }));
 
     this.logger.log(`Returning ${palettes.length} color palettes`);
-    
+
     return { palettes };
   }
 }

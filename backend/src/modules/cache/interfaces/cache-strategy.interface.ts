@@ -63,7 +63,7 @@ export interface ICacheStrategy {
    * @param {Array<{key: string; value: T; ttl?: number}>} entries - Массив записей
    * @returns {Promise<void>}
    */
-  mset<T>(entries: Array<{key: string; value: T; ttl?: number}>): Promise<void>;
+  mset<T>(entries: Array<{ key: string; value: T; ttl?: number }>): Promise<void>;
 
   /**
    * Получение статистики использования памяти
@@ -71,6 +71,24 @@ export interface ICacheStrategy {
    * @returns {Promise<CacheMemoryStats>} Статистика памяти
    */
   getMemoryUsage(): Promise<CacheMemoryStats>;
+
+  /**
+   * Получение Buffer из кеша
+   *
+   * @param {string} key - Ключ для поиска
+   * @returns {Promise<Buffer | null>} Buffer или null если не найдено
+   */
+  getBuffer(key: string): Promise<Buffer | null>;
+
+  /**
+   * Сохранение Buffer в кеш
+   *
+   * @param {string} key - Ключ для сохранения
+   * @param {Buffer} value - Buffer для сохранения
+   * @param {number} [ttl] - Время жизни в секундах (опционально)
+   * @returns {Promise<void>}
+   */
+  setBuffer(key: string, value: Buffer, ttl?: number): Promise<void>;
 }
 
 /**

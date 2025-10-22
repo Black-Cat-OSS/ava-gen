@@ -1,5 +1,6 @@
 import { Module, Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import Redis from 'ioredis';
+import { ConfigModule } from '../../../../config/config.module';
 import { YamlConfigService } from '../../../../config/modules/yaml-driver/yaml-config.service';
 import { ICacheStrategy, CacheMemoryStats } from '../../interfaces';
 import { CacheConnectionException, CacheOperationException } from '../../exceptions';
@@ -29,7 +30,7 @@ export class RedisCacheService implements ICacheStrategy, OnModuleInit, OnModule
    */
   async onModuleInit(): Promise<void> {
     const config = this.configService.getCacheConfig();
-    
+
     // Проверяем, нужен ли Redis драйвер
     if (!config || config.type !== 'redis') {
       this.logger.log('Redis cache driver skipped - not configured or not selected');
@@ -80,7 +81,7 @@ export class RedisCacheService implements ICacheStrategy, OnModuleInit, OnModule
         port: redisConfig.port,
         password: redisConfig.password || undefined,
         db: redisConfig.db || 0,
-        retryStrategy: (times) => {
+        retryStrategy: times => {
           if (times > maxRetries) {
             return null; // Stop retrying
           }
@@ -98,7 +99,7 @@ export class RedisCacheService implements ICacheStrategy, OnModuleInit, OnModule
       this.logger.log(`Redis cache connected successfully on attempt ${retryCount}`);
 
       // Обработка событий переподключения
-      this.client.on('error', (err) => {
+      this.client.on('error', err => {
         this.logger.error(`Redis connection error: ${err.message}`);
         this.isConnected = false;
       });
@@ -168,7 +169,9 @@ export class RedisCacheService implements ICacheStrategy, OnModuleInit, OnModule
       if (value === null) {
         return null;
       }
-      return JSON.parse(value) as T;
+
+      const restored = this.deserializeValue<T>(value);
+      return restored;
     } catch (error) {
       throw new CacheOperationException(
         `Failed to get value from Redis: ${error.message}`,
@@ -299,7 +302,7 @@ export class RedisCacheService implements ICacheStrategy, OnModuleInit, OnModule
 
     try {
       const values = await this.client.mget(...keys);
-      return values.map((value) => (value ? JSON.parse(value) : null)) as (T | null)[];
+      return values.map(value => (value ? JSON.parse(value) : null)) as (T | null)[];
     } catch (error) {
       throw new CacheOperationException(
         `Failed to get multiple values from Redis: ${error.message}`,
@@ -315,14 +318,14 @@ export class RedisCacheService implements ICacheStrategy, OnModuleInit, OnModule
    * @returns {Promise<void>}
    * @throws {CacheOperationException} Если операция не удалась
    */
-  async mset<T>(entries: Array<{key: string; value: T; ttl?: number}>): Promise<void> {
+  async mset<T>(entries: Array<{ key: string; value: T; ttl?: number }>): Promise<void> {
     if (!this.isConnected || !this.client) {
       return; // No-op if not connected
     }
 
     try {
       const pipeline = this.client.pipeline();
-      
+
       for (const entry of entries) {
         const serializedValue = JSON.stringify(entry.value);
         if (entry.ttl) {
@@ -331,7 +334,7 @@ export class RedisCacheService implements ICacheStrategy, OnModuleInit, OnModule
           pipeline.set(entry.key, serializedValue);
         }
       }
-      
+
       await pipeline.exec();
     } catch (error) {
       throw new CacheOperationException(
@@ -358,10 +361,10 @@ export class RedisCacheService implements ICacheStrategy, OnModuleInit, OnModule
     }
 
     try {
-      const info = await this.client.memory('usage');
+      const info = await this.client.info('memory');
       const config = this.configService.getCacheConfig();
       const maxMemory = config?.redis?.max_memory;
-      
+
       let limit = 0;
       if (maxMemory) {
         // Парсим строку типа "256mb" в байты
@@ -403,13 +406,168 @@ export class RedisCacheService implements ICacheStrategy, OnModuleInit, OnModule
   }
 
   /**
+   * Парсинг информации о памяти из строки Redis INFO
+   *
+   * @param {string} info - строка с информацией о памяти
+   * @returns {Record<string, number>} объект с информацией о памяти
+   */
+  private parseMemoryInfo(info: string): Record<string, number> {
+    const result: Record<string, number> = {};
+
+    const lines = info.split('\r\n');
+    for (const line of lines) {
+      if (line.includes(':')) {
+        const [key, value] = line.split(':');
+        const numValue = parseInt(value, 10);
+        if (!isNaN(numValue)) {
+          result[key] = numValue;
+        }
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Сериализация значения с правильной обработкой Buffer объектов
+   *
+   * @param {any} value - значение для сериализации
+   * @returns {string} сериализованная строка
+   */
+  private serializeValue(value: any): string {
+    return JSON.stringify(value, (key, val) => {
+      if (Buffer.isBuffer(val)) {
+        return {
+          type: 'Buffer',
+          data: Array.from(val),
+        };
+      }
+      return val;
+    });
+  }
+
+  /**
+   * Десериализация значения с восстановлением Buffer объектов
+   *
+   * @param {string} value - сериализованная строка
+   * @returns {T} восстановленное значение
+   */
+  private deserializeValue<T>(value: string): T {
+    const parsed = JSON.parse(value);
+    const restored = this.restoreBuffers(parsed) as T;
+
+    // Отладочная информация
+    if (typeof restored === 'object' && restored !== null) {
+      const obj = restored as any;
+      if (obj.image_4n) {
+        console.log(
+          `Deserialized image_4n type:`,
+          typeof obj.image_4n,
+          'isBuffer:',
+          Buffer.isBuffer(obj.image_4n),
+        );
+        if (!Buffer.isBuffer(obj.image_4n)) {
+          console.error(`Buffer restoration failed for image_4n:`, obj.image_4n);
+        }
+      }
+    }
+
+    return restored;
+  }
+
+  /**
+   * Восстановление Buffer объектов из JSON
+   *
+   * @param {any} obj - объект для обработки
+   * @returns {any} объект с восстановленными Buffer
+   */
+  private restoreBuffers(obj: any): any {
+    if (obj === null || obj === undefined) {
+      return obj;
+    }
+
+    if (Array.isArray(obj)) {
+      return obj.map(item => this.restoreBuffers(item));
+    }
+
+    if (typeof obj === 'object') {
+      // Проверяем, является ли это сериализованным Buffer
+      if (obj.type === 'Buffer' && Array.isArray(obj.data)) {
+        return Buffer.from(obj.data);
+      }
+
+      // Рекурсивно обрабатываем все свойства объекта
+      const result: any = {};
+      for (const [key, value] of Object.entries(obj)) {
+        result[key] = this.restoreBuffers(value);
+      }
+      return result;
+    }
+
+    return obj;
+  }
+
+  /**
+   * Получение Buffer значения из Redis
+   *
+   * @param {string} key - Ключ для поиска
+   * @returns {Promise<Buffer | null>} Buffer или null если не найдено
+   * @throws {CacheOperationException} Если операция не удалась
+   */
+  async getBuffer(key: string): Promise<Buffer | null> {
+    if (!this.isConnected || !this.client) {
+      return null;
+    }
+
+    try {
+      const value = await this.client.getBuffer(key);
+      return value;
+    } catch (error) {
+      throw new CacheOperationException(
+        `Failed to get buffer from Redis: ${error.message}`,
+        'getBuffer',
+        key,
+      );
+    }
+  }
+
+  /**
+   * Сохранение Buffer значения в Redis
+   *
+   * @param {string} key - Ключ для сохранения
+   * @param {Buffer} value - Buffer для сохранения
+   * @param {number} [ttl] - Время жизни в секундах (опционально)
+   * @returns {Promise<void>}
+   * @throws {CacheOperationException} Если операция не удалась
+   */
+  async setBuffer(key: string, value: Buffer, ttl?: number): Promise<void> {
+    if (!this.isConnected || !this.client) {
+      return; // No-op if not connected
+    }
+
+    try {
+      if (ttl) {
+        await this.client.setex(key, ttl, value);
+      } else {
+        await this.client.set(key, value);
+      }
+    } catch (error) {
+      throw new CacheOperationException(
+        `Failed to set buffer in Redis: ${error.message}`,
+        'setBuffer',
+        key,
+      );
+    }
+  }
+
+  /**
    * Задержка выполнения
    *
    * @param {number} ms - количество миллисекунд
    * @returns {Promise<void>}
    */
   private delay(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 }
 
@@ -419,6 +577,7 @@ export class RedisCacheService implements ICacheStrategy, OnModuleInit, OnModule
  * @module RedisCacheModule
  */
 @Module({
+  imports: [ConfigModule],
   providers: [RedisCacheService],
   exports: [RedisCacheService],
 })

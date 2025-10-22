@@ -123,7 +123,7 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     try {
       this.logger.log('Running database migrations...');
       const migrations = await this.dataSource.runMigrations();
-      
+
       if (migrations.length === 0) {
         this.logger.log('No pending migrations found');
       } else {
@@ -132,7 +132,7 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
           this.logger.log(`  - ${migration.name}`);
         });
       }
-      
+
       return migrations;
     } catch (error) {
       this.logger.error(`Migration execution failed: ${error.message}`);
@@ -164,11 +164,11 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
   }> {
     try {
       const executedMigrations = await this.dataSource.query(
-        'SELECT * FROM migrations ORDER BY timestamp'
+        'SELECT * FROM migrations ORDER BY timestamp',
       );
-      
+
       const pendingMigrations = await this.dataSource.showMigrations();
-      
+
       return {
         executed: executedMigrations,
         pending: pendingMigrations,

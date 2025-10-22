@@ -45,7 +45,7 @@ export class PostgreSQLDriverService implements IDataBaseDriver {
       ssl: postgresConfig.ssl,
       entities: [],
       synchronize: false, // Disabled for production safety
-      logging: configService.getLoggingConfig().verbose,
+      logging: false, // Отключаем логирование SQL запросов
       logger: 'simple-console',
     };
 

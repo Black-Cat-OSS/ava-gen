@@ -15,11 +15,7 @@ import {
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { Response } from 'express';
 import { AvatarService } from './avatar.service';
-import {
-  GenerateAvatarDto,
-  GetAvatarDto,
-  ListAvatarsDto,
-} from './dto/generate-avatar.dto';
+import { GenerateAvatarDto, GetAvatarDto, ListAvatarsDto } from './dto/generate-avatar.dto';
 import { GenerateAvatarV2Dto } from './dto/generate-avatar-v2.dto';
 import { ColorPaletteDto } from './dto/color-palette.dto';
 
@@ -83,13 +79,13 @@ export class AvatarController {
   @UsePipes(new ValidationPipe({ transform: true }))
   async listAvatars(@Query() dto: ListAvatarsDto, @Res() res: Response) {
     const result = await this.avatarService.listAvatars(dto);
-    
+
     // Устанавливаем заголовки кеширования для списков
     res.set({
       'Cache-Control': 'public, max-age=300', // 5 минут для списков
       'Content-Type': 'application/json',
     });
-    
+
     res.json(result);
   }
 
@@ -99,33 +95,33 @@ export class AvatarController {
   @ApiResponse({ status: 204, description: 'No color schemes available' })
   async getColorSchemes(@Res() res: Response) {
     const result = await this.avatarService.getColorSchemes();
-    
+
     // Устанавливаем заголовки кеширования для цветовых схем
     res.set({
       'Cache-Control': 'public, max-age=1800', // 30 минут для цветовых схем
       'Content-Type': 'application/json',
     });
-    
+
     res.json(result);
   }
 
   @Get('palettes')
   @ApiOperation({ summary: 'Get available color palettes' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Color palettes retrieved successfully',
-    type: [ColorPaletteDto]
+    type: [ColorPaletteDto],
   })
   @ApiResponse({ status: 204, description: 'No color palettes available' })
   async getColorPalettes(@Res() res: Response) {
     const result = await this.avatarService.getColorPalettes();
-    
+
     // Устанавливаем заголовки кеширования для палитр
     res.set({
       'Cache-Control': 'public, max-age=1800', // 30 минут для палитр
       'Content-Type': 'application/json',
     });
-    
+
     res.json(result.palettes);
   }
 
@@ -148,7 +144,7 @@ export class AvatarController {
 
       // Генерируем ETag на основе ID и версии аватара
       const etag = `"${result.id}-${result.version}"`;
-      
+
       // Проверяем If-None-Match заголовок для условного запроса
       const ifNoneMatch = res.req.headers['if-none-match'];
       if (ifNoneMatch === etag) {
@@ -157,12 +153,17 @@ export class AvatarController {
         return;
       }
 
+      // Отладочная информация
+      console.log(
+        `Sending image - type: ${typeof result.image}, isBuffer: ${Buffer.isBuffer(result.image)}, length: ${result.image?.length}`,
+      );
+
       // Устанавливаем HTTP заголовки кеширования
       res.set({
         'Content-Type': result.contentType,
         'Content-Length': result.image.length.toString(),
         'Cache-Control': 'public, max-age=86400, immutable', // 24 часа, immutable для статических изображений
-        'ETag': etag,
+        ETag: etag,
         'Last-Modified': result.createdAt.toUTCString(),
         'X-Avatar-ID': result.id,
         'X-Created-At': result.createdAt.toISOString(),

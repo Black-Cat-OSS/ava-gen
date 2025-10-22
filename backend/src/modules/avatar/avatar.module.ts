@@ -29,7 +29,7 @@ import { FilterModule } from './pipelines/filters/filter.module';
 @Global()
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Avatar]), 
+    TypeOrmModule.forFeature([Avatar]),
     StorageModule.register(),
     GeneratorModule.register(),
     FilterModule,

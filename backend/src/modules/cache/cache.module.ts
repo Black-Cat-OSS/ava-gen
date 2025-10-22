@@ -58,12 +58,7 @@ export class CacheModule {
   static register(): DynamicModule {
     return {
       module: CacheModule,
-      imports: [
-        ConfigModule,
-        RedisCacheModule,
-        MemcachedCacheModule,
-        MemoryCacheModule,
-      ],
+      imports: [ConfigModule, RedisCacheModule, MemcachedCacheModule, MemoryCacheModule],
       providers: [CacheService],
       exports: [CacheService],
     };

@@ -13,8 +13,6 @@ import { ConfigModule } from '../../config/config.module';
 export class CorsMiddlewareModule implements NestModule {
   configure(consumer: MiddlewareConsumer): void {
     // Применяем CORS middleware глобально ко всем маршрутам
-    consumer
-      .apply(CorsMiddleware)
-      .forRoutes('*');
+    consumer.apply(CorsMiddleware).forRoutes('*');
   }
 }

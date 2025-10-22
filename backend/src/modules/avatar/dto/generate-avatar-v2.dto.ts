@@ -25,7 +25,6 @@ export class GenerateAvatarV2Dto {
   @IsString()
   colorScheme?: string;
 
-
   @ApiProperty({
     description: 'Gradient rotation angle in degrees (0-360)',
     minimum: 0,

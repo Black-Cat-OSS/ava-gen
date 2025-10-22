@@ -49,6 +49,6 @@ app:
       ssl: true
   
   logging:
-    level: 'info'
-    verbose: false
-    pretty: false
+    level: 'info' # trace, debug, info, warn, error, fatal
+    verbose: false # отключаем debug уровень логирования в продакшене
+    pretty: false # формат логирования: false = json (для продакшена), true = pretty (для разработки)

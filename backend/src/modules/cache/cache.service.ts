@@ -27,7 +27,7 @@ export class CacheService {
     @Optional() private readonly memoryCacheService: MemoryCacheService,
   ) {
     const cacheConfig = this.configService.getCacheConfig();
-    
+
     if (!cacheConfig) {
       // Если конфигурация кеширования отсутствует, используем no-op стратегию
       this.strategy = new NoOpCacheStrategy();
@@ -123,7 +123,9 @@ export class CacheService {
     try {
       await this.strategy.clear(pattern);
     } catch (error) {
-      this.logger.error(`Failed to clear cache${pattern ? ` with pattern ${pattern}` : ''}: ${error.message}`);
+      this.logger.error(
+        `Failed to clear cache${pattern ? ` with pattern ${pattern}` : ''}: ${error.message}`,
+      );
       // Не выбрасываем ошибку - graceful degradation
     }
   }
@@ -164,7 +166,7 @@ export class CacheService {
    * @param {Array<{key: string; value: T; ttlType?: string}>} entries - Массив записей
    * @returns {Promise<void>}
    */
-  async mset<T>(entries: Array<{key: string; value: T; ttlType?: string}>): Promise<void> {
+  async mset<T>(entries: Array<{ key: string; value: T; ttlType?: string }>): Promise<void> {
     try {
       const cacheEntries = entries.map(entry => ({
         key: entry.key,
@@ -207,11 +209,11 @@ export class CacheService {
       const stats = await this.strategy.getMemoryUsage();
       const cacheConfig = this.configService.getCacheConfig();
       const warnLevel = cacheConfig?.warn_memory_level || 80;
-      
+
       if (stats.percentage >= warnLevel) {
         this.logger.warn(
           `Cache memory usage is high: ${stats.percentage.toFixed(2)}% ` +
-          `(${(stats.used / 1024 / 1024).toFixed(2)}MB / ${(stats.limit / 1024 / 1024).toFixed(2)}MB)`
+            `(${(stats.used / 1024 / 1024).toFixed(2)}MB / ${(stats.limit / 1024 / 1024).toFixed(2)}MB)`,
         );
       }
     } catch (error) {
@@ -257,6 +259,39 @@ export class CacheService {
     }
 
     return cacheConfig.ttl.default;
+  }
+
+  /**
+   * Получение Buffer из кеша
+   *
+   * @param {string} key - Ключ для поиска
+   * @returns {Promise<Buffer | null>} Buffer или null если не найдено
+   */
+  async getBuffer(key: string): Promise<Buffer | null> {
+    try {
+      return await this.strategy.getBuffer(key);
+    } catch (error) {
+      this.logger.error(`Failed to get buffer from cache for key ${key}: ${error.message}`);
+      return null; // Graceful degradation
+    }
+  }
+
+  /**
+   * Сохранение Buffer в кеш
+   *
+   * @param {string} key - Ключ для сохранения
+   * @param {Buffer} value - Buffer для сохранения
+   * @param {string} [ttlType] - Тип TTL (опционально)
+   * @returns {Promise<void>}
+   */
+  async setBuffer(key: string, value: Buffer, ttlType?: string): Promise<void> {
+    try {
+      const ttl = this.getTTL(ttlType);
+      await this.strategy.setBuffer(key, value, ttl);
+    } catch (error) {
+      this.logger.error(`Failed to set buffer in cache for key ${key}: ${error.message}`);
+      // Не выбрасываем ошибку - graceful degradation
+    }
   }
 }
 
@@ -304,5 +339,13 @@ class NoOpCacheStrategy implements ICacheStrategy {
       percentage: 0,
       itemCount: 0,
     };
+  }
+
+  async getBuffer(): Promise<Buffer | null> {
+    return null;
+  }
+
+  async setBuffer(): Promise<void> {
+    // No-op
   }
 }

@@ -4,18 +4,18 @@ import { DatabaseService } from '../../modules/database/database.service';
 
 /**
  * Основная команда для управления миграциями базы данных
- * 
+ *
  * Предоставляет единый интерфейс для выполнения различных операций
  * с миграциями базы данных через Nest Commander.
- * 
+ *
  * @example
  * ```bash
  * # Запуск миграций
  * npm run migration run
- * 
+ *
  * # Откат последней миграции
  * npm run migration revert
- * 
+ *
  * # Статус миграций
  * npm run migration status
  * ```
@@ -52,7 +52,7 @@ export class MigrationCommand extends CommandRunner {
 
   private async runMigrations(): Promise<void> {
     try {
-        this.logger.log('🔄 Running database migrations...');
+      this.logger.log('Running database migrations...');
       const migrations = await this.databaseService.runMigrations();
 
       if (migrations.length === 0) {
@@ -92,7 +92,9 @@ export class MigrationCommand extends CommandRunner {
         this.logger.log('  No migrations have been executed yet');
       } else {
         status.executed.forEach(migration => {
-          this.logger.log(`  - ${migration.name} (${new Date(migration.timestamp).toLocaleString()})`);
+          this.logger.log(
+            `  - ${migration.name} (${new Date(migration.timestamp).toLocaleString()})`,
+          );
         });
       }
 

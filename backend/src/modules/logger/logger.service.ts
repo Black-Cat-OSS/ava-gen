@@ -17,22 +17,23 @@ export class LoggerService implements NestLoggerService {
     const isPretty = loggingConfig.pretty;
     const effectiveLevel = isVerbose ? 'debug' : logLevel;
 
+    // Определяем формат логирования
+    const format = isPretty ? 'pretty' : 'json';
+
     let transport: pino.TransportTargetOptions | pino.TransportMultiOptions | undefined;
 
-    if (isPretty) {
+    if (format === 'pretty') {
+      // Pretty формат для разработки
       transport = {
         target: 'pino-pretty',
         options: {
           colorize: true,
           translateTime: 'SYS:standard',
           ignore: 'pid,hostname',
-          ...(isVerbose && {
-            levelFirst: true,
-            messageFormat: '{levelLabel} [{name}] {msg}',
-          }),
         },
       };
     } else {
+      // JSON формат для продакшена
       transport = {
         targets: [
           {
@@ -69,7 +70,7 @@ export class LoggerService implements NestLoggerService {
     }
 
     this.logger.info(
-      `Logger initialized: level=${effectiveLevel}, pretty=${isPretty}, logFile=${!isPretty ? './logs/app.log' : 'none'}`,
+      `Logger initialized: level=${effectiveLevel}, format=${format}, logFile=${format === 'json' ? './logs/app.log' : 'none'}`,
     );
   }
 

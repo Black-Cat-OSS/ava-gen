@@ -1,4 +1,10 @@
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler, HttpStatus } from '@nestjs/common';
+import {
+  Injectable,
+  NestInterceptor,
+  ExecutionContext,
+  CallHandler,
+  HttpStatus,
+} from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Reflector } from '@nestjs/core';
@@ -12,10 +18,7 @@ export class EmptyResponseInterceptor implements NestInterceptor {
   constructor(private reflector: Reflector) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const skipCheck = this.reflector.get<boolean>(
-      SKIP_EMPTY_CHECK,
-      context.getHandler(),
-    );
+    const skipCheck = this.reflector.get<boolean>(SKIP_EMPTY_CHECK, context.getHandler());
 
     if (skipCheck) {
       return next.handle();
@@ -24,9 +27,9 @@ export class EmptyResponseInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map(data => {
         const response = context.switchToHttp().getResponse();
-        
+
         // Check if data is empty array or empty object
-        const isEmpty = 
+        const isEmpty =
           (Array.isArray(data) && data.length === 0) ||
           (typeof data === 'object' && data !== null && Object.keys(data).length === 0);
 
@@ -40,4 +43,3 @@ export class EmptyResponseInterceptor implements NestInterceptor {
     );
   }
 }
-

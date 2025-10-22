@@ -6,10 +6,10 @@
 export interface CacheConfig {
   /** Тип драйвера кеширования */
   type: 'redis' | 'memcached' | 'memory' | 'disabled';
-  
+
   /** Уровень предупреждения о памяти (0-100) */
   warn_memory_level?: number;
-  
+
   /** TTL настройки для разных типов данных */
   ttl?: {
     /** TTL для аватаров (секунды) */
@@ -21,7 +21,7 @@ export interface CacheConfig {
     /** TTL по умолчанию (секунды) */
     default?: number;
   };
-  
+
   /** Настройки Redis */
   redis?: {
     host: string;
@@ -34,13 +34,13 @@ export interface CacheConfig {
       retryDelay: number;
     };
   };
-  
+
   /** Настройки Memcached */
   memcached?: {
     hosts: string[];
     max_memory?: number;
   };
-  
+
   /** Настройки in-memory кеша */
   memory?: {
     max_items?: number;

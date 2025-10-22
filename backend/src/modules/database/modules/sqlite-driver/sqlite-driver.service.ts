@@ -34,7 +34,7 @@ export class SqliteDriverService implements IDataBaseDriver {
       type: 'sqlite',
       entities: [],
       synchronize: true,
-      logging: configService.getLoggingConfig().verbose,
+      logging: false, // Отключаем логирование SQL запросов
       logger: 'simple-console',
       sqlite: sqliteConfig,
     };

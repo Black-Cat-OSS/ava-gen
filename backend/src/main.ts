@@ -14,7 +14,9 @@ async function bootstrap() {
     bootstrapLogger.log('Starting application bootstrap...');
 
     bootstrapLogger.log('Creating NestJS application instance...');
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create(AppModule, {
+      bufferLogs: true, // чтобы перехватывать логи до инициализации
+    });
     bootstrapLogger.log('Application instance created');
 
     bootstrapLogger.log('Getting configuration and logger services...');
@@ -24,7 +26,7 @@ async function bootstrap() {
     const loggerService = app.get(LoggerService);
     bootstrapLogger.debug('Logger service retrieved');
 
-    app.useLogger(loggerService);
+    app.useLogger(loggerService); // подключаем pino как глобальный логгер
     bootstrapLogger.log('Global logger configured');
 
     loggerService.log('Application bootstrap completed successfully');

@@ -1,5 +1,6 @@
 import { Module, Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import * as Memcached from 'memcached';
+import { ConfigModule } from '../../../../config/config.module';
 import { YamlConfigService } from '../../../../config/modules/yaml-driver/yaml-config.service';
 import { ICacheStrategy, CacheMemoryStats } from '../../interfaces';
 import { CacheConnectionException, CacheOperationException } from '../../exceptions';
@@ -29,7 +30,7 @@ export class MemcachedCacheService implements ICacheStrategy, OnModuleInit, OnMo
    */
   async onModuleInit(): Promise<void> {
     const config = this.configService.getCacheConfig();
-    
+
     // Проверяем, нужен ли Memcached драйвер
     if (!config || config.type !== 'memcached') {
       this.logger.log('Memcached cache driver skipped - not configured or not selected');
@@ -64,7 +65,7 @@ export class MemcachedCacheService implements ICacheStrategy, OnModuleInit, OnMo
     try {
       const config = this.configService.getCacheConfig();
       const memcachedConfig = config?.memcached;
-      
+
       if (!memcachedConfig) {
         throw new Error('Memcached configuration not found');
       }
@@ -83,25 +84,27 @@ export class MemcachedCacheService implements ICacheStrategy, OnModuleInit, OnMo
       await this.ping();
 
       this.isConnected = true;
-      this.logger.log(`Memcached cache connected successfully to ${memcachedConfig.hosts.join(', ')}`);
+      this.logger.log(
+        `Memcached cache connected successfully to ${memcachedConfig.hosts.join(', ')}`,
+      );
 
       // Обработка событий
-      this.client.on('failure', (details) => {
+      this.client.on('failure', details => {
         this.logger.error(`Memcached server failure: ${details.server}`);
         this.isConnected = false;
       });
 
-      this.client.on('reconnecting', (details) => {
+      this.client.on('reconnecting', details => {
         this.logger.warn(`Memcached reconnecting to: ${details.server}`);
         this.isConnected = false;
       });
 
-      this.client.on('reconnected', (details) => {
+      this.client.on('reconnected', details => {
         this.logger.log(`Memcached reconnected to: ${details.server}`);
         this.isConnected = true;
       });
 
-      this.client.on('issue', (details) => {
+      this.client.on('issue', details => {
         this.logger.warn(`Memcached issue: ${details.type} - ${details.message}`);
       });
     } catch (error) {
@@ -121,7 +124,7 @@ export class MemcachedCacheService implements ICacheStrategy, OnModuleInit, OnMo
    */
   private async ping(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.client.version((err) => {
+      this.client.version(err => {
         if (err) {
           reject(new Error(`Memcached ping failed: ${err.message}`));
         } else {
@@ -147,22 +150,26 @@ export class MemcachedCacheService implements ICacheStrategy, OnModuleInit, OnMo
       return new Promise((resolve, reject) => {
         this.client.get(key, (err, data) => {
           if (err) {
-            reject(new CacheOperationException(
-              `Failed to get value from Memcached: ${err.message}`,
-              'get',
-              key,
-            ));
+            reject(
+              new CacheOperationException(
+                `Failed to get value from Memcached: ${err.message}`,
+                'get',
+                key,
+              ),
+            );
           } else if (data === undefined) {
             resolve(null);
           } else {
             try {
               resolve(JSON.parse(data) as T);
             } catch (parseError) {
-              reject(new CacheOperationException(
-                `Failed to parse value from Memcached: ${parseError.message}`,
-                'get',
-                key,
-              ));
+              reject(
+                new CacheOperationException(
+                  `Failed to parse value from Memcached: ${parseError.message}`,
+                  'get',
+                  key,
+                ),
+              );
             }
           }
         });
@@ -196,15 +203,17 @@ export class MemcachedCacheService implements ICacheStrategy, OnModuleInit, OnMo
     try {
       const serializedValue = JSON.stringify(value);
       const lifetime = ttl || 0; // 0 = no expiration
-      
+
       return new Promise((resolve, reject) => {
-        this.client.set(key, serializedValue, lifetime, (err) => {
+        this.client.set(key, serializedValue, lifetime, err => {
           if (err) {
-            reject(new CacheOperationException(
-              `Failed to set value in Memcached: ${err.message}`,
-              'set',
-              key,
-            ));
+            reject(
+              new CacheOperationException(
+                `Failed to set value in Memcached: ${err.message}`,
+                'set',
+                key,
+              ),
+            );
           } else {
             resolve();
           }
@@ -236,13 +245,15 @@ export class MemcachedCacheService implements ICacheStrategy, OnModuleInit, OnMo
 
     try {
       return new Promise((resolve, reject) => {
-        this.client.del(key, (err) => {
+        this.client.del(key, err => {
           if (err) {
-            reject(new CacheOperationException(
-              `Failed to delete value from Memcached: ${err.message}`,
-              'del',
-              key,
-            ));
+            reject(
+              new CacheOperationException(
+                `Failed to delete value from Memcached: ${err.message}`,
+                'del',
+                key,
+              ),
+            );
           } else {
             resolve();
           }
@@ -298,7 +309,7 @@ export class MemcachedCacheService implements ICacheStrategy, OnModuleInit, OnMo
    */
   private async flushAll(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.client.flush((err) => {
+      this.client.flush(err => {
         if (err) {
           reject(new Error(`Failed to flush Memcached: ${err.message}`));
         } else {
@@ -351,12 +362,14 @@ export class MemcachedCacheService implements ICacheStrategy, OnModuleInit, OnMo
       return new Promise((resolve, reject) => {
         this.client.getMulti(keys, (err, data) => {
           if (err) {
-            reject(new CacheOperationException(
-              `Failed to get multiple values from Memcached: ${err.message}`,
-              'mget',
-            ));
+            reject(
+              new CacheOperationException(
+                `Failed to get multiple values from Memcached: ${err.message}`,
+                'mget',
+              ),
+            );
           } else {
-            const results = keys.map((key) => {
+            const results = keys.map(key => {
               const value = data[key];
               if (value === undefined) {
                 return null;
@@ -390,15 +403,13 @@ export class MemcachedCacheService implements ICacheStrategy, OnModuleInit, OnMo
    * @returns {Promise<void>}
    * @throws {CacheOperationException} Если операция не удалась
    */
-  async mset<T>(entries: Array<{key: string; value: T; ttl?: number}>): Promise<void> {
+  async mset<T>(entries: Array<{ key: string; value: T; ttl?: number }>): Promise<void> {
     if (!this.isConnected || !this.client) {
       return; // No-op if not connected
     }
 
     try {
-      const promises = entries.map((entry) => 
-        this.set(entry.key, entry.value, entry.ttl)
-      );
+      const promises = entries.map(entry => this.set(entry.key, entry.value, entry.ttl));
       await Promise.all(promises);
     } catch (error) {
       if (error instanceof CacheOperationException) {
@@ -407,6 +418,88 @@ export class MemcachedCacheService implements ICacheStrategy, OnModuleInit, OnMo
       throw new CacheOperationException(
         `Failed to set multiple values in Memcached: ${error.message}`,
         'mset',
+      );
+    }
+  }
+
+  /**
+   * Получение Buffer значения из Memcached
+   *
+   * @param {string} key - Ключ для поиска
+   * @returns {Promise<Buffer | null>} Buffer или null если не найдено
+   * @throws {CacheOperationException} Если операция не удалась
+   */
+  async getBuffer(key: string): Promise<Buffer | null> {
+    if (!this.isConnected || !this.client) {
+      return null;
+    }
+
+    try {
+      return new Promise((resolve, reject) => {
+        this.client.get(key, (err, data) => {
+          if (err) {
+            reject(
+              new CacheOperationException(
+                `Failed to get buffer from Memcached: ${err.message}`,
+                'getBuffer',
+                key,
+              ),
+            );
+          } else {
+            resolve(data ? Buffer.from(data) : null);
+          }
+        });
+      });
+    } catch (error) {
+      if (error instanceof CacheOperationException) {
+        throw error;
+      }
+      throw new CacheOperationException(
+        `Failed to get buffer from Memcached: ${error.message}`,
+        'getBuffer',
+        key,
+      );
+    }
+  }
+
+  /**
+   * Сохранение Buffer значения в Memcached
+   *
+   * @param {string} key - Ключ для сохранения
+   * @param {Buffer} value - Buffer для сохранения
+   * @param {number} [ttl] - Время жизни в секундах (опционально)
+   * @returns {Promise<void>}
+   * @throws {CacheOperationException} Если операция не удалась
+   */
+  async setBuffer(key: string, value: Buffer, ttl?: number): Promise<void> {
+    if (!this.isConnected || !this.client) {
+      return; // No-op if not connected
+    }
+
+    try {
+      return new Promise((resolve, reject) => {
+        this.client.set(key, value, ttl || 0, err => {
+          if (err) {
+            reject(
+              new CacheOperationException(
+                `Failed to set buffer in Memcached: ${err.message}`,
+                'setBuffer',
+                key,
+              ),
+            );
+          } else {
+            resolve();
+          }
+        });
+      });
+    } catch (error) {
+      if (error instanceof CacheOperationException) {
+        throw error;
+      }
+      throw new CacheOperationException(
+        `Failed to set buffer in Memcached: ${error.message}`,
+        'setBuffer',
+        key,
       );
     }
   }
@@ -431,15 +524,17 @@ export class MemcachedCacheService implements ICacheStrategy, OnModuleInit, OnMo
       return new Promise((resolve, reject) => {
         this.client.stats((err, stats) => {
           if (err) {
-            reject(new CacheOperationException(
-              `Failed to get memory usage from Memcached: ${err.message}`,
-              'getMemoryUsage',
-            ));
+            reject(
+              new CacheOperationException(
+                `Failed to get memory usage from Memcached: ${err.message}`,
+                'getMemoryUsage',
+              ),
+            );
           } else {
             // Получаем статистику с первого сервера
             const firstServer = Object.keys(stats)[0];
             const serverStats = stats[firstServer];
-            
+
             const used = parseInt(serverStats.bytes || '0', 10);
             const limit = parseInt(serverStats.limit_maxbytes || '0', 10);
             const percentage = limit > 0 ? (used / limit) * 100 : 0;
@@ -472,6 +567,7 @@ export class MemcachedCacheService implements ICacheStrategy, OnModuleInit, OnMo
  * @module MemcachedCacheModule
  */
 @Module({
+  imports: [ConfigModule],
   providers: [MemcachedCacheService],
   exports: [MemcachedCacheService],
 })

@@ -2,7 +2,7 @@ import { MigrationInterface, QueryRunner, TableColumn } from 'typeorm';
 
 /**
  * Миграция для добавления поля generatorType в таблицу avatars
- * 
+ *
  * Добавляет новое поле generatorType типа varchar(50) с значением по умолчанию 'pixelize'
  * Это поле определяет тип генератора, который использовался для создания аватара
  */

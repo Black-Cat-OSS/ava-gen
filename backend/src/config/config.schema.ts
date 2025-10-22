@@ -152,7 +152,7 @@ const configSchema = z
     if (data.app.cors === true && data.app.corsEnabled === undefined) {
       ctx.addIssue({
         code: 'custom',
-        message: 'You have enabled CORS but not configure \'corsEnabled\' parameter',
+        message: "You have enabled CORS but not configure 'corsEnabled' parameter",
         path: ['app', 'corsEnabled'],
       });
     }

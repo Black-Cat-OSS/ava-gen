@@ -4,28 +4,27 @@ import { ApiProperty } from '@nestjs/swagger';
  * DTO для представления цветовой палитры
  */
 export class ColorPaletteDto {
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Название палитры',
-    example: 'Ocean'
+    example: 'Ocean',
   })
   name: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Основной цвет в HEX формате',
-    example: '#0077BE'
+    example: '#0077BE',
   })
   primaryColor: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Дополнительный цвет в HEX формате',
-    example: '#00A8CC'
+    example: '#00A8CC',
   })
   foreignColor: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Ключ палитры для идентификации',
-    example: 'ocean'
+    example: 'ocean',
   })
   key: string;
 }
-

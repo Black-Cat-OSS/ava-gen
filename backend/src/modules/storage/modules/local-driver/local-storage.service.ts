@@ -77,6 +77,21 @@ export class LocalStorageService implements IStorageStrategy {
       const fileContent = readFileSync(filePath, 'utf8');
       const data = JSON.parse(fileContent);
 
+      // Проверяем, что все необходимые поля изображений существуют
+      const requiredImageFields = [
+        'image_4n',
+        'image_5n',
+        'image_6n',
+        'image_7n',
+        'image_8n',
+        'image_9n',
+      ];
+      for (const field of requiredImageFields) {
+        if (!data[field]) {
+          throw new Error(`Missing image data field: ${field} in avatar ${id}`);
+        }
+      }
+
       const avatarObject: AvatarObject = {
         meta_data_name: data.meta_data_name,
         meta_data_created_at: new Date(data.meta_data_created_at),

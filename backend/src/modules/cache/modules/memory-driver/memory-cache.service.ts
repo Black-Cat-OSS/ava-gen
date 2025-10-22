@@ -1,5 +1,7 @@
-import { Module, Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import { Module, Injectable, Logger, OnModuleInit, OnModuleDestroy, Inject } from '@nestjs/common';
 import { ICacheStrategy, CacheMemoryStats } from '../../interfaces';
+import { ConfigModule } from '../../../../config/config.module';
+import { YamlConfigService } from '../../../../config/modules/yaml-driver/yaml-config.service';
 
 /**
  * Memory Cache Service (заглушка)
@@ -9,6 +11,21 @@ import { ICacheStrategy, CacheMemoryStats } from '../../interfaces';
 @Injectable()
 export class MemoryCacheService implements ICacheStrategy, OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(MemoryCacheService.name);
+  private readonly configService: YamlConfigService;
+  private readonly maxItems: number = 1000;
+  private readonly maxMemory: number = 100 * 1024 * 1024; // 100MB
+
+  constructor(
+    @Inject(YamlConfigService)
+    configService: YamlConfigService,
+  ) {
+    this.configService = configService;
+  }
+
+  private startCleanupInterval(): void {
+    // Заглушка для периодической очистки
+    this.logger.debug('Cleanup interval started (stub)');
+  }
 
   async onModuleInit(): Promise<void> {
     const config = this.configService.getCacheConfig();
@@ -65,6 +82,14 @@ export class MemoryCacheService implements ICacheStrategy, OnModuleInit, OnModul
       itemCount: 0,
     };
   }
+
+  async getBuffer(): Promise<Buffer | null> {
+    return null;
+  }
+
+  async setBuffer(): Promise<void> {
+    // Stub implementation
+  }
 }
 
 /**
@@ -73,6 +98,7 @@ export class MemoryCacheService implements ICacheStrategy, OnModuleInit, OnModul
  * @module MemoryCacheModule
  */
 @Module({
+  imports: [ConfigModule],
   providers: [MemoryCacheService],
   exports: [MemoryCacheService],
 })

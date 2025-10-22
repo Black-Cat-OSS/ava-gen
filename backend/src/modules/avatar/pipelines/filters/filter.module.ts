@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '../../../../config/config.module';
 import { FilterService } from './filter.service';
 import { GrayscaleFilterStep } from './grayscale-filter.step';
 import { SepiaFilterStep } from './sepia-filter.step';
@@ -13,12 +14,8 @@ import { NegativeFilterStep } from './negative-filter.step';
  * @module FilterModule
  */
 @Module({
-  providers: [
-    FilterService,
-    GrayscaleFilterStep,
-    SepiaFilterStep,
-    NegativeFilterStep,
-  ],
+  imports: [ConfigModule],
+  providers: [FilterService, GrayscaleFilterStep, SepiaFilterStep, NegativeFilterStep],
   exports: [FilterService],
 })
 export class FilterModule {}
