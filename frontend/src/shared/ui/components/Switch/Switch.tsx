@@ -42,43 +42,43 @@ export const Switch: React.FC<SwitchProps> = ({
       aria-disabled={disabled}
       tabIndex={disabled ? -1 : 0}
     >
-      {/* Switch track */}
-      <div
-        className={cn(
-          'relative w-16 h-8 rounded-full transition-all duration-300',
-          checked
-            ? 'bg-primary'
-            : 'bg-muted'
-        )}
-      >
-        {/* Switch thumb */}
-        <div
-          className={cn(
-            'absolute top-1 w-6 h-6 rounded-full bg-background shadow-sm transition-all duration-300',
-            checked ? 'left-7' : 'left-1'
-          )}
-        />
-      </div>
-
-      {/* Icons container */}
-      <div className="relative ml-2 flex items-center space-x-1">
+      <div className="flex items-center gap-3">
         {/* Left icon */}
         {leftIcon && (
           <div
             className={cn(
-              'transition-opacity duration-300',
-              checked ? 'opacity-50' : 'opacity-100'
+              'transition-opacity duration-300 text-foreground',
+              !checked ? 'opacity-100' : 'opacity-50'
             )}
           >
             {leftIcon}
           </div>
         )}
 
+        {/* Switch track */}
+        <div
+          className={cn(
+            'relative w-14 h-7 rounded-full transition-all duration-300',
+            checked
+              ? 'bg-blue-600'
+              : 'bg-gray-700'
+          )}
+        >
+          {/* Switch thumb */}
+          <div
+            className={cn(
+              'absolute top-1 w-5 h-5 rounded-full shadow-lg transition-all duration-300',
+              'bg-gray-800',
+              checked ? 'left-[31px]' : 'left-[3px]'
+            )}
+          />
+        </div>
+
         {/* Right icon */}
         {rightIcon && (
           <div
             className={cn(
-              'transition-opacity duration-300',
+              'transition-opacity duration-300 text-foreground',
               checked ? 'opacity-100' : 'opacity-50'
             )}
           >

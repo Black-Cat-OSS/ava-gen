@@ -34,6 +34,9 @@ export default {
           600: 'var(--color-sky-600)',
           700: 'var(--color-sky-700)',
         },
+        blue: {
+          600: 'var(--color-blue-600)',
+        },
         red: {
           600: 'var(--color-red-600)',
           500: 'var(--color-red-500)',
