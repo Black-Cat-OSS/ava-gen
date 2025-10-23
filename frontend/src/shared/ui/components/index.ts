@@ -12,6 +12,8 @@ export { InputField } from './InputField';
 export type { InputFieldProps, InputStatus } from './InputField';
 export { OverlayBlur } from './OverlayBlur';
 export type { OverlayBlurProps } from './OverlayBlur';
+export { Switch } from './Switch';
+export type { SwitchProps } from './Switch';
 export { AngleVisualizer } from '../angle-visualizer';
 export { ErrorBoundary } from './ErrorBoundary';
 export type { ErrorBoundaryProps } from './ErrorBoundary';
