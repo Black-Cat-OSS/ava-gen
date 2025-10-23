@@ -29,7 +29,20 @@ export function ThemeProvider({
         : 'light';
 
       root.classList.add(systemTheme);
-      return;
+      
+      // Слушаем изменения системной темы
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const handleChange = () => {
+        root.classList.remove('light', 'dark');
+        const newSystemTheme = mediaQuery.matches ? 'dark' : 'light';
+        root.classList.add(newSystemTheme);
+      };
+
+      mediaQuery.addEventListener('change', handleChange);
+      
+      return () => {
+        mediaQuery.removeEventListener('change', handleChange);
+      };
     }
 
     root.classList.add(theme);

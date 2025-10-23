@@ -22,7 +22,7 @@ const queryClient = new QueryClient({
 export const AppProviders = ({ children }: AppProvidersProps) => {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+      <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
         <PopupProvider>
           <MobileMenuProvider>{children}</MobileMenuProvider>
         </PopupProvider>

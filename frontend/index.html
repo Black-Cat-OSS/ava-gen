@@ -8,7 +8,7 @@
     <meta name="theme-color" content="#f8f9fa" />
     <meta name="msapplication-navbutton-color" content="#f8f9fa" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <title>Web2Bizz</title>
+    <title>Avagen - service for avaar generation</title>
     <style>
       :root {
         --background: #ffffff;
@@ -18,6 +18,21 @@
       .dark {
         --background: #0a0a0a;
         --foreground: #ffffff;
+      }
+
+      /* Автоматическое применение системной темы */
+      @media (prefers-color-scheme: dark) {
+        :root:not(.light) {
+          --background: #0a0a0a;
+          --foreground: #ffffff;
+        }
+      }
+
+      @media (prefers-color-scheme: light) {
+        :root:not(.dark) {
+          --background: #ffffff;
+          --foreground: #000000;
+        }
       }
 
       body {
@@ -115,7 +130,29 @@
     <div id="overlay"></div>
     <script async type="module" src="/src/main.tsx"></script>
 
-    <script>
+    <script async>
+      // Функция для определения и применения системной темы
+      function applySystemTheme() {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const root = document.documentElement;
+        
+        // Удаляем предыдущие классы тем
+        root.classList.remove('light', 'dark');
+        
+        // Применяем системную тему
+        if (prefersDark) {
+          root.classList.add('dark');
+        } else {
+          root.classList.add('light');
+        }
+      }
+
+      // Применяем тему сразу при загрузке скрипта
+      applySystemTheme();
+
+      // Отслеживаем изменения системной темы
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applySystemTheme);
+
       function hidePreloader() {
         const preloader = document.getElementById('preloader');
         if (preloader) {
