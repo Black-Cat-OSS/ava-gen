@@ -2,6 +2,9 @@
 
 ### Features
 
+- **ui:** Add avatar preview showcase feature with localized translations
+  ([725b5ed](https://github.com/Black-Cat-OSS/ava-gen/commit/725b5edb7e6e7c7c5a5e5e5e5e5e5e5e5e5e5e5e)),
+  closes [#67](https://github.com/Black-Cat-OSS/ava-gen/issues/67)
 - Added bakery module
   ([d94bd93](https://github.com/Black-Cat-OSS/ava-gen/commit/d94bd93b6614fc33fa1d8197fdd32593ed0e7c43))
 - **api:** Add cache module infrastructure and interfaces

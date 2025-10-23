@@ -4,3 +4,4 @@ export * from './LanguageSwitcher';
 export * from './LanguageButton';
 export * from './LoginForm';
 export * from './color-palette';
+export * from './avatar-preview-showcase';

@@ -1,0 +1,53 @@
+{
+  "section": {
+    "title": "Avatare in Aktion",
+    "subtitle": "Realitätsnahe Beispiele dafür, wie Avatare in verschiedenen Kontexten aussehen"
+  },
+  "contexts": {
+    "comment": {
+      "title": "Kommentarbereich",
+      "description": "Avatar in einem Blog-Kommentar",
+      "userName": "Anna Müller",
+      "text": "Großartiger Artikel! Danke fürs Teilen.",
+      "timestamp": "vor 2 Stunden"
+    },
+    "profile": {
+      "title": "Benutzerprofil",
+      "description": "Avatar in einer Profilkarte",
+      "userName": "Hans Weber",
+      "role": "Entwickler",
+      "location": "Berlin, Deutschland"
+    },
+    "userCard": {
+      "title": "Benutzerkarte",
+      "description": "Avatar in einer Benutzerkarten-Komponente",
+      "userName": "Greta Schmidt",
+      "email": "greta@partner.com",
+      "status": "Online"
+    },
+    "chatMessage": {
+      "title": "Chat-Nachricht",
+      "description": "Avatar in einer Chat-Oberfläche",
+      "userName": "Klaus Fischer",
+      "text": "Hey Team, großartige Arbeit am Projekt!",
+      "timestamp": "10:30"
+    },
+    "userList": {
+      "title": "Benutzerliste",
+      "description": "Avatar in einer Benutzerliste",
+      "users": [
+        { "name": "Sofia Wagner", "role": "Designerin" },
+        { "name": "Thomas Becker", "role": "Manager" },
+        { "name": "Julia Richter", "role": "Entwicklerin" }
+      ]
+    },
+    "forumPost": {
+      "title": "Forum-Beitrag",
+      "description": "Avatar in einem Forum-Beitrag",
+      "userName": "Markus Zimmermann",
+      "title": "Frage zu Best Practices",
+      "text": "Was denkt ihr über diesen Ansatz?",
+      "replies": "5 Antworten"
+    }
+  }
+}

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAvatars } from '@/shared/lib';
 import { AvatarWallpaper, AvatarControls, AvatarGallery, LoadMoreButton, AvatarGalleryProvider } from './';
+import { AvatarPreviewShowcase } from '@/features/avatar-preview-showcase';
 import type { Avatar } from '@/shared/api';
 
 export const HomePage = () => {
@@ -31,14 +32,12 @@ export const HomePage = () => {
       setHasMore(true);
       await refetch();
     } catch {
-      // Error handling is managed by React Query
-      // The error will be available in the isError and error states
+      //TODO: add error handling
     }
   };
 
   const showLoadMore = allAvatars.length > 0 && hasMore && !isLoading && !isRefetching;
   
-  // Различаем первоначальную загрузку и загрузку дополнительных данных
   const isInitialLoading = isLoading && allAvatars.length === 0;
   const isLoadingMore = isLoading && allAvatars.length > 0;
 
@@ -68,6 +67,9 @@ export const HomePage = () => {
 
           {showLoadMore && <LoadMoreButton />}
         </AvatarGalleryProvider>
+
+        {/* Avatar Preview Showcase */}
+        <AvatarPreviewShowcase />
       </div>
     </div>
   );
