@@ -1,25 +1,23 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/shared/lib/i18n';
-//TODO: make loading dynamiclly
-//TODO: later make plugin for compilation
-import { avatarPreviewShowcaseTranslations } from '../locales';
+import { avatarLinkCopyTranslations } from '../locales';
 
 /**
- * Hook for managing local translations for avatar preview showcase feature
+ * Hook for managing local translations for avatar link copy feature
  * Automatically loads and updates translations when language changes
  */
 export const useLocalTranslations = () => {
-  const { t } = useTranslation('avatarPreviewShowcase');
+  const { t } = useTranslation('avatarLinkCopy');
 
   useEffect(() => {
     const loadTranslations = (language: string) => {
-      const translations = avatarPreviewShowcaseTranslations[language as keyof typeof avatarPreviewShowcaseTranslations];
+      const translations = avatarLinkCopyTranslations[language as keyof typeof avatarLinkCopyTranslations];
       
       if (translations) {
         i18n.addResourceBundle(
           language,
-          'avatarPreviewShowcase',
+          'avatarLinkCopy',
           translations,
           true,
           true

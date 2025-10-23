@@ -18,6 +18,7 @@ import { CustomColorInputs } from './CustomColorInputs';
 import type { AvatarGeneratorFormInternalProps } from '../types';
 import { avatarApi } from '@/shared/api';
 import { generateMnemonicSeed } from '../utils';
+import { useAvatarGeneratorContext } from '../contexts';
 
 /**
  * Internal form component that uses color palette context
@@ -25,11 +26,19 @@ import { generateMnemonicSeed } from '../utils';
 const AvatarGeneratorFormInternal = ({ 
   formData, 
   onFormDataChange, 
-  onGenerateSeed 
+  onGenerateSeed
 }: AvatarGeneratorFormInternalProps) => {
   const { t } = useTranslation();
   const generateAvatar = useGenerateAvatar();
   const { selectedScheme } = useColorPaletteContext();
+  const { setGeneratedAvatar } = useAvatarGeneratorContext();
+
+  // Call callback when avatar is generated
+  useEffect(() => {
+    if (generateAvatar.isSuccess && generateAvatar.data) {
+      setGeneratedAvatar(generateAvatar.data);
+    }
+  }, [generateAvatar.isSuccess, generateAvatar.data, setGeneratedAvatar]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

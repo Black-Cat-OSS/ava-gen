@@ -5,6 +5,8 @@ import { Button } from '@/shared/ui';
 import { useAvatars } from '@/shared/lib';
 import { avatarApi } from '@/shared/api';
 import { Link } from '@tanstack/react-router';
+import { AvatarLinkCopy } from '@/features/avatar-link-copy';
+import { useLocalTranslations } from '@/features/avatar-link-copy/hooks';
 
 // Available sizes from backend (2^4 to 2^9)
 const AVAILABLE_SIZES = [
@@ -25,6 +27,8 @@ const AVAILABLE_FILTERS = [
 ];
 
 export const AvatarViewerPage = () => {
+  // Load translations for avatar link copy
+  useLocalTranslations();
   const { t } = useTranslation();
   const search = useSearch({ from: '/avatar-viewer' });
   const { data, isLoading, isError, error } = useAvatars({ pick: 100 });
@@ -322,6 +326,15 @@ export const AvatarViewerPage = () => {
                   </div>
                 </div>
               </div>
+            </div>
+
+            {/* Avatar Link Copy Component */}
+            <div className="mt-8">
+              <AvatarLinkCopy
+                avatarId={avatar.id}
+                size={size}
+                filter={filter}
+              />
             </div>
           </>
         )}
