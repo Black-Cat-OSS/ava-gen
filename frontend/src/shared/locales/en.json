@@ -125,7 +125,11 @@
     "avatarGenerator": {
       "title": "Avatar Generator",
       "subtitle": "Create a unique avatar with custom settings",
-      "description": "Configure colors and parameters to create a personalized avatar"
+      "description": "Configure colors and parameters to create a personalized avatar",
+      "generatorTypes": {
+        "classic": "Classic",
+        "emoji": "Emoji"
+      }
     },
     "avatarViewer": {
       "title": "Avatar Viewer",
@@ -220,12 +224,47 @@
         "wave": "Wave",
         "waveDescription": "Smooth wave-based pattern",
         "gradient": "Gradient",
-        "gradientDescription": "Linear gradient pattern"
+        "gradientDescription": "Linear gradient pattern",
+        "emoji": "Emoji",
+        "emojiDescription": "Create avatars with emoji on custom backgrounds"
       },
-          "angle": "Rotation angle",
-          "angleDescription": "Gradient direction (0-360°)",
-          "anglePresets": "Quick presets",
-          "dragToRotate": "Drag to rotate"
+      "angle": "Rotation angle",
+      "angleDescription": "Gradient direction (0-360°)",
+      "anglePresets": "Quick presets",
+      "dragToRotate": "Drag to rotate",
+      "emojiPicker": {
+        "label": "Select Emoji",
+        "open": "Open",
+        "close": "Close",
+        "selected": "Selected"
+      },
+      "backgroundType": {
+        "label": "Background Type",
+        "solid": "Solid",
+        "solidDescription": "Single color background",
+        "linear": "Linear",
+        "linearDescription": "Linear gradient background",
+        "radial": "Radial",
+        "radialDescription": "Radial gradient background"
+      },
+      "emojiSize": {
+        "label": "Emoji Size",
+        "small": "Small",
+        "smallDescription": "40% of avatar size",
+        "medium": "Medium",
+        "mediumDescription": "60% of avatar size",
+        "large": "Large",
+        "largeDescription": "80% of avatar size"
+      },
+      "gradientAngle": "Gradient Angle",
+      "generateEmojiAvatar": "Generate Emoji Avatar",
+      "healthCheck": {
+        "unavailable": "Emoji Service Unavailable",
+        "unavailableDescription": "The emoji service is currently unavailable. Emoji avatar generation may not work properly.",
+        "checking": "Checking service...",
+        "retry": "Retry Check",
+        "lastChecked": "Last checked"
+      }
     }
   },
   "login": {
