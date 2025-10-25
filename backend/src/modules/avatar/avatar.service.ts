@@ -12,6 +12,7 @@ import { FilterService } from './pipelines/filters/filter.service';
 import { CacheService } from '../cache/cache.service';
 import { GenerateAvatarDto, GetAvatarDto, ListAvatarsDto } from './dto/generate-avatar.dto';
 import { GenerateAvatarV2Dto } from './dto/generate-avatar-v2.dto';
+import { GenerateAvatarV3Dto } from './dto/generate-avatar-v3.dto';
 import { ColorPaletteDto } from './dto/color-palette.dto';
 import { Avatar } from './avatar.entity';
 import { PalettesService } from '../palettes';
@@ -118,6 +119,51 @@ export class AvatarService {
       };
     } catch (error) {
       this.logger.error(`Failed to generate gradient avatar: ${error.message}`, error);
+      throw error;
+    }
+  }
+
+  async generateAvatarV3(dto: GenerateAvatarV3Dto) {
+    this.logger.log('Generating new emoji avatar (v3)');
+
+    try {
+      // Generate avatar object with emoji type
+      const avatarObject = await this.avatarGenerator.generateEmojiAvatar(
+        dto.emoji,
+        dto.backgroundType,
+        dto.primaryColor,
+        dto.foreignColor,
+        undefined, // Emoji generator doesn't use colorScheme
+        dto.angle,
+        dto.emojiSize,
+      );
+
+      // Save to file system
+      const filePath = await this.storageService.saveAvatar(avatarObject);
+
+      // Save metadata to database using TypeORM
+      const avatar = this.avatarRepository.create({
+        id: avatarObject.meta_data_name,
+        name: avatarObject.meta_data_name,
+        filePath,
+        primaryColor: dto.primaryColor,
+        foreignColor: dto.foreignColor,
+        colorScheme: undefined, // Emoji generator doesn't use colorScheme
+        seed: undefined, // Emoji generator doesn't use seed
+        generatorType: 'emoji',
+      });
+
+      const savedAvatar = await this.avatarRepository.save(avatar);
+
+      this.logger.log(`Emoji avatar generated successfully with ID: ${savedAvatar.id}`);
+
+      return {
+        id: savedAvatar.id,
+        createdAt: savedAvatar.createdAt,
+        version: savedAvatar.version,
+      };
+    } catch (error) {
+      this.logger.error(`Failed to generate emoji avatar: ${error.message}`, error);
       throw error;
     }
   }
@@ -353,9 +399,25 @@ export class AvatarService {
   async healthCheck() {
     // Простая проверка подключения к репозиторию
     const dbHealth = await this.avatarRepository.count();
+    
+    // Проверка доступности Twemoji CDN
+    const twemojiAvailable = await this.avatarGenerator.checkTwemojiAvailability();
+    
+    if (!twemojiAvailable) {
+      this.logger.warn('Twemoji CDN is not available - emoji avatar generation may fail');
+    }
+
+    const overallStatus = dbHealth && twemojiAvailable ? 'healthy' : 'unhealthy';
+    
     return {
       database: dbHealth,
-      status: dbHealth ? 'healthy' : 'unhealthy',
+      status: overallStatus,
+      services: {
+        twemoji: {
+          available: twemojiAvailable,
+          lastChecked: new Date(),
+        },
+      },
     };
   }
 
