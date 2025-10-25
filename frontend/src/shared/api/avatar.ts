@@ -36,6 +36,15 @@ export interface GenerateAvatarParams {
   angle?: number;
 }
 
+export interface GenerateEmojiAvatarParams {
+  emoji: string;
+  backgroundType: 'solid' | 'linear' | 'radial';
+  primaryColor?: string;
+  foreignColor?: string;
+  angle?: number;
+  emojiSize?: 'small' | 'medium' | 'large';
+}
+
 export interface GenerateAvatarResponse {
   id: string;
   name: string;
@@ -92,6 +101,12 @@ export const avatarApi = {
     }
     
     const response = await apiClient.post<GenerateAvatarResponse>(endpoint, requestParams);
+    return response.data;
+  },
+
+  generateEmoji: async (params: GenerateEmojiAvatarParams): Promise<GenerateAvatarResponse> => {
+    const endpoint = '/api/v3/generate';
+    const response = await apiClient.post<GenerateAvatarResponse>(endpoint, params);
     return response.data;
   },
 

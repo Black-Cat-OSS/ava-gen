@@ -3,3 +3,8 @@ export { AnglePresets } from './AnglePresets';
 export { AvatarLinkCopySection } from './AvatarLinkCopySection';
 export { CurrentPaletteDisplay } from './CurrentPaletteDisplay';
 export { CustomColorInputs } from './CustomColorInputs';
+export { EmojiPickerComponent } from './EmojiPicker';
+export { BackgroundTypeSelector } from './BackgroundTypeSelector';
+export { EmojiSizeSelector } from './EmojiSizeSelector';
+export { EmojiAvatarGeneratorForm } from './EmojiAvatarGeneratorForm';
+export { EmojiServiceHealthCheck } from './EmojiServiceHealthCheck';

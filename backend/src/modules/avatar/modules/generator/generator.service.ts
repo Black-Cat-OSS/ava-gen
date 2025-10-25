@@ -4,6 +4,7 @@ import { IGeneratorStrategy } from '../../../../common/interfaces/generator-stra
 import { PixelizeGeneratorModule } from '../pixelize-driver';
 import { WaveGeneratorModule } from '../wave-driver';
 import { GradientGeneratorModule } from '../gradient-driver/gradient-generator.module';
+import { EmojiGeneratorModule } from '../emoji-driver';
 
 /**
  * Главный сервис генерации аватаров
@@ -21,6 +22,7 @@ export class GeneratorService {
     private readonly pixelizeGenerator: PixelizeGeneratorModule,
     private readonly waveGenerator: WaveGeneratorModule,
     private readonly gradientGenerator: GradientGeneratorModule,
+    private readonly emojiGenerator: EmojiGeneratorModule,
   ) {}
 
   async generateAvatar(
@@ -37,7 +39,33 @@ export class GeneratorService {
     return await generator.generateAvatar(primaryColor, foreignColor, colorScheme, seed, angle);
   }
 
-  async getColorSchemes(
+  async generateEmojiAvatar(
+    emoji: string,
+    backgroundType: 'solid' | 'linear' | 'radial',
+    primaryColor?: string,
+    foreignColor?: string,
+    colorScheme?: string,
+    angle?: number,
+    emojiSize?: 'small' | 'medium' | 'large',
+  ): Promise<AvatarObject> {
+    this.logger.log('Generating emoji avatar');
+    return await this.emojiGenerator.generateAvatar(
+      primaryColor,
+      foreignColor,
+      colorScheme,
+      undefined, // Emoji generator doesn't use seed
+      angle,
+      emoji,
+      backgroundType,
+      emojiSize,
+    );
+  }
+
+  async checkTwemojiAvailability(): Promise<boolean> {
+    return await this.emojiGenerator.checkTwemojiAvailability();
+  }
+
+  getColorSchemes(
     type: string = 'pixelize',
   ): Promise<Array<{ name: string; primaryColor: string; foreignColor: string }>> {
     const generator = this.getGenerator(type);
@@ -52,6 +80,8 @@ export class GeneratorService {
         return this.waveGenerator;
       case 'gradient':
         return this.gradientGenerator;
+      case 'emoji':
+        return this.emojiGenerator;
       default:
         throw new BadRequestException(`Unsupported generator type: ${type}`);
     }
