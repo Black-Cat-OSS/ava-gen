@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, ErrorBoundary } from '@/shared/ui';
+import { Button } from '@/shared/ui';
+import { Callout } from '@/shared/ui/components/Callout';
 import type { EmojiServiceHealthCheckProps } from '../types';
 
 interface HealthCheckResponse {
@@ -18,7 +19,7 @@ interface HealthCheckResponse {
  * Component for checking emoji service health before rendering emoji form
  * 
  * Periodically checks healthcheck endpoint to verify Twemoji CDN availability.
- * Shows error boundary when service is unavailable.
+ * Shows warning callout when service is unavailable.
  * 
  * @param props - Component props
  * @returns JSX element
@@ -64,39 +65,33 @@ export const EmojiServiceHealthCheck: React.FC<EmojiServiceHealthCheckProps> = (
   }, []);
 
   const defaultFallback = (
-    <div className="p-6 border border-destructive/20 bg-destructive/5 rounded-lg">
-      <div className="flex items-center gap-3 mb-4">
-        <div className="text-destructive text-xl">⚠️</div>
-        <div>
-          <h3 className="font-semibold text-destructive">
-            {t('features.avatarGenerator.healthCheck.unavailable')}
-          </h3>
-          <p className="text-sm text-muted-foreground">
-            {t('features.avatarGenerator.healthCheck.unavailableDescription')}
-          </p>
+    <Callout
+      type="warning"
+      title={t('features.avatarGenerator.healthCheck.unavailable')}
+      subtitle={t('features.avatarGenerator.healthCheck.unavailableDescription')}
+    >
+      <div className="space-y-4">
+        <div className="flex gap-2">
+          <Button
+            onClick={checkHealth}
+            disabled={isChecking}
+            variant="outline"
+            size="sm"
+          >
+            {isChecking 
+              ? t('features.avatarGenerator.healthCheck.checking') 
+              : t('features.avatarGenerator.healthCheck.retry')
+            }
+          </Button>
         </div>
-      </div>
-      
-      <div className="space-y-2">
-        <Button
-          onClick={checkHealth}
-          disabled={isChecking}
-          variant="outline"
-          size="sm"
-        >
-          {isChecking 
-            ? t('features.avatarGenerator.healthCheck.checking') 
-            : t('features.avatarGenerator.healthCheck.retry')
-          }
-        </Button>
         
         {lastChecked && (
-          <p className="text-xs text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             {t('features.avatarGenerator.healthCheck.lastChecked')}: {lastChecked.toLocaleTimeString()}
           </p>
         )}
       </div>
-    </div>
+    </Callout>
   );
 
   if (isHealthy === null) {
@@ -114,11 +109,7 @@ export const EmojiServiceHealthCheck: React.FC<EmojiServiceHealthCheckProps> = (
   }
 
   if (!isHealthy) {
-    return (
-      <ErrorBoundary fallback={fallback || defaultFallback}>
-        {fallback || defaultFallback}
-      </ErrorBoundary>
-    );
+    return fallback || defaultFallback;
   }
 
   return <>{children}</>;
