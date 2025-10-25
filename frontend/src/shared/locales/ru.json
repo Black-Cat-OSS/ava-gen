@@ -125,7 +125,11 @@
     "avatarGenerator": {
       "title": "Генератор аватаров",
       "subtitle": "Создайте уникальный аватар с помощью настроек",
-      "description": "Настройте цвета и параметры для создания персонализированного аватара"
+      "description": "Настройте цвета и параметры для создания персонализированного аватара",
+      "generatorTypes": {
+        "classic": "Классический",
+        "emoji": "Эмодзи"
+      }
     },
     "avatarViewer": {
       "title": "Обозреватель аватаров",
@@ -220,12 +224,47 @@
         "wave": "Волновой",
         "waveDescription": "Плавный волновой узор",
         "gradient": "Градиент",
-        "gradientDescription": "Линейный градиентный узор"
+        "gradientDescription": "Линейный градиентный узор",
+        "emoji": "Эмодзи",
+        "emojiDescription": "Создание аватаров с эмодзи на пользовательских фонах"
       },
-          "angle": "Угол поворота",
-          "angleDescription": "Направление градиента (0-360°)",
-          "anglePresets": "Быстрые пресеты",
-          "dragToRotate": "Перетащите для поворота"
+      "angle": "Угол поворота",
+      "angleDescription": "Направление градиента (0-360°)",
+      "anglePresets": "Быстрые пресеты",
+      "dragToRotate": "Перетащите для поворота",
+      "emojiPicker": {
+        "label": "Выберите эмодзи",
+        "open": "Открыть",
+        "close": "Закрыть",
+        "selected": "Выбрано"
+      },
+      "backgroundType": {
+        "label": "Тип фона",
+        "solid": "Сплошной",
+        "solidDescription": "Одноцветный фон",
+        "linear": "Линейный",
+        "linearDescription": "Линейный градиентный фон",
+        "radial": "Радиальный",
+        "radialDescription": "Радиальный градиентный фон"
+      },
+      "emojiSize": {
+        "label": "Размер эмодзи",
+        "small": "Маленький",
+        "smallDescription": "40% от размера аватара",
+        "medium": "Средний",
+        "mediumDescription": "60% от размера аватара",
+        "large": "Большой",
+        "largeDescription": "80% от размера аватара"
+      },
+      "gradientAngle": "Угол градиента",
+      "generateEmojiAvatar": "Создать эмодзи аватар",
+      "healthCheck": {
+        "unavailable": "Сервис эмодзи недоступен",
+        "unavailableDescription": "Сервис эмодзи в настоящее время недоступен. Генерация эмодзи аватаров может работать некорректно.",
+        "checking": "Проверка сервиса...",
+        "retry": "Повторить проверку",
+        "lastChecked": "Последняя проверка"
+      }
     }
   },
   "login": {
