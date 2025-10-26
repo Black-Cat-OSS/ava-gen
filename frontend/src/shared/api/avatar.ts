@@ -127,7 +127,7 @@ export const avatarApi = {
   },
 
   getAvatar: async (id: string): Promise<Avatar> => {
-    const response = await apiClient.get<Avatar>(`/api/avatar/${id}`);
+    const response = await apiClient.get<Avatar>(`/api/${id}?metadata=true`);
     return response.data;
   },
 
