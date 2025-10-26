@@ -126,6 +126,11 @@ export const avatarApi = {
     return query ? `${baseUrl}/api/${id}?${query}` : `${baseUrl}/api/${id}`;
   },
 
+  getAvatar: async (id: string): Promise<Avatar> => {
+    const response = await apiClient.get<Avatar>(`/api/avatar/${id}`);
+    return response.data;
+  },
+
   delete: async (id: string): Promise<{ message: string }> => {
     const response = await apiClient.delete<{ message: string }>(`/api/${id}`);
     return response.data;
