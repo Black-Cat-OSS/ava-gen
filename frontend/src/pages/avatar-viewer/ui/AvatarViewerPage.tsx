@@ -31,7 +31,7 @@ export const AvatarViewerPage = () => {
   useLocalTranslations();
   const { t } = useTranslation();
   const search = useSearch({ from: '/avatar-viewer' });
-  const { data, isLoading, isError, error } = useAvatars({ pick: 100 });
+  const { data, isLoading, isError, error } = useAvatars({ pick: 100, offset: 0 });
 
   const [size, setSize] = useState(128);
   const [filter, setFilter] = useState('');
