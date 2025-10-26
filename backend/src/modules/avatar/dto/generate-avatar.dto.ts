@@ -60,6 +60,15 @@ export class GetAvatarDto {
   @Min(4)
   @Max(9)
   size?: number;
+
+  @ApiPropertyOptional({
+    description: 'Return metadata as JSON instead of image',
+    type: 'boolean',
+    example: false,
+  })
+  @IsOptional()
+  @Transform(({ value }) => value === 'true' || value === true)
+  metadata?: boolean;
 }
 
 export class ListAvatarsDto {

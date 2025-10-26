@@ -70,15 +70,6 @@ export class AvatarController {
     }
   }
 
-  @Get('avatar/:id')
-  @ApiOperation({ summary: 'Get avatar metadata by ID' })
-  @ApiParam({ name: 'id', description: 'Avatar ID (UUID)' })
-  @ApiResponse({ status: 200, description: 'Avatar metadata retrieved successfully' })
-  @ApiResponse({ status: 404, description: 'Avatar not found' })
-  async getAvatarMetadata(@Param('id') id: string) {
-    return await this.avatarService.getAvatarMetadata(id);
-  }
-
   @Get('list')
   @ApiOperation({ summary: 'Get list of avatars with pagination' })
   @ApiQuery({
@@ -125,6 +116,13 @@ export class AvatarController {
   @UsePipes(new ValidationPipe({ transform: true }))
   async getAvatar(@Param('id') id: string, @Query() dto: GetAvatarDto, @Res() res: Response) {
     try {
+      // If metadata=true, return JSON metadata
+      if (dto.metadata) {
+        const metadata = await this.avatarService.getAvatarMetadata(id);
+        return res.json(metadata);
+      }
+
+      // Otherwise return image
       const result = await this.avatarService.getAvatar(id, dto);
 
       // Генерируем ETag на основе ID и версии аватара
