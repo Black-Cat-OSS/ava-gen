@@ -161,6 +161,9 @@
       "avatarPreview": "Avatar Preview",
       "allSizes": "All Sizes",
       "allFilters": "All Filters"
+    },
+    "palettes": {
+      "title": "Palettes"
     }
   },
   "features": {
@@ -203,6 +206,8 @@
       "currentPalette": "Current Palette",
       "loadingColorPalettes": "Loading color palettes...",
       "failedToLoadColorPalettes": "Failed to load color palettes",
+      "loadMore": "Load More",
+      "loadingMore": "Loading...",
       "colorPaletteError": {
         "title": "Failed to load color palettes",
         "subtitle": "Unable to fetch color palette data from the server",

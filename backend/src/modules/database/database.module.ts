@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '../../config/config.module';
 import { YamlConfigService } from '../../config/modules/yaml-driver/yaml-config.service';
 import { Avatar } from '../avatar/avatar.entity';
+import { Palette } from '../palettes/palette.entity';
 import { DatabaseService } from './database.service';
 import { DatabaseDriverFactory } from './utils/driver-factory';
 import { SqliteDriverService, PostgreSQLDriverService } from './modules';
@@ -43,14 +44,14 @@ import { SqliteDriverService, PostgreSQLDriverService } from './modules';
         const driver = driverFactory.createDriver(configService);
         const typeormConfig = driver.buildConfigs(configService);
 
-        typeormConfig.entities = [Avatar];
+        typeormConfig.entities = [Avatar, Palette];
 
         //FIXME replace any to config type
         return typeormConfig as any;
       },
       inject: [YamlConfigService, DatabaseDriverFactory],
     }),
-    TypeOrmModule.forFeature([Avatar]),
+    TypeOrmModule.forFeature([Avatar, Palette]),
   ],
   providers: [DatabaseService, DatabaseDriverFactory, SqliteDriverService, PostgreSQLDriverService],
   exports: [DatabaseService, TypeOrmModule, DatabaseDriverFactory],

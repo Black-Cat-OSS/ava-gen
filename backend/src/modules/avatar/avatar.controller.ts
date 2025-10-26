@@ -17,7 +17,6 @@ import { Response } from 'express';
 import { AvatarService } from './avatar.service';
 import { GenerateAvatarDto, GetAvatarDto, ListAvatarsDto } from './dto/generate-avatar.dto';
 import { GenerateAvatarV2Dto } from './dto/generate-avatar-v2.dto';
-import { ColorPaletteDto } from './dto/color-palette.dto';
 
 @ApiTags('Avatar')
 @Controller()
@@ -89,41 +88,9 @@ export class AvatarController {
     res.json(result);
   }
 
-  @Get('color-schemes')
-  @ApiOperation({ summary: 'Get available color schemes' })
-  @ApiResponse({ status: 200, description: 'Color schemes retrieved successfully' })
-  @ApiResponse({ status: 204, description: 'No color schemes available' })
-  async getColorSchemes(@Res() res: Response) {
-    const result = await this.avatarService.getColorSchemes();
 
-    // Устанавливаем заголовки кеширования для цветовых схем
-    res.set({
-      'Cache-Control': 'public, max-age=1800', // 30 минут для цветовых схем
-      'Content-Type': 'application/json',
-    });
 
-    res.json(result);
-  }
 
-  @Get('palettes')
-  @ApiOperation({ summary: 'Get available color palettes' })
-  @ApiResponse({
-    status: 200,
-    description: 'Color palettes retrieved successfully',
-    type: [ColorPaletteDto],
-  })
-  @ApiResponse({ status: 204, description: 'No color palettes available' })
-  async getColorPalettes(@Res() res: Response) {
-    const result = await this.avatarService.getColorPalettes();
-
-    // Устанавливаем заголовки кеширования для палитр
-    res.set({
-      'Cache-Control': 'public, max-age=1800', // 30 минут для палитр
-      'Content-Type': 'application/json',
-    });
-
-    res.json(result.palettes);
-  }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get avatar by ID' })

@@ -7,6 +7,7 @@ import { AvatarModule } from '../avatar/avatar.module';
 import { HealthModule } from '../health';
 import { CorsMiddlewareModule } from '../../middleware';
 import { CacheModule } from '../cache/cache.module';
+import { PalettesModule } from '../palettes';
 
 /**
  * Корневой модуль приложения
@@ -21,6 +22,7 @@ import { CacheModule } from '../cache/cache.module';
     InitializationModule,
     DatabaseModule,
     CacheModule.register(),
+    PalettesModule,
     AvatarModule,
     HealthModule,
     CorsMiddlewareModule,

@@ -3,32 +3,28 @@ import { v4 as uuidv4 } from 'uuid';
 import sharp from 'sharp';
 import { AvatarObject, ColorScheme } from '../../../../common/interfaces/avatar-object.interface';
 import { IGeneratorStrategy } from '../../../../common/interfaces/generator-strategy.interface';
+import { PalettesService } from '../../../../modules/palettes';
+import { convertNamedColorToHex } from '../../../../modules/palettes/utils/color-converter.util';
 
 @Injectable()
 export class PixelizeGeneratorModule implements IGeneratorStrategy {
   private readonly logger = new Logger(PixelizeGeneratorModule.name);
 
-  private readonly colorSchemes: ColorScheme[] = [
-    // Basic color schemes
-    { name: 'green', primaryColor: 'green', foreignColor: 'lightgreen' },
-    { name: 'blue', primaryColor: 'blue', foreignColor: 'lightblue' },
-    { name: 'red', primaryColor: 'red', foreignColor: 'pink' },
-    { name: 'orange', primaryColor: 'orange', foreignColor: 'yellow' },
-    { name: 'purple', primaryColor: 'purple', foreignColor: 'violet' },
-    { name: 'teal', primaryColor: 'teal', foreignColor: 'cyan' },
-    { name: 'indigo', primaryColor: 'indigo', foreignColor: 'blue' },
-    { name: 'pink', primaryColor: 'pink', foreignColor: 'rose' },
-    { name: 'emerald', primaryColor: 'emerald', foreignColor: 'green' },
-    // Frontend color palettes
-    { name: 'default', primaryColor: '#3b82f6', foreignColor: '#ef4444' },
-    { name: 'monochrome', primaryColor: '#333333', foreignColor: '#666666' },
-    { name: 'vibrant', primaryColor: '#FF6B35', foreignColor: '#F7931E' },
-    { name: 'pastel', primaryColor: '#FFB3BA', foreignColor: '#FFDFBA' },
-    { name: 'ocean', primaryColor: '#0077BE', foreignColor: '#00A8CC' },
-    { name: 'sunset', primaryColor: '#FF8C42', foreignColor: '#FF6B35' },
-    { name: 'forest', primaryColor: '#2E8B57', foreignColor: '#32CD32' },
-    { name: 'royal', primaryColor: '#6A0DAD', foreignColor: '#8A2BE2' },
-  ];
+  private colorSchemes: ColorScheme[] = [];
+
+  constructor(private readonly palettesService: PalettesService) {
+    this.initializeColorSchemes();
+  }
+
+  private async initializeColorSchemes(): Promise<void> {
+    try {
+      this.colorSchemes = await this.palettesService.getColorSchemes();
+      this.logger.log(`Loaded ${this.colorSchemes.length} color schemes from palettes service`);
+    } catch (error) {
+      this.logger.error(`Failed to load color schemes: ${error.message}`, error);
+      this.colorSchemes = [];
+    }
+  }
 
   async generateAvatar(
     primaryColor?: string,
@@ -180,27 +176,8 @@ export class PixelizeGeneratorModule implements IGeneratorStrategy {
   }
 
   private hexToRgb(hex: string): { r: number; g: number; b: number } {
-    // Handle named colors
-    const namedColors: { [key: string]: string } = {
-      green: '#22C55E',
-      lightgreen: '#86EFAC',
-      blue: '#3B82F6',
-      lightblue: '#60A5FA',
-      red: '#EF4444',
-      pink: '#F472B6',
-      purple: '#A855F7',
-      violet: '#C084FC',
-      orange: '#F97316',
-      yellow: '#FDE047',
-      teal: '#14B8A6',
-      cyan: '#06B6D4',
-      indigo: '#6366F1',
-      rose: '#F43F5E',
-      emerald: '#10B981',
-    };
-
-    const color = namedColors[hex.toLowerCase()] || hex;
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(color);
+    const convertedHex = convertNamedColorToHex(hex);
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(convertedHex);
 
     if (!result) {
       // Default to blue if color is invalid
@@ -214,7 +191,10 @@ export class PixelizeGeneratorModule implements IGeneratorStrategy {
     };
   }
 
-  getColorSchemes(): ColorScheme[] {
+  async getColorSchemes(): Promise<ColorScheme[]> {
+    if (this.colorSchemes.length === 0) {
+      await this.initializeColorSchemes();
+    }
     return this.colorSchemes;
   }
 }

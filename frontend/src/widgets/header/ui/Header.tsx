@@ -48,6 +48,7 @@ export const Header = ({ className, showLogin = false }: HeaderProps) => {
                 {t('pages.avatarGenerator.title')}
               </NavigationLink>
               <NavigationLink to="/avatar-viewer">{t('pages.avatarViewer.title')}</NavigationLink>
+              <NavigationLink to="/palettes">{t('pages.palettes.title')}</NavigationLink>
               <LanguageSwitcher />
               <ThemeToggle />
               {showLogin && (

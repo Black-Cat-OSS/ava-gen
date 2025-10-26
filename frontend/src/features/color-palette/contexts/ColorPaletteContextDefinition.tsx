@@ -15,10 +15,16 @@ export interface ColorPaletteContextValue {
   isLoading: boolean;
   /** Error state of color palettes */
   isError: boolean;
+  /** Whether there are more pages to load */
+  hasNextPage: boolean;
+  /** Whether next page is currently being fetched */
+  isFetchingNextPage: boolean;
   /** Callback when palette is changed */
   onPaletteChange: (paletteKey: string) => void;
   /** Callback when random palette button is clicked */
   onRandomPalette: () => void;
+  /** Callback to load next page */
+  loadMore: () => void;
   /** Set the selected scheme (for external control) */
   setSelectedScheme: (scheme: string) => void;
 }

@@ -161,6 +161,9 @@
       "avatarPreview": "Vista Previa del Avatar",
       "allSizes": "Todos los Tamaños",
       "allFilters": "Todos los Filtros"
+    },
+    "palettes": {
+      "title": "Paletas"
     }
   },
   "features": {
@@ -203,6 +206,8 @@
       "currentPalette": "Paleta Actual",
       "loadingColorPalettes": "Cargando paletas de colores...",
       "failedToLoadColorPalettes": "No se pudieron cargar las paletas de colores",
+      "loadMore": "Cargar Más",
+      "loadingMore": "Cargando...",
       "colorPaletteError": {
         "title": "No se pudieron cargar las paletas de colores",
         "subtitle": "No se pudieron obtener los datos de paletas de colores del servidor",

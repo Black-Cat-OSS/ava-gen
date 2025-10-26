@@ -161,6 +161,9 @@
       "avatarPreview": "Avatar-Vorschau",
       "allSizes": "Alle Größen",
       "allFilters": "Alle Filter"
+    },
+    "palettes": {
+      "title": "Paletten"
     }
   },
   "features": {
@@ -203,6 +206,8 @@
       "currentPalette": "Aktuelle Palette",
       "loadingColorPalettes": "Farbpaletten werden geladen...",
       "failedToLoadColorPalettes": "Farbpaletten konnten nicht geladen werden",
+      "loadMore": "Mehr laden",
+      "loadingMore": "Laden...",
       "colorPaletteError": {
         "title": "Farbpaletten konnten nicht geladen werden",
         "subtitle": "Farbpaletten-Daten konnten nicht vom Server abgerufen werden",

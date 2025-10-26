@@ -161,6 +161,9 @@
       "avatarPreview": "Avatari eelvaade",
       "allSizes": "Kõik suurused",
       "allFilters": "Kõik filtrid"
+    },
+    "palettes": {
+      "title": "Paletid"
     }
   },
   "features": {
@@ -203,6 +206,8 @@
       "currentPalette": "Praegune palett",
       "loadingColorPalettes": "Värvipalettide laadimine...",
       "failedToLoadColorPalettes": "Värvipalette ei õnnestunud laadida",
+      "loadMore": "Lae rohkem",
+      "loadingMore": "Laadimine...",
       "colorPaletteError": {
         "title": "Värvipalette ei õnnestunud laadida",
         "subtitle": "Värvipalettide andmeid ei õnnestunud serverist hankida",

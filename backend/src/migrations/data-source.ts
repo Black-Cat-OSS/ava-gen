@@ -1,7 +1,10 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { Avatar } from '../modules/avatar/avatar.entity';
+import { Palette } from '../modules/palettes/palette.entity';
 import { AddGeneratorTypeToAvatar1739467273000 } from './1739467273000-AddGeneratorTypeToAvatar';
 import { IncreaseColorFieldLengths1760910691899 } from './1760910691899-IncreaseColorFieldLengths';
+import { CreatePalettesTable1761494466000 } from './1761494466000-CreatePalettesTable';
+import { RemoveUniqueNameConstraint1761500000000 } from './1761500000000-RemoveUniqueNameConstraint';
 import { YamlConfigService } from '../config/modules/yaml-driver/yaml-config.service';
 import { DatabaseDriverFactory } from '../modules/database/utils/driver-factory';
 import { SqliteDriverService } from '../modules/database/modules/sqlite-driver';
@@ -35,9 +38,9 @@ async function createDataSourceOptions(): Promise<DataSourceOptions> {
     dataSourceOptions = {
       type: 'sqlite',
       database: typeormConfig.sqlite?.databasePath || './storage/database/avatars.db',
-      entities: [Avatar],
+      entities: [Avatar, Palette],
       //TODO: create migration reader for reading all migrations files and import dynamically
-      migrations: [AddGeneratorTypeToAvatar1739467273000, IncreaseColorFieldLengths1760910691899],
+      migrations: [AddGeneratorTypeToAvatar1739467273000, IncreaseColorFieldLengths1760910691899, CreatePalettesTable1761494466000, RemoveUniqueNameConstraint1761500000000],
       migrationsTableName: 'migrations',
       logging: true,
       synchronize: false,
@@ -51,8 +54,8 @@ async function createDataSourceOptions(): Promise<DataSourceOptions> {
       password: typeormConfig.password,
       database: typeormConfig.database,
       ssl: typeormConfig.ssl,
-      entities: [Avatar],
-      migrations: [AddGeneratorTypeToAvatar1739467273000, IncreaseColorFieldLengths1760910691899],
+      entities: [Avatar, Palette],
+      migrations: [AddGeneratorTypeToAvatar1739467273000, IncreaseColorFieldLengths1760910691899, CreatePalettesTable1761494466000, RemoveUniqueNameConstraint1761500000000],
       migrationsTableName: 'migrations',
       logging: true,
       synchronize: false,

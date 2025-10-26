@@ -161,6 +161,9 @@
       "avatarPreview": "Предпросмотр аватара",
       "allSizes": "Все размеры",
       "allFilters": "Все фильтры"
+    },
+    "palettes": {
+      "title": "Палитры"
     }
   },
   "features": {
@@ -203,6 +206,8 @@
       "currentPalette": "Текущая палитра",
       "loadingColorPalettes": "Загрузка цветовых палитр...",
       "failedToLoadColorPalettes": "Не удалось загрузить цветовые палитры",
+      "loadMore": "Загрузить ещё",
+      "loadingMore": "Загрузка...",
       "colorPaletteError": {
         "title": "Не удалось загрузить цветовые палитры",
         "subtitle": "Невозможно получить данные цветовых палитр с сервера",

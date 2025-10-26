@@ -70,8 +70,15 @@ export const ColorPaletteProvider = ({
     palettes: colorPalettesQuery.data,
     isLoading: colorPalettesQuery.isLoading,
     isError: colorPalettesQuery.isError,
+    hasNextPage: colorPalettesQuery.hasNextPage || false,
+    isFetchingNextPage: colorPalettesQuery.isFetchingNextPage || false,
     onPaletteChange: handlePaletteChange,
     onRandomPalette: handleRandomPalette,
+    loadMore: () => {
+      if (colorPalettesQuery.hasNextPage && !colorPalettesQuery.isFetchingNextPage) {
+        colorPalettesQuery.fetchNextPage();
+      }
+    },
     setSelectedScheme,
   };
 

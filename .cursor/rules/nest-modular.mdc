@@ -1,0 +1,71 @@
+---
+alwaysApply: true
+---
+
+модули для nestjs приложения имеют следующий вид:
+
+module-name
++- __tests__
+    +- module-name.servie.spec.ts
+    +- module-name.controller.spec.ts
++- dto
+    +- some-name.dto.ts
+    +- index.ts
++- schemes
+    +- scheme-name.scheme.ts
+    +- index.ts
++- modules
+    +- submodule-name
+        +- __tests__
+            +- submodule-name.servie.spec.ts
+            +- submodule-name.controller.spec.ts
+        +- interfaces
+            +- interface-name.ts
+            +- index.ts
+        +- utils
+            +- util-name.ts
+            +- index.ts
+        +- exceptions
+            +- some.exception.ts
+            +- index.ts
+        +- submodule-name.servie.ts
+        +- submodule-name.module.ts
+        +- index.ts
+    +- index.ts
++- exceptions
+    +- some.exception.ts
+    +- index.ts
++- middlewares
+    +- some.middleware.ts
+    +- index.ts
++- constants
+    +- index.ts
++- interfaces
+    +- interface-name.ts
+    +- index.ts
++- pipelines
+    +- pipe-name.ts
+    +- index.ts
++- utils
+    +- util-name.ts
+    +- index.ts
++- events
+    +- event-name.event.ts
+    +- index.ts
++- module-name.servie.ts
++- module-name.module.ts
++- module-name.controller.ts
++- module-name.entity.ts
++- index.ts
+
+есть модули и подмодули. В модуле может быть только один уровень вложенности. Подмодули не могут содержать модули.
+
+признаки модуля:
+- сложная логическая единица
+- взаимодействует с сущностью
+- нужен контроллер и полная цепочка: валидация, исключения, dto
+
+признаки подмодуля:
+- реализация стратегии или фабрики
+- взаимодействует с сущностью, но другой реализацией
+- отделение логики или её вариативность

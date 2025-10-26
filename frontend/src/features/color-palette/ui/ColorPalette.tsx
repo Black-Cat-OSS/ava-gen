@@ -15,8 +15,11 @@ export const ColorPalette = () => {
     palettes,
     isLoading,
     isError,
+    hasNextPage,
+    isFetchingNextPage,
     onPaletteChange,
     onRandomPalette,
+    loadMore,
   } = useColorPaletteContext();
 
   return (
@@ -86,6 +89,20 @@ export const ColorPalette = () => {
           );
         })}
       </div>
+
+      {hasNextPage && (
+        <div className="flex justify-center mt-4">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={loadMore}
+            disabled={isFetchingNextPage}
+          >
+            {isFetchingNextPage ? t('features.avatarGenerator.loadingMore') : t('features.avatarGenerator.loadMore')}
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

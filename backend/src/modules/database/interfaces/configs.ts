@@ -1,4 +1,5 @@
 import { Avatar } from '../../avatar/avatar.entity';
+import { Palette } from '../../palettes/palette.entity';
 import { INetwork } from '../../../common/interfaces';
 
 /**
@@ -44,7 +45,7 @@ export interface IDatabaseConfig {
   type: 'postgres' | 'sqlite';
 
   /** Массив сущностей для регистрации в TypeORM */
-  entities: Array<typeof Avatar>;
+  entities: Array<typeof Avatar | typeof Palette>;
 
   /** Включать ли автоматическую синхронизацию схемы БД */
   synchronize: boolean;

@@ -37,11 +37,11 @@ export class GeneratorService {
     return await generator.generateAvatar(primaryColor, foreignColor, colorScheme, seed, angle);
   }
 
-  getColorSchemes(
+  async getColorSchemes(
     type: string = 'pixelize',
-  ): Array<{ name: string; primaryColor: string; foreignColor: string }> {
+  ): Promise<Array<{ name: string; primaryColor: string; foreignColor: string }>> {
     const generator = this.getGenerator(type);
-    return generator.getColorSchemes();
+    return await generator.getColorSchemes();
   }
 
   private getGenerator(type: string): IGeneratorStrategy {

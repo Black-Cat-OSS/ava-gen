@@ -94,6 +94,17 @@ export class InitializationService implements OnModuleInit {
       this.logger.warn('DirectoryInitializerService not found, skipping');
     }
 
+    try {
+      const palettesInitializer = this.moduleRef.get('PalettesInitializerService', {
+        strict: false,
+      });
+      if (palettesInitializer) {
+        this.registerInitializer(palettesInitializer as IInitializer);
+      }
+    } catch {
+      this.logger.warn('PalettesInitializerService not found, skipping');
+    }
+
     this.logger.log(`Discovered ${this.initializers.size} initializers`);
   }
 

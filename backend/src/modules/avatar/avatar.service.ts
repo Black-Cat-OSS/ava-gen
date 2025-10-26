@@ -14,6 +14,7 @@ import { GenerateAvatarDto, GetAvatarDto, ListAvatarsDto } from './dto/generate-
 import { GenerateAvatarV2Dto } from './dto/generate-avatar-v2.dto';
 import { ColorPaletteDto } from './dto/color-palette.dto';
 import { Avatar } from './avatar.entity';
+import { PalettesService } from '../palettes';
 
 @Injectable()
 export class AvatarService {
@@ -26,6 +27,7 @@ export class AvatarService {
     private readonly storageService: StorageService,
     private readonly filterService: FilterService,
     private readonly cacheService: CacheService,
+    private readonly palettesService: PalettesService,
   ) {}
 
   async generateAvatar(dto: GenerateAvatarDto) {
@@ -305,10 +307,6 @@ export class AvatarService {
     }
   }
 
-  async getColorSchemes() {
-    return this.avatarGenerator.getColorSchemes();
-  }
-
   async listAvatars(dto: ListAvatarsDto) {
     this.logger.log('Retrieving avatar list');
 
@@ -365,9 +363,9 @@ export class AvatarService {
     this.logger.log('Getting color palettes');
 
     // Получаем палитры от всех генераторов
-    const pixelizePalettes = this.avatarGenerator.getColorSchemes('pixelize');
-    const wavePalettes = this.avatarGenerator.getColorSchemes('wave');
-    const gradientPalettes = this.avatarGenerator.getColorSchemes('gradient');
+    const pixelizePalettes = await this.avatarGenerator.getColorSchemes('pixelize');
+    const wavePalettes = await this.avatarGenerator.getColorSchemes('wave');
+    const gradientPalettes = await this.avatarGenerator.getColorSchemes('gradient');
 
     // Объединяем и дедуплицируем палитры
     const allPalettes = [...pixelizePalettes, ...wavePalettes, ...gradientPalettes];

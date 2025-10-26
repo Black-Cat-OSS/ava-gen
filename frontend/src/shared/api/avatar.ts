@@ -49,6 +49,21 @@ export interface GenerateAvatarResponse {
   generatorType?: string;
 }
 
+export interface PaletteResponse {
+  palettes: Array<{
+    name: string;
+    primaryColor: string;
+    foreignColor: string;
+    key: string;
+  }>;
+  pagination: {
+    total: number;
+    offset: number;
+    pick: number;
+    hasMore: boolean;
+  };
+}
+
 export const avatarApi = {
   list: async (params: ListAvatarsParams = {}): Promise<ListAvatarsResponse> => {
     const searchParams = new URLSearchParams();
@@ -107,13 +122,8 @@ export const avatarApi = {
     foreignColor: string;
     key: string;
   }>> => {
-    const response = await apiClient.get<Array<{
-      name: string;
-      primaryColor: string;
-      foreignColor: string;
-      key: string;
-    }>>('/api/palettes');
+    const response = await apiClient.get<PaletteResponse>('/api/palettes?pick=100&offset=0');
     
-    return response.data;
+    return response.data.palettes;
   },
 };

@@ -31,7 +31,7 @@ export interface IGeneratorStrategy {
   /**
    * Получение доступных цветовых схем
    *
-   * @returns {Array} Массив цветовых схем
+   * @returns {Promise<Array>} Массив цветовых схем
    */
-  getColorSchemes(): Array<{ name: string; primaryColor: string; foreignColor: string }>;
+  getColorSchemes(): Promise<Array<{ name: string; primaryColor: string; foreignColor: string }>>;
 }

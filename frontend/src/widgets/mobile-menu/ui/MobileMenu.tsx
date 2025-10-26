@@ -133,6 +133,13 @@ export const MobileMenu = ({ showLogin = false }: MobileMenuProps) => {
               >
                 {t('pages.avatarViewer.title')}
               </NavigationLink>
+              <NavigationLink
+                to="/palettes"
+                className="block px-4 py-3 text-muted-foreground hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                onClick={onClose}
+              >
+                {t('pages.palettes.title')}
+              </NavigationLink>
             </div>
           </nav>
 
