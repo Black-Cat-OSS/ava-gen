@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, ErrorBoundary } from '@/shared/ui';
 import { 
@@ -11,7 +11,8 @@ import { EmojiPickerComponent } from './EmojiPicker';
 import { BackgroundTypeSelector } from './BackgroundTypeSelector';
 import { EmojiSizeSelector } from './EmojiSizeSelector';
 import { AnglePresets } from './AnglePresets';
-import { avatarApi } from '@/shared/api';
+import { EmojiBackgroundPreview } from './EmojiBackgroundPreview';
+import { avatarApi, type GenerateAvatarResponse } from '@/shared/api';
 import { useAvatarGeneratorContext } from '../contexts';
 import type { EmojiAvatarGeneratorFormProps } from '../types';
 
@@ -25,9 +26,14 @@ const EmojiAvatarGeneratorFormInternal: React.FC<EmojiAvatarGeneratorFormProps> 
 }) => {
   const { t } = useTranslation();
   const { setGeneratedAvatar } = useAvatarGeneratorContext();
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedAvatar, setGeneratedAvatarLocal] = useState<GenerateAvatarResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsGenerating(true);
+    setError(null);
 
     try {
       const params = {
@@ -40,9 +46,14 @@ const EmojiAvatarGeneratorFormInternal: React.FC<EmojiAvatarGeneratorFormProps> 
       };
 
       const result = await avatarApi.generateEmoji(params);
+      setGeneratedAvatarLocal(result);
       setGeneratedAvatar(result);
-    } catch (error) {
-      console.error('Failed to generate emoji avatar:', error);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to generate emoji avatar';
+      setError(errorMessage);
+      console.error('Failed to generate emoji avatar:', err);
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -122,14 +133,59 @@ const EmojiAvatarGeneratorFormInternal: React.FC<EmojiAvatarGeneratorFormProps> 
         disabled={disabled}
       />
 
+      {/* Background Preview */}
+      <div className="space-y-3">
+        <label className="block text-sm font-medium text-foreground">
+          {t('features.avatarGenerator.preview')}
+        </label>
+        <EmojiBackgroundPreview
+          primaryColor={formData.primaryColor}
+          foreignColor={formData.foreignColor}
+          backgroundType={formData.backgroundType}
+          angle={formData.angle}
+        />
+        <div className="text-center">
+          <div className="text-4xl">{formData.emoji}</div>
+          <p className="text-xs text-muted-foreground mt-2">
+            {formData.backgroundType} • {formData.emojiSize}
+          </p>
+        </div>
+      </div>
+
       {/* Generate Button */}
       <Button
         type="submit"
-        disabled={disabled || !formData.emoji}
+        disabled={disabled || !formData.emoji || isGenerating}
         className="w-full"
       >
-        {t('features.avatarGenerator.generateEmojiAvatar')}
+        {isGenerating
+          ? t('features.avatarGenerator.generating')
+          : t('features.avatarGenerator.generateEmojiAvatar')}
       </Button>
+
+      {/* Success Message with Preview */}
+      {generatedAvatar && (
+        <div className="p-4 bg-green-50 border border-green-200 rounded-md">
+          <p className="text-green-800 text-sm mb-3">{t('features.avatarGenerator.success')}</p>
+          <div className="text-center">
+            <img
+              src={avatarApi.getImageUrl(generatedAvatar.id)}
+              alt={generatedAvatar.id}
+              className="mx-auto rounded-full w-32 h-32 object-cover border-4 border-primary"
+            />
+            <p className="mt-2 text-sm text-muted-foreground">ID: {generatedAvatar.id}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Error Message */}
+      {error && (
+        <div className="p-4 bg-red-50 border border-red-200 rounded-md">
+          <p className="text-red-800 text-sm">
+            {t('features.avatarGenerator.error')}: {error}
+          </p>
+        </div>
+      )}
     </form>
   );
 };
