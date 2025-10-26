@@ -13,14 +13,11 @@ export class GenerateAvatarV3Dto {
   @ApiProperty({
     description: 'Unicode emoji character',
     example: '😀',
-    maxLength: 10,
+    maxLength: 20,
   })
   @IsNotEmpty({ message: 'Emoji is required' })
   @IsString({ message: 'Emoji must be a string' })
-  @MaxLength(10, { message: 'Emoji must not exceed 10 characters' })
-  @Matches(/^[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]$/u, {
-    message: 'Emoji must be a valid unicode emoji character',
-  })
+  @MaxLength(20, { message: 'Emoji must not exceed 20 characters' })
   emoji: string;
 
   @ApiProperty({

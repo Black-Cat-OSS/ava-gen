@@ -392,7 +392,7 @@ export class EmojiGeneratorModule implements IGeneratorStrategy {
     };
   }
 
-  getColorSchemes(): ColorScheme[] {
+  async getColorSchemes(): Promise<ColorScheme[]> {
     return this.colorSchemes;
   }
 }

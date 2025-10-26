@@ -67,7 +67,7 @@ export class GeneratorService {
     return await this.emojiService.checkTwemojiAvailability();
   }
 
-  getColorSchemes(
+  async getColorSchemes(
     type: string = 'pixelize',
   ): Promise<Array<{ name: string; primaryColor: string; foreignColor: string }>> {
     const generator = this.getGenerator(type);
