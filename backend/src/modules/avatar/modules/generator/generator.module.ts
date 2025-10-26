@@ -2,7 +2,9 @@ import { Module, DynamicModule } from '@nestjs/common';
 import { PixelizeGeneratorModule } from '../pixelize-driver';
 import { WaveGeneratorModule } from '../wave-driver';
 import { GradientGeneratorModule } from '../gradient-driver/gradient-generator.module';
+import { EmojiGeneratorModule } from '../emoji-driver';
 import { GeneratorService } from './generator.service';
+import { EmojiModule } from '../../../emoji';
 
 /**
  * Главный модуль генераторов аватаров
@@ -23,11 +25,13 @@ export class GeneratorModule {
   static register(): DynamicModule {
     return {
       module: GeneratorModule,
+      imports: [EmojiModule], // Import EmojiModule to make EmojiService available
       providers: [
         GeneratorService,
         PixelizeGeneratorModule,
         WaveGeneratorModule,
         GradientGeneratorModule,
+        EmojiGeneratorModule,
       ],
       exports: [GeneratorService],
     };

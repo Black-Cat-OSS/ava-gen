@@ -17,6 +17,7 @@ import { Response } from 'express';
 import { AvatarService } from './avatar.service';
 import { GenerateAvatarDto, GetAvatarDto, ListAvatarsDto } from './dto/generate-avatar.dto';
 import { GenerateAvatarV2Dto } from './dto/generate-avatar-v2.dto';
+import { GenerateAvatarV3Dto } from './dto/generate-avatar-v3.dto';
 
 @ApiTags('Avatar')
 @Controller()
@@ -39,6 +40,14 @@ export class AvatarController {
     return await this.avatarService.generateAvatarV2(dto);
   }
 
+  @Post('v3/generate')
+  @ApiOperation({ summary: 'Generate emoji avatar (API v3)' })
+  @ApiResponse({ status: 201, description: 'Emoji avatar generated successfully' })
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async generateAvatarV3(@Body() dto: GenerateAvatarV3Dto) {
+    return await this.avatarService.generateAvatarV3(dto);
+  }
+
   @Get('health')
   @ApiOperation({ summary: 'Health check endpoint' })
   @ApiResponse({ status: 200, description: 'Health status retrieved' })
@@ -59,6 +68,15 @@ export class AvatarController {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  @Get('avatar/:id')
+  @ApiOperation({ summary: 'Get avatar metadata by ID' })
+  @ApiParam({ name: 'id', description: 'Avatar ID (UUID)' })
+  @ApiResponse({ status: 200, description: 'Avatar metadata retrieved successfully' })
+  @ApiResponse({ status: 404, description: 'Avatar not found' })
+  async getAvatarMetadata(@Param('id') id: string) {
+    return await this.avatarService.getAvatarMetadata(id);
   }
 
   @Get('list')
@@ -121,9 +139,9 @@ export class AvatarController {
       }
 
       // Отладочная информация
-      console.log(
-        `Sending image - type: ${typeof result.image}, isBuffer: ${Buffer.isBuffer(result.image)}, length: ${result.image?.length}`,
-      );
+      // console.log(
+      //   `Sending image - type: ${typeof result.image}, isBuffer: ${Buffer.isBuffer(result.image)}, length: ${result.image?.length}`,
+      // );
 
       // Устанавливаем HTTP заголовки кеширования
       res.set({

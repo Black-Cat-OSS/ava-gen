@@ -36,6 +36,15 @@ export interface GenerateAvatarParams {
   angle?: number;
 }
 
+export interface GenerateEmojiAvatarParams {
+  emoji: string;
+  backgroundType: 'solid' | 'linear' | 'radial';
+  primaryColor?: string;
+  foreignColor?: string;
+  angle?: number;
+  emojiSize?: 'small' | 'medium' | 'large';
+}
+
 export interface GenerateAvatarResponse {
   id: string;
   name: string;
@@ -95,6 +104,12 @@ export const avatarApi = {
     return response.data;
   },
 
+  generateEmoji: async (params: GenerateEmojiAvatarParams): Promise<GenerateAvatarResponse> => {
+    const endpoint = '/api/v3/generate';
+    const response = await apiClient.post<GenerateAvatarResponse>(endpoint, params);
+    return response.data;
+  },
+
   getImageUrl: (id: string, filter?: string, size?: number): string => {
     const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
     const params = new URLSearchParams();
@@ -109,6 +124,11 @@ export const avatarApi = {
 
     const query = params.toString();
     return query ? `${baseUrl}/api/${id}?${query}` : `${baseUrl}/api/${id}`;
+  },
+
+  getAvatar: async (id: string): Promise<Avatar> => {
+    const response = await apiClient.get<Avatar>(`/api/avatar/${id}`);
+    return response.data;
   },
 
   delete: async (id: string): Promise<{ message: string }> => {
