@@ -111,21 +111,28 @@ export const avatarApi = {
   },
 
   getImageUrl: (id: string, filter?: string, size?: number): string => {
-    const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:3000';
     const params = new URLSearchParams();
-    if (filter && filter.trim() !== '') params.append('filter', filter);
+    
+    if (filter && filter.trim() !== '') {
+      params.append('filter', filter);
+    }
+    
     if (size) {
-      // Convert pixel size to power of 2 (backend expects 5-9, where 2^n)
       const sizeExponent = Math.log2(size);
       if (Number.isInteger(sizeExponent) && sizeExponent >= 4 && sizeExponent <= 9) {
         params.append('size', sizeExponent.toString());
+      } else {
+        const nearestExponent = Math.round(sizeExponent);
+        if (nearestExponent >= 4 && nearestExponent <= 9) {
+          params.append('size', nearestExponent.toString());
+        }
       }
     }
 
     const query = params.toString();
     return query ? `${baseUrl}/api/${id}?${query}` : `${baseUrl}/api/${id}`;
   },
-
 
   delete: async (id: string): Promise<{ message: string }> => {
     const response = await apiClient.delete<{ message: string }>(`/api/${id}`);
