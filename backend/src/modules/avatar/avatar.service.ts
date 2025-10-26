@@ -398,6 +398,59 @@ export class AvatarService {
     }
   }
 
+  async getAvatarMetadata(id: string) {
+    this.logger.log(`Retrieving avatar metadata for ID: ${id}`);
+
+    try {
+      // Validate UUID format
+      const uuidRegex =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      if (!uuidRegex.test(id)) {
+        throw new BadRequestException(`Invalid avatar ID format: ${id}. Expected UUID format.`);
+      }
+
+      // Get avatar metadata from database using TypeORM
+      const avatar = await this.avatarRepository.findOne({
+        where: { id },
+        select: [
+          'id',
+          'name',
+          'createdAt',
+          'version',
+          'primaryColor',
+          'foreignColor',
+          'colorScheme',
+          'seed',
+          'generatorType',
+        ],
+      });
+
+      if (!avatar) {
+        throw new NotFoundException(`Avatar with ID ${id} not found`);
+      }
+
+      this.logger.log(`Avatar metadata retrieved successfully: ${id}`);
+
+      return {
+        id: avatar.id,
+        name: avatar.name,
+        createdAt: avatar.createdAt,
+        version: avatar.version,
+        primaryColor: avatar.primaryColor,
+        foreignColor: avatar.foreignColor,
+        colorScheme: avatar.colorScheme,
+        seed: avatar.seed,
+        generatorType: avatar.generatorType,
+      };
+    } catch (error) {
+      if (error instanceof NotFoundException || error instanceof BadRequestException) {
+        throw error;
+      }
+      this.logger.error(`Failed to get avatar metadata: ${error.message}`, error);
+      throw new Error(`Failed to get avatar metadata: ${error.message}`);
+    }
+  }
+
   async healthCheck() {
     // Простая проверка подключения к репозиторию
     const dbHealth = await this.avatarRepository.count();

@@ -18,7 +18,6 @@ import { AvatarService } from './avatar.service';
 import { GenerateAvatarDto, GetAvatarDto, ListAvatarsDto } from './dto/generate-avatar.dto';
 import { GenerateAvatarV2Dto } from './dto/generate-avatar-v2.dto';
 import { GenerateAvatarV3Dto } from './dto/generate-avatar-v3.dto';
-import { ColorPaletteDto } from './dto/color-palette.dto';
 
 @ApiTags('Avatar')
 @Controller()
@@ -69,6 +68,15 @@ export class AvatarController {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  @Get('avatar/:id')
+  @ApiOperation({ summary: 'Get avatar metadata by ID' })
+  @ApiParam({ name: 'id', description: 'Avatar ID (UUID)' })
+  @ApiResponse({ status: 200, description: 'Avatar metadata retrieved successfully' })
+  @ApiResponse({ status: 404, description: 'Avatar not found' })
+  async getAvatarMetadata(@Param('id') id: string) {
+    return await this.avatarService.getAvatarMetadata(id);
   }
 
   @Get('list')
