@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearch } from '@tanstack/react-router';
 import { Button } from '@/shared/ui';
-import { useAvatar } from '@/shared/lib';
+import { useAvatars } from '@/shared/lib';
 import { avatarApi } from '@/shared/api';
 import { Link } from '@tanstack/react-router';
 import { AvatarLinkCopy } from '@/features/avatar-link-copy';
@@ -31,10 +31,13 @@ export const AvatarViewerPage = () => {
   useLocalTranslations();
   const { t } = useTranslation();
   const search = useSearch({ from: '/avatar-viewer' });
-  const { data: avatar, isLoading, isError, error } = useAvatar(search.id);
+  const { data, isLoading, isError, error } = useAvatars({ pick: 100 });
 
   const [size, setSize] = useState(128);
   const [filter, setFilter] = useState('');
+
+  // Find the specific avatar by ID
+  const avatar = data?.avatars?.find(a => a.id === search.id);
 
   const selectedSizeLabel = AVAILABLE_SIZES.find(s => s.value === size)?.label || `${size}px`;
   const selectedFilterLabel = AVAILABLE_FILTERS.find(f => f.value === filter)?.label || 'None';
@@ -74,7 +77,7 @@ export const AvatarViewerPage = () => {
         )}
 
         {/* Avatar Not Found */}
-        {isError && !isLoading && (
+        {data && !avatar && search.id && (
           <div className="text-center py-8">
             <p className="text-muted-foreground mb-4">{t('pages.avatarViewer.avatarNotFound')}</p>
             <Link to="/">
