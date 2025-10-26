@@ -127,6 +127,7 @@ export const avatarApi = {
   },
 
   getAvatar: async (id: string): Promise<Avatar> => {
+    // Use metadata=true to get JSON data instead of image
     const response = await apiClient.get<Avatar>(`/api/${id}?metadata=true`);
     return response.data;
   },
