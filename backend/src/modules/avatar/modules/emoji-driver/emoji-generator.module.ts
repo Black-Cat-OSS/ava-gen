@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import sharp from 'sharp';
 import { AvatarObject, ColorScheme } from '../../../../common/interfaces/avatar-object.interface';
 import { IGeneratorStrategy } from '../../../../common/interfaces/generator-strategy.interface';
+import { EmojiService } from '../../../../modules/emoji';
 
 /**
  * Генератор эмодзи-аватаров
@@ -15,8 +16,9 @@ import { IGeneratorStrategy } from '../../../../common/interfaces/generator-stra
 @Injectable()
 export class EmojiGeneratorModule implements IGeneratorStrategy {
   private readonly logger = new Logger(EmojiGeneratorModule.name);
-  private readonly TWEMOJI_BASE_URL = 'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/';
   private readonly emojiCache = new Map<string, Buffer>();
+
+  constructor(private readonly emojiService: EmojiService) {}
 
   private readonly colorSchemes: ColorScheme[] = [
     // Basic color schemes
@@ -143,23 +145,7 @@ export class EmojiGeneratorModule implements IGeneratorStrategy {
    * @returns {Promise<boolean>} true если CDN доступен
    */
   async checkTwemojiAvailability(): Promise<boolean> {
-    try {
-      const testEmoji = '😀';
-      const codepoint = this.emojiToCodepoint(testEmoji);
-      const url = `${this.TWEMOJI_BASE_URL}${codepoint}.svg`;
-
-      const response = await fetch(url, { method: 'HEAD' });
-      const isAvailable = response.ok;
-
-      if (!isAvailable) {
-        this.logger.warn(`Twemoji CDN is not available. Status: ${response.status}`);
-      }
-
-      return isAvailable;
-    } catch (error) {
-      this.logger.warn(`Failed to check Twemoji CDN availability: ${error.message}`);
-      return false;
-    }
+    return await this.emojiService.checkTwemojiAvailability();
   }
 
   private async generateImageForSize(
@@ -333,24 +319,19 @@ export class EmojiGeneratorModule implements IGeneratorStrategy {
     }
 
     try {
-      const codepoint = this.emojiToCodepoint(emoji);
-      const url = `${this.TWEMOJI_BASE_URL}${codepoint}.svg`;
-
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch emoji SVG: ${response.status}`);
-      }
-
-      const svgBuffer = Buffer.from(await response.arrayBuffer());
+      // Fetch SVG from EmojiService
+      const svgBuffer = await this.emojiService.fetchEmojiSvg(emoji);
       
       // Calculate emoji size based on avatar size
       const sizeMultiplier = emojiSize === 'small' ? 0.4 : emojiSize === 'medium' ? 0.6 : 0.8;
       const emojiPixelSize = Math.round(avatarSize * sizeMultiplier);
 
-      const rasterizedEmoji = await sharp(svgBuffer)
-        .resize(emojiPixelSize, emojiPixelSize, { fit: 'contain' })
-        .png()
-        .toBuffer();
+      // Rasterize using EmojiService
+      const rasterizedEmoji = await this.emojiService.rasterizeEmoji(svgBuffer, {
+        width: emojiPixelSize,
+        height: emojiPixelSize,
+        format: 'png',
+      });
 
       this.emojiCache.set(cacheKey, rasterizedEmoji);
       return rasterizedEmoji;
@@ -374,17 +355,6 @@ export class EmojiGeneratorModule implements IGeneratorStrategy {
       ])
       .png()
       .toBuffer();
-  }
-
-  private emojiToCodepoint(emoji: string): string {
-    const codePoints: string[] = [];
-    for (let i = 0; i < emoji.length; i++) {
-      const codePoint = emoji.codePointAt(i);
-      if (codePoint !== undefined) {
-        codePoints.push(codePoint.toString(16).toLowerCase());
-      }
-    }
-    return codePoints.join('-');
   }
 
   private hexToRgb(hex: string): { r: number; g: number; b: number } {

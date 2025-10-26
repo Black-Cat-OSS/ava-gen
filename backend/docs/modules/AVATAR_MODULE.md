@@ -21,6 +21,16 @@ Avatar модуль предоставляет функциональность 
 - `StorageService` - управление хранением аватаров
 - `CacheService` - кеширование аватаров
 
+### Зависимости
+
+Avatar модуль зависит от следующих сервисных модулей:
+
+- **EmojiModule** - для работы с эмодзи через Twemoji CDN
+  - Получение SVG эмодзи
+  - Растеризация в PNG
+  - Проверка доступности CDN
+  - Кеширование эмодзи
+
 ### Генераторы
 
 Каждый генератор реализует интерфейс `IGeneratorStrategy`:
@@ -106,20 +116,42 @@ interface IGeneratorStrategy {
 
 ### Особенности
 
-- Загрузка SVG эмодзи из Twemoji CDN
+- Использует **EmojiService** для работы с Twemoji CDN
+- Загрузка SVG эмодзи через централизованный сервис
 - Растеризация SVG в PNG с помощью Sharp
 - Генерация фонов (solid/linear/radial)
 - Композиция эмодзи на фон с настраиваемым размером
-- Кеширование загруженных эмодзи
+- Кеширование загруженных эмодзи на уровне EmojiService
 
 ### Процесс генерации
 
-1. **Конвертация эмодзи** - Unicode в codepoint для Twemoji URL
-2. **Загрузка SVG** - с CDN `https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/...`
-3. **Растеризация** - SVG в PNG буфер нужного размера
-4. **Генерация фона** - solid/linear/radial gradient
-5. **Композиция** - наложение эмодзи на фон с учетом размера
-6. **Возврат** - финальный PNG для всех размеров (4n-9n)
+1. **Получение SVG** - через `EmojiService.fetchEmojiSvg(emoji)`
+2. **Растеризация** - через `EmojiService.rasterizeEmoji(svgBuffer, options)`
+3. **Генерация фона** - solid/linear/radial gradient
+4. **Композиция** - наложение эмодзи на фон с учетом размера
+5. **Возврат** - финальный PNG для всех размеров (4n-9n)
+
+### Интеграция с EmojiService
+
+```typescript
+// В EmojiGeneratorModule
+constructor(private readonly emojiService: EmojiService) {}
+
+async generateEmojiAvatar(emoji: string) {
+  // Получить SVG через EmojiService
+  const svgBuffer = await this.emojiService.fetchEmojiSvg(emoji);
+  
+  // Растеризовать через EmojiService
+  const pngBuffer = await this.emojiService.rasterizeEmoji(svgBuffer, {
+    width: emojiPixelSize,
+    height: emojiPixelSize,
+    format: 'png'
+  });
+  
+  // Использовать для композиции
+  return this.compositeEmojiOnBackground(backgroundBuffer, pngBuffer);
+}
+```
 
 ### Размеры эмодзи
 
@@ -156,6 +188,33 @@ interface IGeneratorStrategy {
 **Статусы:**
 - `healthy` - все сервисы доступны
 - `unhealthy` - один или более сервисов недоступны
+
+### Интеграция с EmojiService
+
+Health check использует `EmojiService.checkTwemojiAvailability()` для проверки доступности Twemoji CDN:
+
+```typescript
+// В AvatarService
+async healthCheck() {
+  const dbHealth = await this.avatarRepository.count();
+  const twemojiAvailable = await this.emojiService.checkTwemojiAvailability();
+  
+  if (!twemojiAvailable) {
+    this.logger.warn('Twemoji CDN is not available - emoji avatar generation may fail');
+  }
+  
+  return {
+    database: dbHealth,
+    status: dbHealth && twemojiAvailable ? 'healthy' : 'unhealthy',
+    services: {
+      twemoji: {
+        available: twemojiAvailable,
+        lastChecked: new Date(),
+      },
+    },
+  };
+}
+```
 
 ## Хранение данных
 

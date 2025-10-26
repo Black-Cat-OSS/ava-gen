@@ -208,6 +208,7 @@
       "randomPalette": "Случайная палитра",
       "generateSeed": "Сгенерировать фразу",
       "currentPalette": "Текущая палитра",
+      "colorPalette": "Цветовая палитра",
       "loadingColorPalettes": "Загрузка цветовых палитр...",
       "failedToLoadColorPalettes": "Не удалось загрузить цветовые палитры",
       "loadMore": "Загрузить ещё",

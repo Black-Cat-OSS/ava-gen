@@ -161,26 +161,36 @@ export const EmojiAvatarGeneratorForm: React.FC<EmojiAvatarGeneratorFormProps> =
         </p>
       </div>
 
-      <div className="border border-border rounded-lg p-6 bg-card">
-        <ErrorBoundary fallback={<ColorPaletteError />}>
-          <Suspense fallback={<ColorPaletteSkeleton />}>
-            <ColorPaletteProviderSuspense
-              initialScheme="default"
-              onPaletteChange={(paletteKey, palette) => {
-                if (paletteKey === 'default') {
-                  props.onFormDataChange('primaryColor', '#3b82f6');
-                  props.onFormDataChange('foreignColor', '#ef4444');
-                } else if (palette) {
-                  props.onFormDataChange('primaryColor', palette.primaryColor);
-                  props.onFormDataChange('foreignColor', palette.foreignColor);
+      <ErrorBoundary fallback={<ColorPaletteError />}>
+        <Suspense fallback={<ColorPaletteSkeleton />}>
+          <ColorPaletteProviderSuspense
+            initialScheme="default"
+            onPaletteChange={(paletteKey, palette) => {
+              if (paletteKey === 'default') {
+                props.onFormDataChange('primaryColor', '#3b82f6');
+                props.onFormDataChange('foreignColor', '#ef4444');
+              } else if (palette) {
+                // Ensure we're getting hex colors, not color names
+                const primaryHex = palette.primaryColor?.startsWith('#') 
+                  ? palette.primaryColor 
+                  : undefined;
+                const foreignHex = palette.foreignColor?.startsWith('#') 
+                  ? palette.foreignColor 
+                  : undefined;
+                
+                if (primaryHex) {
+                  props.onFormDataChange('primaryColor', primaryHex);
                 }
-              }}
-            >
-              <EmojiAvatarGeneratorFormInternal {...props} />
-            </ColorPaletteProviderSuspense>
-          </Suspense>
-        </ErrorBoundary>
-      </div>
+                if (foreignHex) {
+                  props.onFormDataChange('foreignColor', foreignHex);
+                }
+              }
+            }}
+          >
+            <EmojiAvatarGeneratorFormInternal {...props} />
+          </ColorPaletteProviderSuspense>
+        </Suspense>
+      </ErrorBoundary>
     </div>
   );
 };

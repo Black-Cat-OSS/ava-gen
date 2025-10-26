@@ -10,6 +10,7 @@ import { StorageService } from '../storage/storage.service';
 import { GeneratorService } from './modules/generator/generator.service';
 import { FilterService } from './pipelines/filters/filter.service';
 import { CacheService } from '../cache/cache.service';
+import { EmojiService } from '../emoji';
 import { GenerateAvatarDto, GetAvatarDto, ListAvatarsDto } from './dto/generate-avatar.dto';
 import { GenerateAvatarV2Dto } from './dto/generate-avatar-v2.dto';
 import { GenerateAvatarV3Dto } from './dto/generate-avatar-v3.dto';
@@ -28,6 +29,7 @@ export class AvatarService {
     private readonly storageService: StorageService,
     private readonly filterService: FilterService,
     private readonly cacheService: CacheService,
+    private readonly emojiService: EmojiService,
     private readonly palettesService: PalettesService,
   ) {}
 
@@ -400,15 +402,15 @@ export class AvatarService {
     // Простая проверка подключения к репозиторию
     const dbHealth = await this.avatarRepository.count();
     
-    // Проверка доступности Twemoji CDN
-    const twemojiAvailable = await this.avatarGenerator.checkTwemojiAvailability();
+    // Проверка доступности Twemoji CDN через EmojiService
+    const twemojiAvailable = await this.emojiService.checkTwemojiAvailability();
     
     if (!twemojiAvailable) {
       this.logger.warn('Twemoji CDN is not available - emoji avatar generation may fail');
     }
 
     const overallStatus = dbHealth && twemojiAvailable ? 'healthy' : 'unhealthy';
-    
+
     return {
       database: dbHealth,
       status: overallStatus,
