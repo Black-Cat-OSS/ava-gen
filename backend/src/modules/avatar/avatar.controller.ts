@@ -116,13 +116,6 @@ export class AvatarController {
   @UsePipes(new ValidationPipe({ transform: true }))
   async getAvatar(@Param('id') id: string, @Query() dto: GetAvatarDto, @Res() res: Response) {
     try {
-      // If metadata=true, return JSON metadata
-      if (dto.metadata) {
-        const metadata = await this.avatarService.getAvatarMetadata(id);
-        return res.json(metadata);
-      }
-
-      // Otherwise return image
       const result = await this.avatarService.getAvatar(id, dto);
 
       // Генерируем ETag на основе ID и версии аватара
