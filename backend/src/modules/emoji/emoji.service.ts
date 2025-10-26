@@ -18,7 +18,18 @@ export class EmojiService {
    * @returns Array of codepoint strings
    */
   private getEmojiCodepoints(emoji: string): string[] {
-    return [...emoji].map(char => char.codePointAt(0).toString(16));
+    const codePoints: string[] = [];
+    for (let i = 0; i < emoji.length; i++) {
+      const codePoint = emoji.codePointAt(i);
+      if (codePoint !== undefined) {
+        codePoints.push(codePoint.toString(16));
+        // Skip the next character if this is a surrogate pair
+        if (codePoint > 0xffff) {
+          i++;
+        }
+      }
+    }
+    return codePoints;
   }
 
   /**
@@ -53,7 +64,21 @@ export class EmojiService {
       const svgUrl = `${this.twemojiBaseUrl}${filename}.svg`;
       this.logger.debug(`Fetching emoji SVG from: ${svgUrl}`);
 
-      const response = await fetch(svgUrl);
+      let response = await fetch(svgUrl);
+      
+      // If the emoji with variation selector is not found, try without it
+      if (!response.ok && emoji.includes('\uFE0F')) {
+        const emojiWithoutVS = emoji.replace(/\uFE0F/g, '');
+        const fallbackFilename = this.getEmojiFilename(emojiWithoutVS);
+        const fallbackUrl = `${this.twemojiBaseUrl}${fallbackFilename}.svg`;
+        this.logger.debug(`Trying fallback without variation selector: ${fallbackUrl}`);
+        
+        response = await fetch(fallbackUrl);
+        if (response.ok) {
+          this.logger.debug(`Successfully fetched emoji without variation selector`);
+        }
+      }
+      
       if (!response.ok) {
         this.logger.error(
           `Failed to fetch emoji SVG from ${svgUrl}: ${response.status} ${response.statusText}`,
@@ -73,7 +98,7 @@ export class EmojiService {
         });
       }
 
-      this.logger.debug(`Successfully fetched SVG for emoji: ${emoji} from ${svgUrl}`);
+      this.logger.debug(`Successfully fetched SVG for emoji: ${emoji}`);
       return svgBuffer;
     } catch (error) {
       this.logger.error(`Failed to fetch emoji SVG for ${emoji}: ${error.message}`);
