@@ -5,6 +5,7 @@ import { PixelizeGeneratorModule } from '../pixelize-driver';
 import { WaveGeneratorModule } from '../wave-driver';
 import { GradientGeneratorModule } from '../gradient-driver/gradient-generator.module';
 import { EmojiGeneratorModule } from '../emoji-driver';
+import { EmojiService } from '../../../emoji';
 
 /**
  * Главный сервис генерации аватаров
@@ -23,6 +24,7 @@ export class GeneratorService {
     private readonly waveGenerator: WaveGeneratorModule,
     private readonly gradientGenerator: GradientGeneratorModule,
     private readonly emojiGenerator: EmojiGeneratorModule,
+    private readonly emojiService: EmojiService,
   ) {}
 
   async generateAvatar(
@@ -62,7 +64,7 @@ export class GeneratorService {
   }
 
   async checkTwemojiAvailability(): Promise<boolean> {
-    return await this.emojiGenerator.checkTwemojiAvailability();
+    return await this.emojiService.checkTwemojiAvailability();
   }
 
   getColorSchemes(

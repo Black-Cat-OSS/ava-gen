@@ -3,6 +3,7 @@ import { ConfigModule } from '../../config/config.module';
 import { LoggerModule } from '../logger/logger.module';
 import { DatabaseModule } from '../database';
 import { InitializationModule } from '../initialization';
+import { EmojiModule } from '../emoji';
 import { AvatarModule } from '../avatar/avatar.module';
 import { HealthModule } from '../health';
 import { CorsMiddlewareModule } from '../../middleware';
@@ -22,6 +23,7 @@ import { PalettesModule } from '../palettes';
     InitializationModule,
     DatabaseModule,
     CacheModule.register(),
+    EmojiModule,
     PalettesModule,
     AvatarModule,
     HealthModule,

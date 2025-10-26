@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { EmojiGeneratorModule } from '../emoji-generator.module';
 import { Logger } from '@nestjs/common';
+import { EmojiService } from '../../../../emoji';
 
 // Mock dependencies
 vi.mock('sharp', () => ({
@@ -14,16 +15,12 @@ vi.mock('sharp', () => ({
   })),
 }));
 
-vi.mock('twemoji-parser', () => ({
-  parse: vi.fn((emoji: string) => {
-    if (emoji === '😀') return ['1f600'];
-    if (emoji === '🚀') return ['1f680'];
-    return [];
-  }),
-}));
-
-// Mock fetch for Twemoji CDN
-global.fetch = vi.fn();
+// Mock EmojiService
+const mockEmojiService = {
+  fetchEmojiSvg: vi.fn(),
+  rasterizeEmoji: vi.fn(),
+  checkTwemojiAvailability: vi.fn(),
+};
 
 describe('EmojiGeneratorModule', () => {
   let emojiGenerator: EmojiGeneratorModule;
@@ -36,7 +33,7 @@ describe('EmojiGeneratorModule', () => {
       warn: vi.fn(),
     } as any;
 
-    emojiGenerator = new EmojiGeneratorModule();
+    emojiGenerator = new EmojiGeneratorModule(mockEmojiService as any);
     (emojiGenerator as any).logger = mockLogger;
 
     // Reset mocks
@@ -49,48 +46,29 @@ describe('EmojiGeneratorModule', () => {
 
   describe('checkTwemojiAvailability', () => {
     it('should return true when Twemoji CDN is available', async () => {
-      (global.fetch as any).mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-      });
+      mockEmojiService.checkTwemojiAvailability.mockResolvedValue(true);
 
       const result = await emojiGenerator.checkTwemojiAvailability();
 
       expect(result).toBe(true);
-      expect(global.fetch).toHaveBeenCalledWith(
-        'https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f600.svg',
-        { method: 'HEAD' }
-      );
+      expect(mockEmojiService.checkTwemojiAvailability).toHaveBeenCalledTimes(1);
     });
 
     it('should return false when Twemoji CDN is unavailable', async () => {
-      (global.fetch as any).mockRejectedValueOnce(new Error('Network error'));
+      mockEmojiService.checkTwemojiAvailability.mockResolvedValue(false);
 
       const result = await emojiGenerator.checkTwemojiAvailability();
 
       expect(result).toBe(false);
-    });
-
-    it('should return false when Twemoji CDN returns error status', async () => {
-      (global.fetch as any).mockResolvedValueOnce({
-        ok: false,
-        status: 404,
-      });
-
-      const result = await emojiGenerator.checkTwemojiAvailability();
-
-      expect(result).toBe(false);
+      expect(mockEmojiService.checkTwemojiAvailability).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('generateAvatar', () => {
     beforeEach(() => {
-      // Mock successful SVG fetch with proper response structure
-      (global.fetch as any).mockResolvedValueOnce({
-        ok: true,
-        arrayBuffer: () => Promise.resolve(new ArrayBuffer(8)),
-        text: () => Promise.resolve('<svg>mock-svg-content</svg>'),
-      });
+      // Mock EmojiService methods
+      mockEmojiService.fetchEmojiSvg.mockResolvedValue(Buffer.from('<svg>mock-svg-content</svg>'));
+      mockEmojiService.rasterizeEmoji.mockResolvedValue(Buffer.from('mock-rasterized-emoji'));
     });
 
     it('should generate emoji avatar with solid background', async () => {
@@ -112,6 +90,7 @@ describe('EmojiGeneratorModule', () => {
         emoji: '😀',
         backgroundType: 'solid',
         emojiSize: 'large',
+        angle: 90,
       });
       expect(result.image_4n).toBeInstanceOf(Buffer);
       expect(result.image_5n).toBeInstanceOf(Buffer);
@@ -159,14 +138,12 @@ describe('EmojiGeneratorModule', () => {
         emoji: '😀',
         backgroundType: 'radial',
         emojiSize: 'small',
+        angle: 90,
       });
     });
 
     it('should handle invalid emoji gracefully', async () => {
-      (global.fetch as any).mockResolvedValueOnce({
-        ok: false,
-        status: 404,
-      });
+      mockEmojiService.fetchEmojiSvg.mockRejectedValue(new Error('Invalid emoji'));
 
       await expect(
         emojiGenerator.generateAvatar(
@@ -179,7 +156,7 @@ describe('EmojiGeneratorModule', () => {
           'solid',
           'large'
         )
-      ).rejects.toThrow();
+      ).rejects.toThrow('Invalid emoji');
     });
 
     it('should use default values when optional parameters are not provided', async () => {
@@ -215,7 +192,7 @@ describe('EmojiGeneratorModule', () => {
 
   describe('error handling', () => {
     it('should handle network errors during SVG fetch', async () => {
-      (global.fetch as any).mockRejectedValueOnce(new Error('Network error'));
+      mockEmojiService.fetchEmojiSvg.mockRejectedValue(new Error('Network error'));
 
       await expect(
         emojiGenerator.generateAvatar(
@@ -232,11 +209,8 @@ describe('EmojiGeneratorModule', () => {
     });
 
     it('should handle invalid SVG content', async () => {
-      (global.fetch as any).mockResolvedValueOnce({
-        ok: true,
-        arrayBuffer: () => Promise.resolve(new ArrayBuffer(8)),
-        text: () => Promise.resolve('invalid-svg-content'),
-      });
+      mockEmojiService.fetchEmojiSvg.mockResolvedValue(Buffer.from('invalid-svg-content'));
+      mockEmojiService.rasterizeEmoji.mockRejectedValue(new Error('Invalid SVG'));
 
       await expect(
         emojiGenerator.generateAvatar(
@@ -249,7 +223,7 @@ describe('EmojiGeneratorModule', () => {
           'solid',
           'large'
         )
-      ).rejects.toThrow();
+      ).rejects.toThrow('Invalid SVG');
     });
   });
 });

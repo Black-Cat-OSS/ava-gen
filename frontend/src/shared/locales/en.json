@@ -208,6 +208,7 @@
       "randomPalette": "Random palette",
       "generateSeed": "Generate phrase",
       "currentPalette": "Current Palette",
+      "colorPalette": "Color Palette",
       "loadingColorPalettes": "Loading color palettes...",
       "failedToLoadColorPalettes": "Failed to load color palettes",
       "loadMore": "Load More",

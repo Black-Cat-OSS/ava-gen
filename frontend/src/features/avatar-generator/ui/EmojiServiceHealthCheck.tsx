@@ -5,14 +5,10 @@ import { Callout } from '@/shared/ui/components/Callout';
 import type { EmojiServiceHealthCheckProps } from '../types';
 
 interface HealthCheckResponse {
-  database: number;
-  status: 'healthy' | 'unhealthy';
-  services: {
-    twemoji: {
-      available: boolean;
-      lastChecked: string;
-    };
-  };
+  available: boolean;
+  lastChecked: string;
+  responseTime?: number;
+  error?: string;
 }
 
 /**
@@ -36,10 +32,10 @@ export const EmojiServiceHealthCheck: React.FC<EmojiServiceHealthCheckProps> = (
   const checkHealth = async () => {
     try {
       setIsChecking(true);
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || ''}/api/health`);
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || ''}/api/emoji/health`);
       const health: HealthCheckResponse = await response.json();
       
-      const twemojiAvailable = health.services?.twemoji?.available ?? false;
+      const twemojiAvailable = health.available ?? false;
       setIsHealthy(twemojiAvailable);
       setLastChecked(new Date());
       
