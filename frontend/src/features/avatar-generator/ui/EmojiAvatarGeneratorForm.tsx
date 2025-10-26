@@ -11,7 +11,6 @@ import { EmojiPickerComponent } from './EmojiPicker';
 import { BackgroundTypeSelector } from './BackgroundTypeSelector';
 import { EmojiSizeSelector } from './EmojiSizeSelector';
 import { AnglePresets } from './AnglePresets';
-import { EmojiBackgroundPreview } from './EmojiBackgroundPreview';
 import { avatarApi, type GenerateAvatarResponse } from '@/shared/api';
 import { useAvatarGeneratorContext } from '../contexts';
 import type { EmojiAvatarGeneratorFormProps } from '../types';
@@ -132,25 +131,6 @@ const EmojiAvatarGeneratorFormInternal: React.FC<EmojiAvatarGeneratorFormProps> 
         onSizeSelect={(size) => handleInputChange('emojiSize', size)}
         disabled={disabled}
       />
-
-      {/* Background Preview */}
-      <div className="space-y-3">
-        <label className="block text-sm font-medium text-foreground">
-          {t('features.avatarGenerator.preview')}
-        </label>
-        <EmojiBackgroundPreview
-          primaryColor={formData.primaryColor}
-          foreignColor={formData.foreignColor}
-          backgroundType={formData.backgroundType}
-          angle={formData.angle}
-        />
-        <div className="text-center">
-          <div className="text-4xl">{formData.emoji}</div>
-          <p className="text-xs text-muted-foreground mt-2">
-            {formData.backgroundType} • {formData.emojiSize}
-          </p>
-        </div>
-      </div>
 
       {/* Generate Button */}
       <Button
