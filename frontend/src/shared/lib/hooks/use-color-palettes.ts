@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { apiClient } from '@/shared/api';
+import { apiClient } from '@/shared/lib/utils/api-client';
 import type { PaletteResponse } from '@/shared/api/avatar';
 
 /**

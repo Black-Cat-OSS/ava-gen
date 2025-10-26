@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ThemeProviderContext } from './theme-context';
+import { ThemeProviderContext } from '../../shared/lib/hooks/theme-context';
 
 type Theme = 'dark' | 'light' | 'system';
 
@@ -30,7 +30,6 @@ export function ThemeProvider({
 
       root.classList.add(systemTheme);
       
-      // Слушаем изменения системной темы
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
       const handleChange = () => {
         root.classList.remove('light', 'dark');

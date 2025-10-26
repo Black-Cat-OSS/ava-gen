@@ -17,3 +17,4 @@ export type { SwitchProps } from './Switch';
 export { AngleVisualizer } from '../angle-visualizer';
 export { ErrorBoundary } from './ErrorBoundary';
 export type { ErrorBoundaryProps } from './ErrorBoundary';
+export { FailImage } from './FailImage'
