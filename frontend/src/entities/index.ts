@@ -1,2 +1,1 @@
-export * from './user';
-export * from './counter';
+export type { Avatar } from './avatar';

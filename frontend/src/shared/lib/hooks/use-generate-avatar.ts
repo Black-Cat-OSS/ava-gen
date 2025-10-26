@@ -7,7 +7,6 @@ export const useGenerateAvatar = () => {
   return useMutation({
     mutationFn: (params: GenerateAvatarParams) => avatarApi.generate(params),
     onSuccess: () => {
-      // Инвалидируем кеш списка аватаров, чтобы показать новый аватар
       queryClient.invalidateQueries({ queryKey: ['avatars'] });
     },
   });

@@ -1,16 +1,6 @@
-import { apiClient } from './index';
-
-export interface Avatar {
-  id: string;
-  name: string;
-  createdAt: string;
-  version: string;
-  primaryColor?: string;
-  foreignColor?: string;
-  colorScheme?: string;
-  seed?: string;
-  generatorType?: string;
-}
+import type { Avatar } from '@/entities';
+import { apiClient } from '@/shared/lib/utils/api-client';
+import type { ApiPagination } from './api';
 
 export interface ListAvatarsResponse {
   avatars: Avatar[];
@@ -25,37 +15,6 @@ export interface ListAvatarsResponse {
 export interface ListAvatarsParams {
   pick?: number;
   offset?: number;
-}
-
-export interface GenerateAvatarParams {
-  primaryColor?: string;
-  foreignColor?: string;
-  colorScheme?: string;
-  seed?: string;
-  type?: string;
-  angle?: number;
-}
-
-export interface GenerateEmojiAvatarParams {
-  emoji: string;
-  backgroundType: 'solid' | 'linear' | 'radial';
-  primaryColor?: string;
-  foreignColor?: string;
-  angle?: number;
-  emojiSize?: 'small' | 'medium' | 'large';
-}
-
-export interface GenerateAvatarResponse {
-  id: string;
-  name: string;
-  filePath: string;
-  createdAt: string;
-  version: string;
-  primaryColor?: string;
-  foreignColor?: string;
-  colorScheme?: string;
-  seed?: string;
-  generatorType?: string;
 }
 
 export interface PaletteResponse {
@@ -74,10 +33,22 @@ export interface PaletteResponse {
 }
 
 export const avatarApi = {
-  list: async (params: ListAvatarsParams = {}): Promise<ListAvatarsResponse> => {
+  getAll: async (pick: number, offset: number): Promise<ApiPagination<Avatar>> => {
     const searchParams = new URLSearchParams();
-    if (params.pick) searchParams.append('pick', params.pick.toString());
-    if (params.offset) searchParams.append('offset', params.offset.toString());
+    if (pick) searchParams.append('pick', pick.toString());
+    if (offset) searchParams.append('offset', offset.toString());
+
+    const query = searchParams.toString();
+    const endpoint = query ? `/api/list?${query}` : '/api/list';
+
+    const response = await apiClient.get<ApiPagination<Avatar>>(endpoint);
+    return response.data;
+  },
+
+  list: async (params?: ListAvatarsParams): Promise<ListAvatarsResponse> => {
+    const searchParams = new URLSearchParams();
+    if (params?.pick) searchParams.append('pick', params.pick.toString());
+    if (params?.offset) searchParams.append('offset', params.offset.toString());
 
     const query = searchParams.toString();
     const endpoint = query ? `/api/list?${query}` : '/api/list';
@@ -86,67 +57,72 @@ export const avatarApi = {
     return response.data;
   },
 
+  getById: async (id: string): Promise<Avatar> => {
+    const response = await apiClient.get<Avatar>(`/api/${id}`);
+    return response.data;
+  },
+
+  post: async (data: Avatar): Promise<Avatar> => {
+    const response = await apiClient.post<Avatar>('/api', data);
+    return response.data;
+  },
+
+  put: async (id: string, data: Avatar): Promise<Avatar> => {
+    const response = await apiClient.put<Avatar>(`/api/${id}`, data);
+    return response.data;
+  },
+
+  delete: async (id: string): Promise<void> => {
+    await apiClient.delete<void>(`/api/${id}`);
+  },
+
   generate: async (params: GenerateAvatarParams): Promise<GenerateAvatarResponse> => {
-    const endpoint = params.type === 'gradient' ? '/api/v2/generate' : '/api/v1/generate';
-    
-    let requestParams: Omit<GenerateAvatarParams, 'type'> | Omit<GenerateAvatarParams, 'angle'>;
-    if (params.type === 'gradient') {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { type, seed, ...v2Params } = params;
-      requestParams = v2Params;
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { angle, ...v1Params } = params;
-      requestParams = v1Params;
-    }
-    
-    const response = await apiClient.post<GenerateAvatarResponse>(endpoint, requestParams);
+    const response = await apiClient.post<GenerateAvatarResponse>('/api/v1/generate', params);
     return response.data;
   },
 
   generateEmoji: async (params: GenerateEmojiAvatarParams): Promise<GenerateAvatarResponse> => {
-    const endpoint = '/api/v3/generate';
-    const response = await apiClient.post<GenerateAvatarResponse>(endpoint, params);
+    const response = await apiClient.post<GenerateAvatarResponse>('/api/v3/generate', params);
     return response.data;
   },
 
   getImageUrl: (id: string, filter?: string, size?: number): string => {
-    const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:3000';
     const params = new URLSearchParams();
-    
-    if (filter && filter.trim() !== '') {
-      params.append('filter', filter);
-    }
-    
-    if (size) {
-      const sizeExponent = Math.log2(size);
-      if (Number.isInteger(sizeExponent) && sizeExponent >= 4 && sizeExponent <= 9) {
-        params.append('size', sizeExponent.toString());
-      } else {
-        const nearestExponent = Math.round(sizeExponent);
-        if (nearestExponent >= 4 && nearestExponent <= 9) {
-          params.append('size', nearestExponent.toString());
-        }
-      }
-    }
-
+    if (filter) params.append('filter', filter);
+    if (size) params.append('size', size.toString());
     const query = params.toString();
-    return query ? `${baseUrl}/api/${id}?${query}` : `${baseUrl}/api/${id}`;
+    return `/api/${id}${query ? `?${query}` : ''}`;
   },
 
-  delete: async (id: string): Promise<{ message: string }> => {
-    const response = await apiClient.delete<{ message: string }>(`/api/${id}`);
+  getColorPalettes: async (): Promise<PaletteResponse> => {
+    const response = await apiClient.get<PaletteResponse>('/api/palettes');
     return response.data;
   },
-
-  getColorPalettes: async (): Promise<Array<{
-    name: string;
-    primaryColor: string;
-    foreignColor: string;
-    key: string;
-  }>> => {
-    const response = await apiClient.get<PaletteResponse>('/api/palettes?pick=100&offset=0');
-    
-    return response.data.palettes;
-  },
 };
+
+export interface GenerateAvatarParams {
+  seed?: string;
+  type?: string;
+  primaryColor?: string;
+  foreignColor?: string;
+  colorScheme?: string;
+}
+
+export interface GenerateAvatarResponse {
+  id: string;
+  name: string;
+  filePath: string;
+  createdAt: string;
+  version: string;
+  generatorType?: string;
+}
+
+export interface GenerateEmojiAvatarParams {
+  emoji: string;
+  backgroundType: 'solid' | 'linear' | 'radial';
+  angle?: number;
+  emojiSize?: 'small' | 'medium' | 'large';
+  primaryColor?: string;
+  foreignColor?: string;
+  colorScheme?: string;
+}

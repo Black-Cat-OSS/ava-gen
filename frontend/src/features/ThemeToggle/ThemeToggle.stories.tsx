@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { ThemeToggle } from './ThemeToggle';
-import { ThemeProvider } from '@/shared/lib/hooks/theme-provider';
+import { ThemeProvider } from '@/app/providers/theme-provider';
 
 const meta: Meta<typeof ThemeToggle> = {
   title: 'Features/ThemeToggle',
