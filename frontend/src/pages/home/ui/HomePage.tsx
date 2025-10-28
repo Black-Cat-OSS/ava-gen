@@ -1,22 +1,31 @@
 import { useState, useEffect } from 'react';
 import { useAvatars } from '@/shared/lib';
-import { AvatarWallpaper, AvatarControls, AvatarGallery, LoadMoreButton, AvatarGalleryProvider } from './';
+import {
+  AvatarWallpaper,
+  AvatarControls,
+  AvatarGallery,
+  LoadMoreButton,
+  AvatarGalleryProvider,
+} from './';
 import { AvatarPreviewShowcase } from '@/features/avatar-preview-showcase';
-import type { Avatar } from '@/shared/api';
+import type { Avatar } from '@/entities';
 
 export const HomePage = () => {
   const [offset, setOffset] = useState(0);
   const [allAvatars, setAllAvatars] = useState<Avatar[]>([]);
   const [hasMore, setHasMore] = useState(true);
 
-  const { data, isLoading, isError, error, refetch, isRefetching } = useAvatars({ pick: 10, offset });
+  const { data, isLoading, isError, error, refetch, isRefetching } = useAvatars({
+    pick: 10,
+    offset,
+  });
 
   useEffect(() => {
     if (data) {
       if (offset === 0) {
-        setAllAvatars(data.avatars);
+        setAllAvatars(data.items);
       } else {
-        setAllAvatars(prev => [...prev, ...data.avatars]);
+        setAllAvatars(prev => [...prev, ...data.items]);
       }
       setHasMore(data.pagination.hasMore);
     }
@@ -37,7 +46,7 @@ export const HomePage = () => {
   };
 
   const showLoadMore = allAvatars.length > 0 && hasMore && !isLoading && !isRefetching;
-  
+
   const isInitialLoading = isLoading && allAvatars.length === 0;
   const isLoadingMore = isLoading && allAvatars.length > 0;
 
@@ -68,7 +77,6 @@ export const HomePage = () => {
           {showLoadMore && <LoadMoreButton />}
         </AvatarGalleryProvider>
 
-        {/* Avatar Preview Showcase */}
         <AvatarPreviewShowcase />
       </div>
     </div>

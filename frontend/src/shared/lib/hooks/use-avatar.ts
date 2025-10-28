@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
-import { avatarApi } from '../../api/avatar';
+import { AvatarApi } from '@/shared/api';
 
 export const useAvatar = (id: string) => {
   return useQuery({
     queryKey: ['avatar', id],
-    queryFn: () => avatarApi.getById(id),
+    queryFn: () => AvatarApi.getById(id),
   });
 };

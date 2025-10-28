@@ -1,24 +1,8 @@
 import { Switch } from '@/shared/ui/components';
-import { useAvatarShape } from '../hooks';
-import { useLocalTranslations } from '../hooks/useLocalTranslations';
-
-/**
- * Circle icon for avatar shape toggle
- */
-const CircleIcon = () => (
-  <svg viewBox="0 0 24 24" className="w-5 h-5">
-    <circle cx="12" cy="12" r="8" stroke="currentColor" fill="none" strokeWidth="2" />
-  </svg>
-);
-
-/**
- * Square icon for avatar shape toggle
- */
-const SquareIcon = () => (
-  <svg viewBox="0 0 24 24" className="w-5 h-5">
-    <rect x="6" y="6" width="12" height="12" stroke="currentColor" fill="none" strokeWidth="2" rx="2" />
-  </svg>
-);
+import { useAvatarShape } from '@/features/avatar-preview-showcase/hooks';
+import { useLocalTranslations } from '@/features/avatar-preview-showcase/hooks/useLocalTranslations';
+import { CircleIcon } from './CircleIcon';
+import { SquareIcon } from './SquareIcon';
 
 /**
  * AvatarShapeToggle component - toggle between circular and square avatar shapes

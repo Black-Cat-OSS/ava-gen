@@ -1,0 +1,1 @@
+export { ForumPostPreview } from './ui';

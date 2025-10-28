@@ -1,4 +1,3 @@
-// Common form field types
 export type FormFieldError = {
   message: string;
   type?: string;
@@ -10,7 +9,6 @@ export type FormState = {
   isValid: boolean;
 };
 
-// Simple validation functions
 export const validateEmail = (email: string): string | null => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email) ? null : 'Invalid email address';
