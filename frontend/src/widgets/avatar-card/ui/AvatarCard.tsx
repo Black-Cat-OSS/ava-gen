@@ -1,6 +1,9 @@
 import { Link } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
-import { avatarApi } from '@/shared/api';
+import { AvatarApi } from '@/shared/api';
+import { useEffect, useState } from 'react';
+import type { Avatar } from '@/entities';
+import { FailImage } from '@/shared';
 
 interface AvatarCardProps {
   avatar: {
@@ -19,27 +22,23 @@ interface AvatarCardProps {
   className?: string;
 }
 
-export const AvatarCard = ({
-  avatar,
-  showDetails = true,
-  imageSize,
-  imageFilter,
-  className = '',
-}: AvatarCardProps) => {
+export const AvatarCard = ({ avatar, showDetails = true, className = '' }: AvatarCardProps) => {
   const { t } = useTranslation();
+
+  const [avatarData, setAvatarData] = useState<Avatar | null>(null);
+
+  useEffect(() => {
+    AvatarApi.getById(avatar.id).then(setAvatarData);
+  }, [avatar.id]);
 
   return (
     <div className={`border rounded-lg p-4 bg-card hover:shadow-lg transition-shadow ${className}`}>
       <div className="aspect-square bg-muted rounded-md mb-3 overflow-hidden">
         <img
-          src={avatarApi.getImageUrl(avatar.id, imageFilter, imageSize)}
+          src={avatarData?.id}
           alt={avatar.name}
           className="w-full h-full object-cover"
-          onError={e => {
-            const target = e.target as HTMLImageElement;
-            target.src =
-              'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23ddd" width="200" height="200"/%3E%3Ctext fill="%23999" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3ENo Image%3C/text%3E%3C/svg%3E';
-          }}
+          onError={() => <FailImage />}
         />
       </div>
 

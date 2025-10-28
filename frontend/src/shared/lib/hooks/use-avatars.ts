@@ -1,15 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
-import { avatarApi, type ListAvatarsParams } from '../../api/avatar';
+import { AvatarApi } from '../../api/avatar';
+import type { avatarTypes } from '@/shared/api';
 
-export const useAvatars = (params?: ListAvatarsParams) => {
-  const query = useQuery({
+export const useAvatars = (params: avatarTypes.ListAvatarsParams) => {
+  return useQuery({
     queryKey: ['avatars', params],
-    queryFn: () => avatarApi.list(params),
+    queryFn: () => AvatarApi.getAll(params.pick, params.offset),
   });
-
-  return {
-    ...query,
-    refetch: query.refetch,
-    isRefetching: query.isRefetching,
-  };
 };

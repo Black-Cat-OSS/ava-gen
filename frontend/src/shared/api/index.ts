@@ -1,2 +1,6 @@
-export { avatarApi, type GenerateAvatarParams, type GenerateAvatarResponse, type GenerateEmojiAvatarParams } from './avatar';
-export { type GeneratorApi } from './generator';
+export { AvatarApi } from './avatar';
+export { GeneratorApi } from './generator';
+export { PaletteApi } from './palletes';
+export * as generatorTypes from './generator/types';
+export * as avatarTypes from './avatar/types';
+export * as paletteTypes from './palletes/types';
