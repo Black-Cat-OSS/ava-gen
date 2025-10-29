@@ -7,8 +7,9 @@ import {
   EmojiAvatarGeneratorForm,
   EmojiServiceHealthCheck
 } from '@/features/avatar-generator';
-import { Button } from '@/shared/ui';
 import type { EmojiAvatarFormData } from '@/features/avatar-generator/types';
+import { Button, Card, Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui';
+import { Description } from './Description';
 
 type GeneratorType = 'classic' | 'emoji';
 
@@ -44,8 +45,35 @@ export const AvatarGeneratorPage = () => {
             <p className="text-muted-foreground">{t('pages.avatarGenerator.subtitle')}</p>
           </div>
 
-          {/* Generator Type Tabs */}
-          <div className="mb-6">
+          <Tabs defaultValue="classic" className="mb-6">
+            <TabsList className="bg-stone-900 rounded-lg p-1 mb-3">
+              <TabsTrigger className="text-white data-[state=active]:bg-blue-600" value="classic">
+                Classic
+              </TabsTrigger>
+              <TabsTrigger className="text-white data-[state=active]:bg-blue-600" value="emoji">
+                Emoji
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="classic">
+              <Card>
+                <AvatarGeneratorForm />
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="emoji">
+              <Card>
+                <EmojiServiceHealthCheck>
+                  <EmojiAvatarGeneratorForm
+                    formData={emojiFormData}
+                    onFormDataChange={handleEmojiFormDataChange}
+                  />
+                </EmojiServiceHealthCheck>
+              </Card>
+            </TabsContent>
+          </Tabs>
+
+          {/* <div className="mb-6">
             <div className="flex space-x-1 bg-muted p-1 rounded-lg">
               <Button
                 variant={generatorType === 'classic' ? 'default' : 'ghost'}
@@ -75,14 +103,12 @@ export const AvatarGeneratorPage = () => {
                 />
               </EmojiServiceHealthCheck>
             )}
-          </div>
+          </div> */}
 
           {/* Avatar Link Copy Section - separate from form */}
           <AvatarLinkCopySection />
 
-          <div className="mt-8 text-center">
-            <p className="text-sm text-muted-foreground">{t('pages.avatarGenerator.description')}</p>
-          </div>
+          <Description />
         </div>
       </div>
     </AvatarGeneratorProvider>
