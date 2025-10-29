@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAvatars } from '@/shared/lib';
 import {
   AvatarWallpaper,
@@ -8,28 +8,14 @@ import {
   AvatarGalleryProvider,
 } from './';
 import { AvatarPreviewShowcase } from '@/features/avatar-preview-showcase';
-import type { Avatar } from '@/entities';
 
 export const HomePage = () => {
   const [offset, setOffset] = useState(0);
-  const [allAvatars, setAllAvatars] = useState<Avatar[]>([]);
-  const [hasMore, setHasMore] = useState(true);
 
-  const { data, isLoading, isError, error, refetch, isRefetching } = useAvatars({
+  const { data, isError, error, refetch, isRefetching } = useAvatars({
     pick: 10,
     offset,
   });
-
-  useEffect(() => {
-    if (data) {
-      if (offset === 0) {
-        setAllAvatars(data.items);
-      } else {
-        setAllAvatars(prev => [...prev, ...data.items]);
-      }
-      setHasMore(data.pagination.hasMore);
-    }
-  }, [data, offset]);
 
   const handleLoadMore = () => {
     setOffset(prevOffset => prevOffset + 10);
@@ -38,27 +24,19 @@ export const HomePage = () => {
   const handleRefresh = async () => {
     try {
       setOffset(0);
-      setHasMore(true);
       await refetch();
     } catch {
       //TODO: add error handling
     }
   };
 
-  const showLoadMore = allAvatars.length > 0 && hasMore && !isLoading && !isRefetching;
-
-  const isInitialLoading = isLoading && allAvatars.length === 0;
-  const isLoadingMore = isLoading && allAvatars.length > 0;
-
   const contextValue = {
-    avatars: allAvatars,
-    isLoading: isInitialLoading,
-    isLoadingMore,
+    avatars: data?.items ?? [],
     isError,
     isRefreshing: isRefetching,
     error,
-    totalCount: data?.pagination.total ?? allAvatars.length,
-    hasMore,
+    totalCount: data?.pagination.total ?? 0,
+    hasMore: data?.pagination.hasMore ?? false,
     onRefresh: handleRefresh,
     onLoadMore: handleLoadMore,
   };
@@ -70,11 +48,11 @@ export const HomePage = () => {
 
         <AvatarGalleryProvider value={contextValue}>
           <div className="mb-8">
-            {allAvatars.length > 0 && <AvatarControls />}
+            {data?.items && data?.items.length > 0 && <AvatarControls />}
             <AvatarGallery />
           </div>
 
-          {showLoadMore && <LoadMoreButton />}
+          {data?.pagination.hasMore && <LoadMoreButton />}
         </AvatarGalleryProvider>
 
         <AvatarPreviewShowcase />

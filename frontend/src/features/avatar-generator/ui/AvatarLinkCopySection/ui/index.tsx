@@ -1,4 +1,4 @@
-import { useAvatarGeneratorContext } from '../contexts';
+import { useAvatarGeneratorContext } from '@/features/avatar-generator/contexts';
 import { AvatarLinkCopy } from '@/features/avatar-link-copy';
 import { useLocalTranslations } from '@/features/avatar-link-copy/hooks';
 
@@ -7,7 +7,6 @@ import { useLocalTranslations } from '@/features/avatar-link-copy/hooks';
  * Uses context to get generated avatar data
  */
 export const AvatarLinkCopySection = () => {
-  // Load translations for avatar link copy
   useLocalTranslations();
   const { generatedAvatar } = useAvatarGeneratorContext();
 
@@ -17,11 +16,7 @@ export const AvatarLinkCopySection = () => {
 
   return (
     <div className="mt-6">
-      <AvatarLinkCopy
-        avatarId={generatedAvatar.id}
-        size={128}
-        filter=""
-      />
+      <AvatarLinkCopy avatarId={generatedAvatar.id} size={128} filter="" />
     </div>
   );
 };

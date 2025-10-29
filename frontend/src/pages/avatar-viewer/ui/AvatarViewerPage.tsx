@@ -2,8 +2,6 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearch } from '@tanstack/react-router';
 import { Button, FailImage } from '@/shared/ui';
-import { useAvatars } from '@/shared/lib';
-import { avatarApi } from '@/shared/api';
 import { Link } from '@tanstack/react-router';
 import { AvatarLinkCopy } from '@/features/avatar-link-copy';
 import { useLocalTranslations } from '@/features/avatar-link-copy/hooks';
@@ -11,17 +9,16 @@ import { AVAILABLE_SIZES, AVAILABLE_FILTERS } from '../constants';
 import { ErrorBoundary } from './ErrorBoundary';
 import { NotFound } from './NotFound';
 import { AvatarInformation } from './AvatarInformation';
+import { useAvatar } from '@/shared/lib/hooks/use-avatar';
 
 export const AvatarViewerPage = () => {
   useLocalTranslations();
   const { t } = useTranslation();
   const search = useSearch({ from: '/avatar-viewer' });
-  const { data, isLoading, isError, error } = useAvatars({ pick: 100 });
+  const { data: avatar, isLoading, isError, error } = useAvatar(search.id || '');
 
   const [size, setSize] = useState(128);
   const [filter, setFilter] = useState('');
-
-  const avatar = data?.avatars?.find(a => a.id === search.id);
 
   const selectedSizeLabel = AVAILABLE_SIZES.find(s => s.value === size)?.label || `${size}px`;
 
@@ -47,13 +44,9 @@ export const AvatarViewerPage = () => {
           </div>
         )}
 
-        {isError && (
-          <ErrorBoundary error={error} />
-        )}
+        {isError && <ErrorBoundary error={error} />}
 
-        {data && !avatar && search.id && (
-          <NotFound />
-        )}
+        {!avatar && search.id && <NotFound />}
 
         {!search.id && (
           <div className="text-center py-8">
@@ -84,7 +77,7 @@ export const AvatarViewerPage = () => {
                     }}
                   >
                     <img
-                      src={avatarApi.getImageUrl(avatar.id, filter, size)}
+                      src={avatar.id}
                       alt={avatar.name}
                       className="w-full h-full object-cover"
                       onError={() => <FailImage />}
@@ -115,7 +108,7 @@ export const AvatarViewerPage = () => {
                           onClick={() => setSize(sizeOption.value)}
                         >
                           <img
-                            src={avatarApi.getImageUrl(avatar.id, filter, sizeOption.value)}
+                            src={avatar.id}
                             alt={`${avatar.name} - ${sizeOption.label}`}
                             className="w-full h-full object-cover"
                             onError={e => {
@@ -148,7 +141,7 @@ export const AvatarViewerPage = () => {
                           onClick={() => setFilter(filterOption.value)}
                         >
                           <img
-                            src={avatarApi.getImageUrl(avatar.id, filterOption.value, 64)}
+                            src={avatar.id}
                             alt={`${avatar.name} - ${filterOption.label}`}
                             className="w-full h-full object-cover"
                             onError={e => {
@@ -167,11 +160,7 @@ export const AvatarViewerPage = () => {
             </div>
 
             <div className="mt-8">
-              <AvatarLinkCopy
-                avatarId={avatar.id}
-                size={size}
-                filter={filter}
-              />
+              <AvatarLinkCopy avatarId={avatar.id} size={size} filter={filter} />
             </div>
           </>
         )}

@@ -1,10 +1,8 @@
+import type { Avatar } from '@/entities';
 import { createContext, useContext, type ReactNode } from 'react';
-import type { Avatar } from '@/shared/api';
 
 interface AvatarGalleryContextValue {
   avatars: Avatar[];
-  isLoading: boolean;
-  isLoadingMore: boolean;
   isError: boolean;
   isRefreshing: boolean;
   error?: Error | null;
@@ -22,11 +20,7 @@ interface AvatarGalleryProviderProps {
 }
 
 export const AvatarGalleryProvider = ({ children, value }: AvatarGalleryProviderProps) => {
-  return (
-    <AvatarGalleryContext.Provider value={value}>
-      {children}
-    </AvatarGalleryContext.Provider>
-  );
+  return <AvatarGalleryContext.Provider value={value}>{children}</AvatarGalleryContext.Provider>;
 };
 
 // eslint-disable-next-line react-refresh/only-export-components

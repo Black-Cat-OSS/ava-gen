@@ -21,7 +21,7 @@ export const AvatarWallpaper = () => {
               />
             ))}
           </div>
-        ) : isError || avatarsData?.items.length === 0 ? (
+        ) : isError || !avatarsData || !avatarsData.items ? (
           <div className="flex items-center space-x-2">
             {[...Array(3)].map((_, index) => (
               <div
@@ -35,7 +35,7 @@ export const AvatarWallpaper = () => {
           </div>
         ) : (
           <div className="flex items-center">
-            {avatarsData?.items.slice(0, 5).map((avatar, index) => (
+            {avatarsData.items.map((avatar, index) => (
               <div
                 key={avatar.id}
                 className="w-40 h-40 md:w-44 md:h-44 lg:w-48 lg:h-48 rounded-full border-4 border-background shadow-lg overflow-hidden transition-transform hover:scale-110"
