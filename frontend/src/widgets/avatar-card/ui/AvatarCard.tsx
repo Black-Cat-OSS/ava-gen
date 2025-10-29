@@ -1,21 +1,10 @@
 import { Link } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
-import { AvatarApi } from '@/shared/api';
-import { useEffect, useState } from 'react';
-import type { Avatar } from '@/entities';
 import { FailImage } from '@/shared';
+import type { Avatar } from '@/entities';
 
 interface AvatarCardProps {
-  avatar: {
-    id: string;
-    name: string;
-    createdAt: string;
-    version: string;
-    primaryColor?: string;
-    foreignColor?: string;
-    colorScheme?: string;
-    seed?: string;
-  };
+  avatar: Avatar;
   showDetails?: boolean;
   imageSize?: number;
   imageFilter?: string;
@@ -25,17 +14,11 @@ interface AvatarCardProps {
 export const AvatarCard = ({ avatar, showDetails = true, className = '' }: AvatarCardProps) => {
   const { t } = useTranslation();
 
-  const [avatarData, setAvatarData] = useState<Avatar | null>(null);
-
-  useEffect(() => {
-    AvatarApi.getById(avatar.id).then(setAvatarData);
-  }, [avatar.id]);
-
   return (
     <div className={`border rounded-lg p-4 bg-card hover:shadow-lg transition-shadow ${className}`}>
       <div className="aspect-square bg-muted rounded-md mb-3 overflow-hidden">
         <img
-          src={avatarData?.id}
+          src={avatar.id}
           alt={avatar.name}
           className="w-full h-full object-cover"
           onError={() => <FailImage />}

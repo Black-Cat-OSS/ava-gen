@@ -4,29 +4,29 @@ import { useGenerateAvatar } from '@/shared/lib';
 import { Button, ErrorBoundary } from '@/shared/ui';
 import { InputField } from '@/shared/ui';
 import { AngleVisualizer } from '@/shared/ui';
-import { AnglePresets } from './AnglePresets';
-import { 
-  ColorPalette, 
-  ColorPaletteError, 
+import { AnglePresets } from '@/features/avatar-generator/ui';
+import {
+  ColorPalette,
+  ColorPaletteError,
   ColorPaletteSkeleton,
-  ColorPaletteProviderSuspense, 
-  useColorPaletteContext
+  ColorPaletteProviderSuspense,
+  useColorPaletteContext,
 } from '@/features/color-palette';
 import type { ColorPalette as ColorPaletteType } from '@/features/color-palette/types/types';
-import { CurrentPaletteDisplay } from './CurrentPaletteDisplay';
-import { CustomColorInputs } from './CustomColorInputs';
-import type { AvatarGeneratorFormInternalProps } from '../types';
-import { avatarApi } from '@/shared/api';
-import { generateMnemonicSeed } from '../utils';
-import { useAvatarGeneratorContext } from '../contexts';
+import { CurrentPaletteDisplay } from '@/features/avatar-generator/ui';
+import { CustomColorInputs } from '@/features/avatar-generator/ui';
+import type { AvatarGeneratorFormInternalProps } from '@/features/avatar-generator/types';
+// import { AvatarApi } from '@/shared/api';
+import { generateMnemonicSeed } from '@/features/avatar-generator/utils';
+import { useAvatarGeneratorContext } from '@/features/avatar-generator/contexts';
 
 /**
  * Internal form component that uses color palette context
  */
-const AvatarGeneratorFormInternal = ({ 
-  formData, 
-  onFormDataChange, 
-  onGenerateSeed
+const AvatarGeneratorFormInternal = ({
+  formData,
+  onFormDataChange,
+  onGenerateSeed,
 }: AvatarGeneratorFormInternalProps) => {
   const { t } = useTranslation();
   const generateAvatar = useGenerateAvatar();
@@ -35,24 +35,24 @@ const AvatarGeneratorFormInternal = ({
 
   // Call callback when avatar is generated
   useEffect(() => {
-    if (generateAvatar.isSuccess && generateAvatar.data) {
-      setGeneratedAvatar(generateAvatar.data);
+    if (generateAvatar.v1.isSuccess && generateAvatar.v1.data) {
+      setGeneratedAvatar(generateAvatar.v1.data);
     }
-  }, [generateAvatar.isSuccess, generateAvatar.data, setGeneratedAvatar]);
+  }, [generateAvatar.v1.isSuccess, generateAvatar.v1.data, setGeneratedAvatar]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const params = {
-      primaryColor: formData.primaryColor || undefined,
-      foreignColor: formData.foreignColor || undefined,
-      colorScheme: selectedScheme !== 'default' ? selectedScheme : undefined,
-      seed: formData.seed || undefined,
-      type: formData.type || 'pixelize',
-      angle: formData.type === 'gradient' ? formData.angle : undefined,
-    };
+    // const params = {
+    //   primaryColor: formData.primaryColor || undefined,
+    //   foreignColor: formData.foreignColor || undefined,
+    //   colorScheme: selectedScheme !== 'default' ? selectedScheme : undefined,
+    //   seed: formData.seed || undefined,
+    //   type: formData.type || 'pixelize',
+    //   angle: formData.type === 'gradient' ? formData.angle : undefined,
+    // };
 
-    generateAvatar.mutate(params);
+    // generateAvatar.v1.mutate(params);
   };
 
   const handleInputChange = (field: string, value: string | number) => {
@@ -64,23 +64,19 @@ const AvatarGeneratorFormInternal = ({
   return (
     <div className="space-y-6">
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Color Palette Selection */}
         <ColorPalette />
 
-        {/* Current Palette Display */}
         {!isCustomPalette && <CurrentPaletteDisplay />}
 
-        {/* Custom Colors (only when default palette is selected) */}
         {isCustomPalette && (
           <CustomColorInputs
             primaryColor={formData.primaryColor}
             foreignColor={formData.foreignColor}
-            onPrimaryColorChange={(value) => handleInputChange('primaryColor', value)}
-            onForeignColorChange={(value) => handleInputChange('foreignColor', value)}
+            onPrimaryColorChange={value => handleInputChange('primaryColor', value)}
+            onForeignColorChange={value => handleInputChange('foreignColor', value)}
           />
         )}
 
-        {/* Generator Type Selection */}
         <div className="space-y-2">
           <label className="block text-sm font-medium text-foreground">
             {t('features.avatarGenerator.generatorType')}
@@ -96,7 +92,8 @@ const AvatarGeneratorFormInternal = ({
               }`}
               style={{
                 borderColor: formData.type === 'pixelize' ? formData.primaryColor : undefined,
-                backgroundColor: formData.type === 'pixelize' ? `${formData.primaryColor}15` : undefined,
+                backgroundColor:
+                  formData.type === 'pixelize' ? `${formData.primaryColor}15` : undefined,
               }}
             >
               <div className="text-center">
@@ -118,7 +115,8 @@ const AvatarGeneratorFormInternal = ({
               }`}
               style={{
                 borderColor: formData.type === 'wave' ? formData.primaryColor : undefined,
-                backgroundColor: formData.type === 'wave' ? `${formData.primaryColor}15` : undefined,
+                backgroundColor:
+                  formData.type === 'wave' ? `${formData.primaryColor}15` : undefined,
               }}
             >
               <div className="text-center">
@@ -140,7 +138,8 @@ const AvatarGeneratorFormInternal = ({
               }`}
               style={{
                 borderColor: formData.type === 'gradient' ? formData.primaryColor : undefined,
-                backgroundColor: formData.type === 'gradient' ? `${formData.primaryColor}15` : undefined,
+                backgroundColor:
+                  formData.type === 'gradient' ? `${formData.primaryColor}15` : undefined,
               }}
             >
               <div className="text-center">
@@ -155,25 +154,24 @@ const AvatarGeneratorFormInternal = ({
           </div>
         </div>
 
-        {/* Angle Control - only for gradient */}
         {formData.type === 'gradient' && (
           <div className="space-y-4">
             <label className="block text-sm font-medium text-foreground">
               {t('features.avatarGenerator.angle')}
             </label>
-            
-              <div className="flex items-center gap-1">
-                  <AnglePresets
-                    currentAngle={formData.angle}
-                    onAngleSelect={(angle) => handleInputChange('angle', angle)}
-                    size={70}
-                  />
-              
+
+            <div className="flex items-center gap-1">
+              <AnglePresets
+                currentAngle={formData.angle}
+                onAngleSelect={angle => handleInputChange('angle', angle)}
+                size={70}
+              />
+
               {/* Interactive angle visualizer */}
               <div className="flex flex-col items-center w-full">
                 <AngleVisualizer
                   angle={formData.angle}
-                  onChange={(angle) => handleInputChange('angle', angle)}
+                  onChange={angle => handleInputChange('angle', angle)}
                   size={230}
                 />
                 <p className="text-xs text-muted-foreground text-center mt-2">
@@ -187,66 +185,62 @@ const AvatarGeneratorFormInternal = ({
           </div>
         )}
 
-        {/* Seed Generation - hidden for gradient */}
         {formData.type !== 'gradient' && (
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <label className="block text-sm font-medium text-foreground">
-              {t('features.avatarGenerator.seed')}
-            </label>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={onGenerateSeed}
-              className="text-xs"
-            >
-              {t('features.avatarGenerator.generateSeed')}
-            </Button>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="block text-sm font-medium text-foreground">
+                {t('features.avatarGenerator.seed')}
+              </label>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={onGenerateSeed}
+                className="text-xs"
+              >
+                {t('features.avatarGenerator.generateSeed')}
+              </Button>
+            </div>
+            <InputField
+              type="text"
+              value={formData.seed}
+              onChange={e => handleInputChange('seed', e.target.value)}
+              placeholder={t('features.avatarGenerator.seedPlaceholder')}
+              maxLength={32}
+              label=""
+            />
+            <p className="text-xs text-muted-foreground">
+              {t('features.avatarGenerator.seedDescription')}
+            </p>
           </div>
-          <InputField
-            type="text"
-            value={formData.seed}
-            onChange={e => handleInputChange('seed', e.target.value)}
-            placeholder={t('features.avatarGenerator.seedPlaceholder')}
-            maxLength={32}
-            label=""
-          />
-          <p className="text-xs text-muted-foreground">
-            {t('features.avatarGenerator.seedDescription')}
-          </p>
-        </div>
         )}
 
-        {/* Submit Button */}
         <div className="flex justify-center">
-          <Button type="submit" disabled={generateAvatar.isPending} className="px-8 py-2">
-            {generateAvatar.isPending
+          <Button type="submit" disabled={generateAvatar.v1.isPending} className="px-8 py-2">
+            {generateAvatar.v1.isPending
               ? t('features.avatarGenerator.generating')
               : t('features.avatarGenerator.generate')}
           </Button>
         </div>
 
-        {/* Success Message */}
-        {generateAvatar.isSuccess && generateAvatar.data && (
+        {generateAvatar.v1.isSuccess && generateAvatar.v1.data && (
           <div className="p-4 bg-green-50 border border-green-200 rounded-md">
             <p className="text-green-800 text-sm mb-3">{t('features.avatarGenerator.success')}</p>
             <div className="text-center">
               <img
-                src={avatarApi.getImageUrl(generateAvatar.data.id)}
-                alt={generateAvatar.data.name}
+                src={generateAvatar.v1.data.id}
+                alt={generateAvatar.v1.data.name}
                 className="mx-auto rounded-full w-32 h-32 object-cover border-4 border-primary"
               />
-              <p className="mt-2 text-sm text-muted-foreground">ID: {generateAvatar.data.id}</p>
+              <p className="mt-2 text-sm text-muted-foreground">ID: {generateAvatar.v1.data.id}</p>
             </div>
           </div>
         )}
 
-        {/* Error Message */}
-        {generateAvatar.isError && (
+        {generateAvatar.v1.isError && (
           <div className="p-4 bg-red-50 border border-red-200 rounded-md">
             <p className="text-red-800 text-sm">
-              {t('features.avatarGenerator.error')}: {generateAvatar.error?.message}
+              {t('features.avatarGenerator.error')}: {generateAvatar.v1.error?.message}
             </p>
           </div>
         )}
@@ -254,8 +248,6 @@ const AvatarGeneratorFormInternal = ({
     </div>
   );
 };
-
-
 
 /**
  * Main AvatarGeneratorForm component with ErrorBoundary and Suspense
@@ -321,7 +313,7 @@ export const AvatarGeneratorForm = () => {
           initialScheme={formData.colorScheme}
           onPaletteChange={handlePaletteChange}
         >
-          <AvatarGeneratorFormInternal 
+          <AvatarGeneratorFormInternal
             formData={formData}
             onFormDataChange={handleFormDataChange}
             onGenerateSeed={handleGenerateSeed}

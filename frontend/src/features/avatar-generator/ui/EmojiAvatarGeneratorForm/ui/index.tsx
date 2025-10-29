@@ -1,19 +1,20 @@
 import React, { Suspense, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, ErrorBoundary } from '@/shared/ui';
-import { 
-  ColorPalette, 
-  ColorPaletteError, 
+import {
+  ColorPalette,
+  ColorPaletteError,
   ColorPaletteSkeleton,
-  ColorPaletteProviderSuspense
+  ColorPaletteProviderSuspense,
 } from '@/features/color-palette';
-import { EmojiPickerComponent } from './EmojiPicker';
-import { BackgroundTypeSelector } from './BackgroundTypeSelector';
-import { EmojiSizeSelector } from './EmojiSizeSelector';
-import { AnglePresets } from './AnglePresets';
-import { avatarApi, type GenerateAvatarResponse } from '@/shared/api';
-import { useAvatarGeneratorContext } from '../contexts';
-import type { EmojiAvatarGeneratorFormProps } from '../types';
+import { EmojiPickerComponent } from '@/features/avatar-generator/ui';
+import { BackgroundTypeSelector } from '@/features/avatar-generator/ui';
+import { EmojiSizeSelector } from '@/features/avatar-generator/ui';
+import { AnglePresets } from '@/features/avatar-generator/ui';
+import { GeneratorApi } from '@/shared/api';
+import { useAvatarGeneratorContext } from '@/features/avatar-generator/contexts';
+import type { EmojiAvatarGeneratorFormProps } from '@/features/avatar-generator/types';
+import type { Avatar } from '@/entities/avatar';
 
 /**
  * Internal form component that uses color palette context
@@ -26,7 +27,7 @@ const EmojiAvatarGeneratorFormInternal: React.FC<EmojiAvatarGeneratorFormProps> 
   const { t } = useTranslation();
   const { setGeneratedAvatar } = useAvatarGeneratorContext();
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedAvatar, setGeneratedAvatarLocal] = useState<GenerateAvatarResponse | null>(null);
+  const [generatedAvatar, setGeneratedAvatarLocal] = useState<Avatar | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -44,7 +45,7 @@ const EmojiAvatarGeneratorFormInternal: React.FC<EmojiAvatarGeneratorFormProps> 
         emojiSize: formData.emojiSize,
       };
 
-      const result = await avatarApi.generateEmoji(params);
+      const result = await GeneratorApi.v3.generate(params);
       setGeneratedAvatarLocal(result);
       setGeneratedAvatar(result);
     } catch (err) {
@@ -62,21 +63,17 @@ const EmojiAvatarGeneratorFormInternal: React.FC<EmojiAvatarGeneratorFormProps> 
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Emoji Selection */}
       <EmojiPickerComponent
         selectedEmoji={formData.emoji}
-        onEmojiSelect={(emoji) => handleInputChange('emoji', emoji)}
+        onEmojiSelect={emoji => handleInputChange('emoji', emoji)}
         disabled={disabled}
       />
-
-      {/* Background Type Selection */}
       <BackgroundTypeSelector
         selectedType={formData.backgroundType}
-        onTypeSelect={(type) => handleInputChange('backgroundType', type)}
+        onTypeSelect={type => handleInputChange('backgroundType', type)}
         disabled={disabled}
       />
 
-      {/* Color Palette */}
       <div className="space-y-3">
         <label className="block text-sm font-medium text-foreground">
           {t('features.avatarGenerator.colorPalette')}
@@ -84,7 +81,6 @@ const EmojiAvatarGeneratorFormInternal: React.FC<EmojiAvatarGeneratorFormProps> 
         <ColorPalette />
       </div>
 
-      {/* Custom Color Inputs */}
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-foreground mb-2">
@@ -93,7 +89,7 @@ const EmojiAvatarGeneratorFormInternal: React.FC<EmojiAvatarGeneratorFormProps> 
           <input
             type="color"
             value={formData.primaryColor}
-            onChange={(e) => handleInputChange('primaryColor', e.target.value)}
+            onChange={e => handleInputChange('primaryColor', e.target.value)}
             disabled={disabled}
             className="w-full h-10 rounded-md border border-border bg-background"
           />
@@ -105,14 +101,13 @@ const EmojiAvatarGeneratorFormInternal: React.FC<EmojiAvatarGeneratorFormProps> 
           <input
             type="color"
             value={formData.foreignColor}
-            onChange={(e) => handleInputChange('foreignColor', e.target.value)}
+            onChange={e => handleInputChange('foreignColor', e.target.value)}
             disabled={disabled}
             className="w-full h-10 rounded-md border border-border bg-background"
           />
         </div>
       </div>
 
-      {/* Angle Selection (only for linear gradient) */}
       {formData.backgroundType === 'linear' && (
         <div className="space-y-3">
           <label className="block text-sm font-medium text-foreground">
@@ -120,19 +115,17 @@ const EmojiAvatarGeneratorFormInternal: React.FC<EmojiAvatarGeneratorFormProps> 
           </label>
           <AnglePresets
             currentAngle={formData.angle}
-            onAngleSelect={(angle) => handleInputChange('angle', angle)}
+            onAngleSelect={angle => handleInputChange('angle', angle)}
           />
         </div>
       )}
 
-      {/* Emoji Size Selection */}
       <EmojiSizeSelector
         selectedSize={formData.emojiSize}
-        onSizeSelect={(size) => handleInputChange('emojiSize', size)}
+        onSizeSelect={size => handleInputChange('emojiSize', size)}
         disabled={disabled}
       />
 
-      {/* Generate Button */}
       <Button
         type="submit"
         disabled={disabled || !formData.emoji || isGenerating}
@@ -143,13 +136,12 @@ const EmojiAvatarGeneratorFormInternal: React.FC<EmojiAvatarGeneratorFormProps> 
           : t('features.avatarGenerator.generateEmojiAvatar')}
       </Button>
 
-      {/* Success Message with Preview */}
       {generatedAvatar && (
         <div className="p-4 bg-green-50 border border-green-200 rounded-md">
           <p className="text-green-800 text-sm mb-3">{t('features.avatarGenerator.success')}</p>
           <div className="text-center">
             <img
-              src={avatarApi.getImageUrl(generatedAvatar.id)}
+              src={generatedAvatar.id}
               alt={generatedAvatar.id}
               className="mx-auto rounded-full w-32 h-32 object-cover border-4 border-primary"
             />
@@ -158,7 +150,6 @@ const EmojiAvatarGeneratorFormInternal: React.FC<EmojiAvatarGeneratorFormProps> 
         </div>
       )}
 
-      {/* Error Message */}
       {error && (
         <div className="p-4 bg-red-50 border border-red-200 rounded-md">
           <p className="text-red-800 text-sm">
@@ -172,18 +163,18 @@ const EmojiAvatarGeneratorFormInternal: React.FC<EmojiAvatarGeneratorFormProps> 
 
 /**
  * Main emoji avatar generator form component
- * 
+ *
  * Integrates all emoji avatar generation components:
  * - EmojiPicker for emoji selection
  * - BackgroundTypeSelector for background type
  * - ColorPalette for color selection
  * - EmojiSizeSelector for emoji size
  * - AnglePresets for gradient angle (when applicable)
- * 
+ *
  * @param props - Component props
  * @returns JSX element
  */
-export const EmojiAvatarGeneratorForm: React.FC<EmojiAvatarGeneratorFormProps> = (props) => {
+export const EmojiAvatarGeneratorForm: React.FC<EmojiAvatarGeneratorFormProps> = props => {
   const { t } = useTranslation();
 
   return (
@@ -207,13 +198,13 @@ export const EmojiAvatarGeneratorForm: React.FC<EmojiAvatarGeneratorFormProps> =
                 props.onFormDataChange('foreignColor', '#ef4444');
               } else if (palette) {
                 // Ensure we're getting hex colors, not color names
-                const primaryHex = palette.primaryColor?.startsWith('#') 
-                  ? palette.primaryColor 
+                const primaryHex = palette.primaryColor?.startsWith('#')
+                  ? palette.primaryColor
                   : undefined;
-                const foreignHex = palette.foreignColor?.startsWith('#') 
-                  ? palette.foreignColor 
+                const foreignHex = palette.foreignColor?.startsWith('#')
+                  ? palette.foreignColor
                   : undefined;
-                
+
                 if (primaryHex) {
                   props.onFormDataChange('primaryColor', primaryHex);
                 }

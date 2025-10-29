@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "../constants";
+import { API_BASE_URL } from '../constants';
 
 export interface ApiResponse<T> {
   data: T;
@@ -34,20 +34,24 @@ export class ApiClient {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 3000);
-      
+
       const minDelayPromise = new Promise(resolve => setTimeout(resolve, 500));
-      
+
       const fetchPromise = fetch(url, {
         ...config,
         signal: controller.signal,
       });
-      
-      const response = await Promise.all([minDelayPromise, fetchPromise]).then(([, response]) => response);
-      
+
+      const response = await Promise.all([minDelayPromise, fetchPromise]).then(
+        ([, response]) => response,
+      );
+
       clearTimeout(timeoutId);
 
       if (!response.ok && response.status !== 204) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(
+          `HTTP error! status: ${response.status}\ncurl -X ${options.method} ${response.url}`,
+        );
       }
 
       if (response.status === 204) {

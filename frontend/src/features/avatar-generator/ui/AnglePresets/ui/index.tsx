@@ -1,19 +1,15 @@
-import React from 'react';
+import { type FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AngleVisualizer } from '@/shared/ui';
-import type { AnglePresetsProps } from '../types';
+import type { AnglePresetsProps } from '../../../types';
 
 /**
  * Component for displaying angle presets
- * 
+ *
  * Shows a grid of predefined angle values with visual indicators.
  * Users can click on any preset to quickly select that angle.
  */
-export const AnglePresets: React.FC<AnglePresetsProps> = ({
-  currentAngle,
-  onAngleSelect,
-  size = 70,
-}) => {
+export const AnglePresets: FC<AnglePresetsProps> = ({ currentAngle, onAngleSelect, size = 70 }) => {
   const { t } = useTranslation();
 
   const presetAngles = [0, 45, 90, 135, 180, 225, 270, 315];
@@ -21,7 +17,7 @@ export const AnglePresets: React.FC<AnglePresetsProps> = ({
   return (
     <div className="flex flex-col gap-2">
       <div className="grid grid-cols-2 gap-2">
-        {presetAngles.map((presetAngle) => (
+        {presetAngles.map(presetAngle => (
           <button
             key={presetAngle}
             type="button"
