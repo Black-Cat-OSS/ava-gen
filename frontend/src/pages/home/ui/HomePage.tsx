@@ -1,61 +1,20 @@
-import { useState } from 'react';
-import { useAvatars } from '@/shared/lib';
-import {
-  AvatarWallpaper,
-  AvatarControls,
-  AvatarGallery,
-  LoadMoreButton,
-  AvatarGalleryProvider,
-} from './';
-import { AvatarPreviewShowcase } from '@/features/avatar-preview-showcase';
+import { lazy, Suspense } from 'react';
+import AvatarGalleryFeature from '@/features/avatar-gallery';
 
 export const HomePage = () => {
-  const [offset, setOffset] = useState(0);
-
-  const { data, isError, error, refetch, isRefetching } = useAvatars({
-    pick: 10,
-    offset,
-  });
-
-  const handleLoadMore = () => {
-    setOffset(prevOffset => prevOffset + 10);
-  };
-
-  const handleRefresh = async () => {
-    try {
-      setOffset(0);
-      await refetch();
-    } catch {
-      //TODO: add error handling
-    }
-  };
-
-  const contextValue = {
-    avatars: data?.items ?? [],
-    isError,
-    isRefreshing: isRefetching,
-    error,
-    totalCount: data?.pagination.total ?? 0,
-    hasMore: data?.pagination.hasMore ?? false,
-    onRefresh: handleRefresh,
-    onLoadMore: handleLoadMore,
-  };
+  const AvatarPreviewShowcase = lazy(() => import('@/features/avatar-preview-showcase'));
+  const AvatarWallpaper = lazy(() => import('@/features/AvatarCircles'));
 
   return (
     <div className="py-8">
       <div className="max-w">
         <AvatarWallpaper />
 
-        <AvatarGalleryProvider value={contextValue}>
-          <div className="mb-8">
-            {data?.items && data?.items.length > 0 && <AvatarControls />}
-            <AvatarGallery />
-          </div>
+        <AvatarGalleryFeature />
 
-          {data?.pagination.hasMore && <LoadMoreButton />}
-        </AvatarGalleryProvider>
-
-        <AvatarPreviewShowcase />
+        <Suspense fallback={<div>Loading...</div>}>
+          <AvatarPreviewShowcase />
+        </Suspense>
       </div>
     </div>
   );

@@ -37,11 +37,13 @@
       "error": "Laadimise viga",
       "unknownError": "Tundmatu viga",
       "noAvatars": "Avatarid ei leitud",
+      "noAvatarsDescription": "Teie galerii on tühi. Looge oma esimene avatar!",
       "avatarsFound": "Leitud avatare",
       "refresh": "Värskenda",
       "refreshing": "Laadimine...",
       "avatarId": "ID",
       "generateAvatar": "Loo avatar",
+      "createAvatar": "Loo avatar",
       "loadMore": "Lae rohkem"
     },
     "about": {

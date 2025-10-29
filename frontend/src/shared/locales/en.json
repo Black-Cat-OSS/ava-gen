@@ -37,11 +37,13 @@
       "error": "Loading error",
       "unknownError": "Unknown error",
       "noAvatars": "No avatars found",
+      "noAvatarsDescription": "Your gallery is empty. Create your first avatar!",
       "avatarsFound": "Avatars found",
       "refresh": "Refresh",
       "refreshing": "Loading...",
       "avatarId": "ID",
       "generateAvatar": "Create Avatar",
+      "createAvatar": "Create Avatar",
       "loadMore": "Load More"
     },
     "about": {
@@ -189,7 +191,7 @@
       "colorSchemes": {
         "default": "Default",
         "green": "Green",
-        "blue": "Blue", 
+        "blue": "Blue",
         "red": "Red",
         "orange": "Orange",
         "purple": "Purple",

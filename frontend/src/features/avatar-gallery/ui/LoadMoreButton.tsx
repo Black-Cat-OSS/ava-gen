@@ -1,10 +1,14 @@
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/shared/ui';
-import { useAvatarGallery } from './AvatarGalleryContext';
+import { useAvatarGallery } from '../hooks';
 
 export const LoadMoreButton = () => {
   const { t } = useTranslation();
-  const { isRefreshing, onLoadMore } = useAvatarGallery();
+  const { hasMore, isRefreshing, onLoadMore } = useAvatarGallery();
+
+  if (!hasMore) {
+    return null;
+  }
 
   return (
     <div className="text-center mt-8">

@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  BadRequestException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, Logger, BadRequestException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { StorageService } from '../storage/storage.service';
@@ -275,11 +270,13 @@ export class AvatarService {
       } else {
         // Нет фильтра - загружаем оригинальное изображение из хранилища
         this.logger.log('No filter specified, returning original image');
-        
+
         // Загружаем оригинальное изображение из хранилища
         this.logger.debug(`[STORAGE] Getting original image ${id}:${size}...`);
         imageBuffer = await this.storageService.loadImage(id, size);
-        this.logger.log(`Original image ${id}:${size} loaded from storage (${imageBuffer.length} bytes)`);
+        this.logger.log(
+          `Original image ${id}:${size} loaded from storage (${imageBuffer.length} bytes)`,
+        );
 
         // Если кеширование включено, кешируем оригинальное изображение
         if (this.cacheService) {
@@ -291,9 +288,7 @@ export class AvatarService {
             await this.cacheService.setBuffer(originalCacheKey, imageBuffer, 'original');
             this.logger.debug(`[CACHE] Original ${id}:${size} successfully cached`);
           } catch (error) {
-            this.logger.debug(
-              `[CACHE] Failed to cache original ${id}:${size}: ${error.message}`,
-            );
+            this.logger.debug(`[CACHE] Failed to cache original ${id}:${size}: ${error.message}`);
             this.logger.warn(`Failed to cache original image: ${error.message}`);
           }
         }
@@ -384,7 +379,7 @@ export class AvatarService {
       this.logger.log(`Retrieved ${avatars.length} avatars from ${offset} offset`);
 
       return {
-        avatars,
+        items: avatars,
         pagination: {
           total,
           offset,
@@ -454,10 +449,10 @@ export class AvatarService {
   async healthCheck() {
     // Простая проверка подключения к репозиторию
     const dbHealth = await this.avatarRepository.count();
-    
+
     // Проверка доступности Twemoji CDN через EmojiService
     const twemojiAvailable = await this.emojiService.checkTwemojiAvailability();
-    
+
     if (!twemojiAvailable) {
       this.logger.warn('Twemoji CDN is not available - emoji avatar generation may fail');
     }
