@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { 
-  AvatarGeneratorForm, 
-  AvatarLinkCopySection, 
+import {
+  AvatarGeneratorForm,
+  AvatarLinkCopySection,
   AvatarGeneratorProvider,
   EmojiAvatarGeneratorForm,
-  EmojiServiceHealthCheck
+  EmojiServiceHealthCheck,
 } from '@/features/avatar-generator';
 import { Button } from '@/shared/ui';
 import type { EmojiAvatarFormData } from '@/features/avatar-generator/types';
@@ -15,8 +15,7 @@ type GeneratorType = 'classic' | 'emoji';
 export const AvatarGeneratorPage = () => {
   const { t } = useTranslation();
   const [generatorType, setGeneratorType] = useState<GeneratorType>('classic');
-  
-  // Default emoji form data
+
   const [emojiFormData, setEmojiFormData] = useState<EmojiAvatarFormData>({
     emoji: '😀',
     backgroundType: 'solid',
@@ -44,7 +43,6 @@ export const AvatarGeneratorPage = () => {
             <p className="text-muted-foreground">{t('pages.avatarGenerator.subtitle')}</p>
           </div>
 
-          {/* Generator Type Tabs */}
           <div className="mb-6">
             <div className="flex space-x-1 bg-muted p-1 rounded-lg">
               <Button
@@ -77,11 +75,12 @@ export const AvatarGeneratorPage = () => {
             )}
           </div>
 
-          {/* Avatar Link Copy Section - separate from form */}
           <AvatarLinkCopySection />
 
           <div className="mt-8 text-center">
-            <p className="text-sm text-muted-foreground">{t('pages.avatarGenerator.description')}</p>
+            <p className="text-sm text-muted-foreground">
+              {t('pages.avatarGenerator.description')}
+            </p>
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { I18nextProvider } from 'react-i18next';
 import { ThemeProvider } from '@/app/providers/theme-provider';
 import { PopupProvider } from '@/shared/lib/contexts';
-import i18n from '@/shared/lib/i18n';
+import i18n from '@/shared/lib/utils/i18n';
 import { HeaderDefault } from '.';
 
 const meta: Meta<typeof HeaderDefault> = {
