@@ -7,14 +7,12 @@ import {
   EmojiAvatarGeneratorForm,
   EmojiServiceHealthCheck,
 } from '@/features/avatar-generator';
-import { Button } from '@/shared/ui';
 import type { EmojiAvatarFormData } from '@/features/avatar-generator/types';
-
-type GeneratorType = 'classic' | 'emoji';
+import { Card, Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui';
+import { Description } from './Description';
 
 export const AvatarGeneratorPage = () => {
   const { t } = useTranslation();
-  const [generatorType, setGeneratorType] = useState<GeneratorType>('classic');
 
   const [emojiFormData, setEmojiFormData] = useState<EmojiAvatarFormData>({
     emoji: '😀',
@@ -35,7 +33,7 @@ export const AvatarGeneratorPage = () => {
   return (
     <AvatarGeneratorProvider>
       <div className="py-8">
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w mx-auto">
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-foreground mb-4">
               {t('pages.avatarGenerator.title')}
@@ -43,45 +41,37 @@ export const AvatarGeneratorPage = () => {
             <p className="text-muted-foreground">{t('pages.avatarGenerator.subtitle')}</p>
           </div>
 
-          <div className="mb-6">
-            <div className="flex space-x-1 bg-muted p-1 rounded-lg">
-              <Button
-                variant={generatorType === 'classic' ? 'default' : 'ghost'}
-                onClick={() => setGeneratorType('classic')}
-                className="flex-1"
-              >
-                {t('pages.avatarGenerator.generatorTypes.classic')}
-              </Button>
-              <Button
-                variant={generatorType === 'emoji' ? 'default' : 'ghost'}
-                onClick={() => setGeneratorType('emoji')}
-                className="flex-1"
-              >
-                {t('pages.avatarGenerator.generatorTypes.emoji')}
-              </Button>
-            </div>
-          </div>
+          <Tabs defaultValue="classic" className="mb-6">
+            <TabsList className="bg-stone-50 dark:bg-stone-900 rounded-lg p-1 mb-3">
+              <TabsTrigger className="text-white data-[state=active]:bg-blue-600" value="classic">
+                Classic
+              </TabsTrigger>
+              <TabsTrigger className="text-white data-[state=active]:bg-blue-600" value="emoji">
+                Emoji
+              </TabsTrigger>
+            </TabsList>
 
-          <div className="bg-card border rounded-lg p-6 shadow-sm">
-            {generatorType === 'classic' ? (
-              <AvatarGeneratorForm />
-            ) : (
-              <EmojiServiceHealthCheck>
-                <EmojiAvatarGeneratorForm
-                  formData={emojiFormData}
-                  onFormDataChange={handleEmojiFormDataChange}
-                />
-              </EmojiServiceHealthCheck>
-            )}
-          </div>
+            <TabsContent value="classic">
+              <Card className='p-4 bg-card border-0'>
+                <AvatarGeneratorForm />
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="emoji">
+              <Card className='p-4 bg-card border-0'>
+                <EmojiServiceHealthCheck>
+                  <EmojiAvatarGeneratorForm
+                    formData={emojiFormData}
+                    onFormDataChange={handleEmojiFormDataChange}
+                  />
+                </EmojiServiceHealthCheck>
+              </Card>
+            </TabsContent>
+          </Tabs>
 
           <AvatarLinkCopySection />
 
-          <div className="mt-8 text-center">
-            <p className="text-sm text-muted-foreground">
-              {t('pages.avatarGenerator.description')}
-            </p>
-          </div>
+          <Description />
         </div>
       </div>
     </AvatarGeneratorProvider>

@@ -1,6 +1,4 @@
-import { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import i18n from '@/shared/lib/utils/i18n';
+import { useLocalTranslations as useLocalTranslationsBase } from '@/shared/lib/hooks';
 import { avatarLinkCopyTranslations } from '../locales';
 
 /**
@@ -8,33 +6,5 @@ import { avatarLinkCopyTranslations } from '../locales';
  * Automatically loads and updates translations when language changes
  */
 export const useLocalTranslations = () => {
-  const { t } = useTranslation('avatarLinkCopy');
-
-  useEffect(() => {
-    const loadTranslations = (language: string) => {
-      const translations =
-        avatarLinkCopyTranslations[language as keyof typeof avatarLinkCopyTranslations];
-
-      if (translations) {
-        i18n.addResourceBundle(language, 'avatarLinkCopy', translations, true, true);
-      }
-    };
-
-    // Load translations for current language immediately
-    loadTranslations(i18n.language);
-
-    // Listen for language changes
-    const handleLanguageChange = (lng: string) => {
-      loadTranslations(lng);
-    };
-
-    i18n.on('languageChanged', handleLanguageChange);
-
-    // Cleanup listener on unmount
-    return () => {
-      i18n.off('languageChanged', handleLanguageChange);
-    };
-  }, []);
-
-  return { t };
+  return useLocalTranslationsBase('avatarLinkCopy', avatarLinkCopyTranslations);
 };

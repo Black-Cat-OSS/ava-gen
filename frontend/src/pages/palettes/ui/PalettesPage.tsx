@@ -1,81 +1,14 @@
-import { useEffect, useState } from 'react';
-
-interface Palette {
-  id: string;
-  name: string;
-  key: string;
-  primaryColor: string;
-  foreignColor: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface PaginationData {
-  total: number;
-  offset: number;
-  pick: number;
-  hasMore: boolean;
-}
+import { Suspense } from 'react';
+import { useInfinitePalettes, useDeletePalette } from '@/features/color-palette/hooks';
+import { ErrorBoundary } from '@/shared/ui';
 
 /**
- * Palettes management page
- * Displays all available color palettes with ability to view, edit, and delete them
+ * Внутренний компонент страницы с палитрами
  */
-export const PalettesPage = () => {
-  const [palettes, setPalettes] = useState<Palette[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [pagination, setPagination] = useState<PaginationData | null>(null);
-  const [offset, setOffset] = useState(0);
+const PalettesContent = () => {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfinitePalettes();
 
-  useEffect(() => {
-    fetchPalettes();
-  }, []);
-
-  const fetchPalettes = async (reset = false, loadOffset?: number) => {
-    try {
-      const currentOffset = loadOffset !== undefined ? loadOffset : (reset ? 0 : offset);
-      
-      if (reset) {
-        setLoading(true);
-      } else {
-        setLoadingMore(true);
-      }
-
-      const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
-      const response = await fetch(`${baseUrl}/api/palettes?pick=10&offset=${currentOffset}`);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch palettes: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      
-      if (reset) {
-        setPalettes(data.palettes || []);
-        setOffset(0);
-      } else {
-        setPalettes(prev => [...prev, ...(data.palettes || [])]);
-      }
-      
-      setPagination(data.pagination || null);
-      setError(null);
-    } catch (err) {
-      console.error('Fetch error:', err);
-      setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
-      setLoading(false);
-      setLoadingMore(false);
-    }
-  };
-
-  const handleLoadMore = async () => {
-    if (pagination?.hasMore && !loadingMore) {
-      const newOffset = offset + 10;
-      setOffset(newOffset);
-      await fetchPalettes(false, newOffset);
-    }
-  };
+  const deletePalette = useDeletePalette();
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this palette?')) {
@@ -83,38 +16,19 @@ export const PalettesPage = () => {
     }
 
     try {
-      const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
-      const response = await fetch(`${baseUrl}/api/palettes/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete palette');
-      }
-
-      fetchPalettes(true);
+      await deletePalette.mutateAsync(id);
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed to delete palette');
     }
   };
 
+  const handleLoadMore = () => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  };
 
-
-  if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">Loading palettes...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center text-red-500">Error: {error}</div>
-      </div>
-    );
-  }
+  const allPalettes = data.pages.flatMap((page) => page.palettes);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -123,7 +37,7 @@ export const PalettesPage = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {palettes.map(palette => (
+        {allPalettes.map((palette) => (
           <div
             key={palette.id}
             className="border border-gray-300 rounded-lg p-4 hover:shadow-lg transition-shadow"
@@ -132,9 +46,10 @@ export const PalettesPage = () => {
               <h3 className="text-xl font-semibold">{palette.name}</h3>
               <button
                 onClick={() => handleDelete(palette.id)}
-                className="text-red-600 hover:text-red-700 text-sm"
+                disabled={deletePalette.isPending}
+                className="text-red-600 hover:text-red-700 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Delete
+                {deletePalette.isPending ? 'Deleting...' : 'Delete'}
               </button>
             </div>
 
@@ -155,28 +70,55 @@ export const PalettesPage = () => {
               </div>
             </div>
 
-            <div className="text-xs text-gray-500">
-              Key: {palette.key}
-            </div>
+            <div className="text-xs text-gray-500">Key: {palette.key}</div>
           </div>
         ))}
       </div>
 
-      {palettes.length === 0 && (
+      {allPalettes.length === 0 && (
         <div className="text-center py-12 text-gray-500">No palettes found</div>
       )}
 
-      {pagination?.hasMore && (
+      {hasNextPage && (
         <div className="text-center mt-8">
           <button
             onClick={handleLoadMore}
-            disabled={loadingMore}
+            disabled={isFetchingNextPage}
             className="px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loadingMore ? 'Loading...' : 'Load More'}
+            {isFetchingNextPage ? 'Loading...' : 'Load More'}
           </button>
         </div>
       )}
     </div>
+  );
+};
+
+/**
+ * Страница управления палитрами
+ * Отображает все доступные цветовые палитры с возможностью просмотра и удаления
+ * Использует React Query Suspense для декларативного управления загрузкой и ошибками
+ */
+export const PalettesPage = () => {
+  return (
+    <ErrorBoundary
+      fallback={
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center text-red-500">
+            Error loading palettes. Please try again later.
+          </div>
+        </div>
+      }
+    >
+      <Suspense
+        fallback={
+          <div className="container mx-auto px-4 py-8">
+            <div className="text-center">Loading palettes...</div>
+          </div>
+        }
+      >
+        <PalettesContent />
+      </Suspense>
+    </ErrorBoundary>
   );
 };
