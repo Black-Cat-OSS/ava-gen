@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { I18nextProvider } from 'react-i18next';
-import i18n from '../../shared/lib/i18n';
+import i18n from '@/shared/lib/utils/i18n';
 
 const meta: Meta<typeof LanguageSwitcher> = {
   title: 'Features/LanguageSwitcher',

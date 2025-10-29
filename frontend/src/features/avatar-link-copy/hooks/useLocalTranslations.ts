@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import i18n from '@/shared/lib/i18n';
+import i18n from '@/shared/lib/utils/i18n';
 import { avatarLinkCopyTranslations } from '../locales';
 
 /**
@@ -12,16 +12,11 @@ export const useLocalTranslations = () => {
 
   useEffect(() => {
     const loadTranslations = (language: string) => {
-      const translations = avatarLinkCopyTranslations[language as keyof typeof avatarLinkCopyTranslations];
-      
+      const translations =
+        avatarLinkCopyTranslations[language as keyof typeof avatarLinkCopyTranslations];
+
       if (translations) {
-        i18n.addResourceBundle(
-          language,
-          'avatarLinkCopy',
-          translations,
-          true,
-          true
-        );
+        i18n.addResourceBundle(language, 'avatarLinkCopy', translations, true, true);
       }
     };
 

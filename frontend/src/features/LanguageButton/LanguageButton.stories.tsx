@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { LanguageButton } from './LanguageButton';
 import { I18nextProvider } from 'react-i18next';
 import { PopupProvider } from '@/shared/lib/contexts';
-import i18n from '@/shared/lib/i18n';
+import i18n from '@/shared/lib/utils/i18n';
 
 const meta: Meta<typeof LanguageButton> = {
   title: 'Features/LanguageButton',

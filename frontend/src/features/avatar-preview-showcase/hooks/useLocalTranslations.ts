@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import i18n from '@/shared/lib/i18n';
+import i18n from '@/shared/lib/utils/i18n';
 //TODO: make loading dynamiclly
 //TODO: later make plugin for compilation
 import { avatarPreviewShowcaseTranslations } from '../locales';
@@ -14,16 +14,13 @@ export const useLocalTranslations = () => {
 
   useEffect(() => {
     const loadTranslations = (language: string) => {
-      const translations = avatarPreviewShowcaseTranslations[language as keyof typeof avatarPreviewShowcaseTranslations];
-      
+      const translations =
+        avatarPreviewShowcaseTranslations[
+          language as keyof typeof avatarPreviewShowcaseTranslations
+        ];
+
       if (translations) {
-        i18n.addResourceBundle(
-          language,
-          'avatarPreviewShowcase',
-          translations,
-          true,
-          true
-        );
+        i18n.addResourceBundle(language, 'avatarPreviewShowcase', translations, true, true);
       }
     };
 
