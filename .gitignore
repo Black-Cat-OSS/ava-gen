@@ -33,8 +33,6 @@ frontend/.env.development.local
 frontend/.env.production.local
 
 # Editor directories and files
-.vscode/*
-!.vscode/extensions.json
 .idea
 .DS_Store
 *.suo
