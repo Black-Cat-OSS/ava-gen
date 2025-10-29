@@ -5,3 +5,5 @@ export * from './LanguageButton';
 export * from './LoginForm';
 export * from './color-palette';
 export * from './avatar-preview-showcase';
+export * from './AvatarCircles';
+export * from './avatar-gallery';

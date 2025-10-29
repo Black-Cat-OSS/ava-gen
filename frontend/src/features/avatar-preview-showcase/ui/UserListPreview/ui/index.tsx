@@ -1,10 +1,9 @@
 import { useTranslation } from 'react-i18next';
-import { AvatarApi } from '@/shared/api/avatar';
 import { useAvatarShape } from '@/features/avatar-preview-showcase/hooks';
 import type { PreviewContextProps } from '@/features/avatar-preview-showcase/types';
-import { useEffect, useState, type FC } from 'react';
-import type { Avatar } from '@/entities';
+import { type FC } from 'react';
 import { FailImage } from '@/shared';
+import { getImageUrl } from '@/shared/lib/utils';
 
 /**
  * UserListPreview component - shows avatar in a user list context
@@ -19,18 +18,12 @@ export const UserListPreview: FC<PreviewContextProps> = ({ avatar }) => {
     { name: t('contexts.userList.users.2.name'), role: t('contexts.userList.users.2.role') },
   ];
 
-  const [avatarData, setAvatarData] = useState<Avatar | null>(null);
-
-  useEffect(() => {
-    AvatarApi.getById(avatar.id).then(setAvatarData);
-  }, [avatar.id]);
-
   return (
     <div className="space-y-3">
       {users.map((user, index) => (
         <div key={index} className="flex items-center space-x-3">
           <img
-            src={avatarData?.id}
+            src={getImageUrl(avatar.id, { size: 8 })}
             alt={user.name}
             className={`w-6 h-6 ${shape === 'circle' ? 'rounded-full' : 'rounded-lg'} border border-border`}
             title="Avatar size: 24px (5th power of 2)"

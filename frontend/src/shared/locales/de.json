@@ -37,11 +37,13 @@
       "error": "Ladefehler",
       "unknownError": "Unbekannter Fehler",
       "noAvatars": "Keine Avatare gefunden",
+      "noAvatarsDescription": "Ihre Galerie ist leer. Erstellen Sie Ihren ersten Avatar!",
       "avatarsFound": "Gefundene Avatare",
       "refresh": "Aktualisieren",
       "refreshing": "Laden...",
       "avatarId": "ID",
       "generateAvatar": "Avatar erstellen",
+      "createAvatar": "Avatar erstellen",
       "loadMore": "Mehr laden"
     },
     "about": {

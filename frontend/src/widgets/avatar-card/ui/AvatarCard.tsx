@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { FailImage } from '@/shared';
 import type { Avatar } from '@/entities';
+import { getImageUrl } from '@/shared/lib/utils';
 
 interface AvatarCardProps {
   avatar: Avatar;
@@ -18,7 +19,7 @@ export const AvatarCard = ({ avatar, showDetails = true, className = '' }: Avata
     <div className={`border rounded-lg p-4 bg-card hover:shadow-lg transition-shadow ${className}`}>
       <div className="aspect-square bg-muted rounded-md mb-3 overflow-hidden">
         <img
-          src={avatar.id}
+          src={getImageUrl(avatar.id, { size: 7 })}
           alt={avatar.name}
           className="w-full h-full object-cover"
           onError={() => <FailImage />}

@@ -1,10 +1,11 @@
 import type { Avatar } from '@/entities';
-import { createContext, useContext, type ReactNode } from 'react';
+import { createContext, type ReactNode } from 'react';
 
 interface AvatarGalleryContextValue {
   avatars: Avatar[];
   isError: boolean;
   isRefreshing: boolean;
+  isLoading: boolean;
   error?: Error | null;
   totalCount: number;
   hasMore: boolean;
@@ -14,6 +15,8 @@ interface AvatarGalleryContextValue {
 
 const AvatarGalleryContext = createContext<AvatarGalleryContextValue | undefined>(undefined);
 
+export { AvatarGalleryContext };
+
 interface AvatarGalleryProviderProps {
   children: ReactNode;
   value: AvatarGalleryContextValue;
@@ -21,13 +24,4 @@ interface AvatarGalleryProviderProps {
 
 export const AvatarGalleryProvider = ({ children, value }: AvatarGalleryProviderProps) => {
   return <AvatarGalleryContext.Provider value={value}>{children}</AvatarGalleryContext.Provider>;
-};
-
-// eslint-disable-next-line react-refresh/only-export-components
-export const useAvatarGallery = () => {
-  const context = useContext(AvatarGalleryContext);
-  if (context === undefined) {
-    throw new Error('useAvatarGallery must be used within an AvatarGalleryProvider');
-  }
-  return context;
 };

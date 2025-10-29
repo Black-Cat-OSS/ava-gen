@@ -1,10 +1,8 @@
 import { useTranslation } from 'react-i18next';
-import { AvatarApi } from '@/shared/api/avatar';
 import { useAvatarShape } from '@/features/avatar-preview-showcase/hooks';
 import type { PreviewContextProps } from '@/features/avatar-preview-showcase/types';
-import { useEffect, useState } from 'react';
-import type { Avatar } from '@/entities';
 import { FailImage } from '@/shared';
+import { getImageUrl } from '@/shared/lib/utils';
 
 /**
  * ForumPostPreview component - shows avatar in a forum post context
@@ -13,17 +11,11 @@ export const ForumPostPreview: React.FC<PreviewContextProps> = ({ avatar }) => {
   const { t } = useTranslation('avatarPreviewShowcase');
   const { shape } = useAvatarShape();
 
-  const [avatarData, setAvatarData] = useState<Avatar | null>(null);
-
-  useEffect(() => {
-    AvatarApi.getById(avatar.id).then(setAvatarData);
-  }, [avatar.id]);
-
   return (
     <div className="space-y-3">
       <div className="flex items-center space-x-3">
         <img
-          src={avatarData?.id}
+          src={getImageUrl(avatar.id, { size: 7 })}
           alt={avatar.name}
           className={`w-16 h-16 ${shape === 'circle' ? 'rounded-full' : 'rounded-lg'} border border-border`}
           title="Avatar size: 128px (7th power of 2)"

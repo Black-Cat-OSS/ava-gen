@@ -1,10 +1,8 @@
 import { useTranslation } from 'react-i18next';
-import { AvatarApi } from '@/shared/api';
 import { useAvatarShape } from '@/features/avatar-preview-showcase/hooks';
 import type { PreviewContextProps } from '@/features/avatar-preview-showcase/types';
-import { useEffect, useState } from 'react';
-import type { Avatar } from '@/entities';
 import { FailImage } from '@/shared';
+import { getImageUrl } from '@/shared/lib/utils';
 
 /**
  * ChatMessagePreview component - shows avatar in a chat interface context
@@ -13,17 +11,11 @@ export const Message: React.FC<PreviewContextProps> = ({ avatar }) => {
   const { t } = useTranslation('avatarPreviewShowcase');
   const { shape } = useAvatarShape();
 
-  const [avatarData, setAvatarData] = useState<Avatar | null>(null);
-
-  useEffect(() => {
-    AvatarApi.getById(avatar.id).then(setAvatarData);
-  }, [avatar.id]);
-
   return (
     <div className="flex space-x-3">
       <div className="flex-shrink-0">
         <img
-          src={avatarData?.id}
+          src={getImageUrl(avatar.id, { size: 4 })}
           alt={avatar.name}
           className={`w-8 h-8 ${shape === 'circle' ? 'rounded-full' : 'rounded-lg'} border border-border`}
           title="Avatar size: 32px (5th power of 2)"
