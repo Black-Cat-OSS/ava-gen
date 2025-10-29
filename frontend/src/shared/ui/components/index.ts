@@ -17,4 +17,6 @@ export type { SwitchProps } from './Switch';
 export { AngleVisualizer } from '../angle-visualizer';
 export { ErrorBoundary } from './ErrorBoundary';
 export type { ErrorBoundaryProps } from './ErrorBoundary';
-export { FailImage } from './FailImage'
+export { FailImage } from './FailImage';
+export { Tabs, TabsContent, TabsList, TabsTrigger } from './Tabs';
+export { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from './Card';
