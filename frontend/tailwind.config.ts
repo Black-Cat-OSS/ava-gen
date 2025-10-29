@@ -23,6 +23,18 @@ export default {
           800: 'var(--color-gray-800)',
           900: 'var(--color-gray-900)',
         },
+        stone: {
+          50: '#fafaf9',
+          100: '#f5f5f4',
+          200: '#e7e5e4',
+          300: '#d6d3d1',
+          400: '#a8a29e',
+          500: '#78716c',
+          600: '#57534e',
+          700: '#44403c',
+          800: '#292524',
+          900: '#1c1917',
+        },
         cyan: {
           500: 'var(--color-cyan-500)',
         },
@@ -75,8 +87,8 @@ export default {
           foreground: 'oklch(var(--popover-foreground))',
         },
         card: {
-          DEFAULT: 'oklch(var(--card))',
-          foreground: 'oklch(var(--card-foreground))',
+          DEFAULT: 'var(--card)',
+          foreground: 'var(--card-foreground)',
         },
       },
       borderRadius: {

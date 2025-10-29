@@ -37,7 +37,7 @@ export class PalettesService {
     this.logger.log(`Retrieved ${palettes.length} palettes from ${skip} offset`);
 
     return {
-      palettes,
+      items: palettes,
       pagination: {
         total,
         offset: skip,

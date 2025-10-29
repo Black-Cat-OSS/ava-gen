@@ -16,7 +16,7 @@ export const AvatarCard = ({ avatar, showDetails = true, className = '' }: Avata
   const { t } = useTranslation();
 
   return (
-    <div className={`border rounded-lg p-4 bg-card hover:shadow-lg transition-shadow ${className}`}>
+    <div className={`rounded-lg p-4 bg-gray-700 dark:bg-gray-700 hover:shadow-lg transition-shadow ${className}`}>
       <div className="aspect-square bg-muted rounded-md mb-3 overflow-hidden">
         <img
           src={getImageUrl(avatar.id, { size: 7 })}
