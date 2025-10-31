@@ -27,7 +27,7 @@ export const PaletteCard = ({ palette, type, isSelected, onClick }: PaletteCardP
       <button
         type="button"
         onClick={() => onClick?.(palette)}
-        className={`p-3 rounded-lg border-2 transition-all`}
+        className={'card p-3 rounded-lg transition-all bg-gray-700 dark:bg-gray-700'}
         style={{
           borderColor: isSelected ? palette.primaryColor : undefined,
           backgroundColor: isSelected ? `${palette.primaryColor}15` : undefined,
@@ -52,23 +52,27 @@ export const PaletteCard = ({ palette, type, isSelected, onClick }: PaletteCardP
   }
 
   return (
-    <div className="border border-gray-300 rounded-lg p-4 hover:shadow-lg transition-shadow">
+    <div className="card rounded-lg p-4 hover:shadow-lg transition-shadow bg-gray-700 dark:bg-gray-700">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-xl font-semibold">{palette.name}</h3>
       </div>
 
       <div className="flex gap-4 mb-4">
         <div className="flex-1">
-          <div className="h-12 rounded-md mb-2" style={{ backgroundColor: palette.primaryColor }} />
-          <p className="text-sm text-gray-600">Primary: {palette.primaryColor}</p>
+          <div className="h-12 rounded-md mb-1" style={{ backgroundColor: palette.primaryColor }} />
+          <p className="text-sm text-gray-400">
+            Primary: <strong>{palette.primaryColor}</strong>
+          </p>
         </div>
         <div className="flex-1">
-          <div className="h-12 rounded-md mb-2" style={{ backgroundColor: palette.foreignColor }} />
-          <p className="text-sm text-gray-600">Foreign: {palette.foreignColor}</p>
+          <div className="h-12 rounded-md mb-1" style={{ backgroundColor: palette.foreignColor }} />
+          <p className="text-sm text-gray-400">
+            Foreign: <strong>{palette.foreignColor}</strong>
+          </p>
         </div>
       </div>
 
-      <div className="text-xs text-gray-500">Key: {palette.key}</div>
+      <div className="text-xs text-gray-200">Key: {palette.key}</div>
     </div>
   );
 };
