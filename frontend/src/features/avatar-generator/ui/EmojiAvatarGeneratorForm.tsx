@@ -5,7 +5,7 @@ import {
   ColorPalette, 
   ColorPaletteError, 
   ColorPaletteSkeleton,
-  ColorPaletteProviderSuspense
+  useColorPaletteContext,
 } from '@/features/color-palette';
 import { EmojiPickerComponent } from './EmojiPicker';
 import { BackgroundTypeSelector } from './BackgroundTypeSelector';
@@ -25,6 +25,7 @@ const EmojiAvatarGeneratorFormInternal: React.FC<EmojiAvatarGeneratorFormProps> 
 }) => {
   const { t } = useTranslation();
   const { setGeneratedAvatar } = useAvatarGeneratorContext();
+  const colorPaletteContext = useColorPaletteContext();
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedAvatar, setGeneratedAvatarLocal] = useState<GenerateAvatarResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -81,7 +82,18 @@ const EmojiAvatarGeneratorFormInternal: React.FC<EmojiAvatarGeneratorFormProps> 
         <label className="block text-sm font-medium text-foreground">
           {t('features.avatarGenerator.colorPalette')}
         </label>
-        <ColorPalette />
+        <ColorPalette
+          selectedScheme={colorPaletteContext.selectedScheme}
+          colorSchemes={colorPaletteContext.colorSchemes}
+          palettes={colorPaletteContext.palettes}
+          isLoading={colorPaletteContext.isLoading}
+          isError={colorPaletteContext.isError}
+          hasNextPage={colorPaletteContext.hasNextPage}
+          isFetchingNextPage={colorPaletteContext.isFetchingNextPage}
+          onPaletteChange={colorPaletteContext.onPaletteChange}
+          onRandomPalette={colorPaletteContext.onRandomPalette}
+          loadMore={colorPaletteContext.loadMore}
+        />
       </div>
 
       {/* Custom Color Inputs */}
@@ -199,32 +211,7 @@ export const EmojiAvatarGeneratorForm: React.FC<EmojiAvatarGeneratorFormProps> =
 
       <ErrorBoundary fallback={<ColorPaletteError />}>
         <Suspense fallback={<ColorPaletteSkeleton />}>
-          <ColorPaletteProviderSuspense
-            initialScheme="default"
-            onPaletteChange={(paletteKey, palette) => {
-              if (paletteKey === 'default') {
-                props.onFormDataChange('primaryColor', '#3b82f6');
-                props.onFormDataChange('foreignColor', '#ef4444');
-              } else if (palette) {
-                // Ensure we're getting hex colors, not color names
-                const primaryHex = palette.primaryColor?.startsWith('#') 
-                  ? palette.primaryColor 
-                  : undefined;
-                const foreignHex = palette.foreignColor?.startsWith('#') 
-                  ? palette.foreignColor 
-                  : undefined;
-                
-                if (primaryHex) {
-                  props.onFormDataChange('primaryColor', primaryHex);
-                }
-                if (foreignHex) {
-                  props.onFormDataChange('foreignColor', foreignHex);
-                }
-              }
-            }}
-          >
-            <EmojiAvatarGeneratorFormInternal {...props} />
-          </ColorPaletteProviderSuspense>
+          <EmojiAvatarGeneratorFormInternal {...props} />
         </Suspense>
       </ErrorBoundary>
     </div>
