@@ -2,7 +2,6 @@ import { useState, useEffect, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useGenerateAvatar } from '@/shared/lib';
 import { Button, ErrorBoundary } from '@/shared/ui';
-import { InputField } from '@/shared/ui';
 import { AngleVisualizer } from '@/shared/ui';
 import { AnglePresets } from '@/features/avatar-generator/ui';
 import { ColorPalette, ColorPaletteError, ColorPaletteSkeleton } from '@/features/color-palette';
@@ -16,7 +15,6 @@ import { useAvatarGeneratorContext } from '@/features/avatar-generator/contexts'
 const AvatarGeneratorFormInternal = ({
   formData,
   onFormDataChange,
-  onGenerateSeed,
 }: AvatarGeneratorFormInternalProps) => {
   const { t } = useTranslation();
   const generateAvatar = useGenerateAvatar();
@@ -142,9 +140,7 @@ const AvatarGeneratorFormInternal = ({
         </div>
       )}
 
-      {formData.type !== 'gradient' && (
-        <></>
-      )}
+      {formData.type !== 'gradient' && <></>}
 
       <div className="flex justify-center">
         <Button type="submit" disabled={generateAvatar.v1.isPending} className="px-8 py-2">
