@@ -2,13 +2,14 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { qrcode } from 'vite-plugin-qrcode';
 import { defineConfig } from 'vite';
-import { welcomeMessage } from './plugins';
+import { welcomeMessage, i18nAutoImport } from './plugins';
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    i18nAutoImport(),
     qrcode({
       filter: url => {
         return url.startsWith('http://192.168');

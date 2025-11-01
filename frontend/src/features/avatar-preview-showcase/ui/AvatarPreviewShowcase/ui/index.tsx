@@ -1,4 +1,3 @@
-import { useLocalTranslations } from '@/features/avatar-preview-showcase/hooks/useLocalTranslations';
 import { AvatarShapeProvider } from '@/features/avatar-preview-showcase/contexts';
 import { AvatarShapeToggle } from '@/features/avatar-preview-showcase/ui/AvatarShapeToggle';
 import type { AvatarPreviewShowcaseProps } from '@/features/avatar-preview-showcase/types';
@@ -12,13 +11,14 @@ import { ProfilePreview } from '../../ProfilePreview';
 import { UserCardPreview } from '../../UserCardPreview';
 import { UserListPreview } from '../../UserListPreview';
 import { PreviewCard } from '../../PreviewCard';
+import { useTranslation } from 'react-i18next';
 
 /**
  * AvatarPreviewShowcase component - main showcase section with avatar previews
  * Shows real-world examples of how avatars look in different contexts
  */
 export const AvatarPreviewShowcase: React.FC<AvatarPreviewShowcaseProps> = ({ className = '' }) => {
-  const { t } = useLocalTranslations();
+  const { t } = useTranslation('featuresAvatarPreviewShowcase');
 
   return (
     <section className={`py-12 ${className}`}>
@@ -49,7 +49,7 @@ const AvatarPreviewShowcaseContent = () => {
 
   if (isError) throw new Error('No avatars found', { cause: error });
 
-  const { t } = useLocalTranslations();
+  const { t } = useTranslation('featuresAvatarPreviewShowcase');
 
   return (
     data && (

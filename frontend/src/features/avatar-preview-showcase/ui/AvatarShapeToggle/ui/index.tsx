@@ -1,6 +1,6 @@
 import { Switch } from '@/shared/ui/components';
 import { useAvatarShape } from '@/features/avatar-preview-showcase/hooks';
-import { useLocalTranslations } from '@/features/avatar-preview-showcase/hooks/useLocalTranslations';
+import { useTranslation } from 'react-i18next';
 import { CircleIcon } from './CircleIcon';
 import { SquareIcon } from './SquareIcon';
 
@@ -10,7 +10,7 @@ import { SquareIcon } from './SquareIcon';
  */
 export const AvatarShapeToggle: React.FC = () => {
   const { shape, setShape } = useAvatarShape();
-  const { t } = useLocalTranslations();
+  const { t } = useTranslation('featuresAvatarPreviewShowcase');
 
   const handleShapeChange = (checked: boolean) => {
     setShape(checked ? 'square' : 'circle');

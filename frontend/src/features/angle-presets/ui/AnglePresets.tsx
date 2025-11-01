@@ -1,7 +1,7 @@
 import { type FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AngleVisualizer } from '@/shared/ui';
-import type { AnglePresetsProps } from '../../../types';
+import type { AnglePresetsProps } from '../types';
 
 /**
  * Component for displaying angle presets

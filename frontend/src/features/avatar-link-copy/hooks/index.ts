@@ -1,1 +1,1 @@
-export * from './useLocalTranslations';
+// No hooks exported from this feature
