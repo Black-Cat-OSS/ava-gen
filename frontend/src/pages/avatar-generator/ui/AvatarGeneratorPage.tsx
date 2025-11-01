@@ -42,23 +42,29 @@ export const AvatarGeneratorPage = () => {
           </div>
 
           <Tabs defaultValue="classic" className="mb-6">
-            <TabsList className="bg-stone-50 dark:bg-stone-900 rounded-lg p-1 mb-3">
-              <TabsTrigger className="text-white data-[state=active]:bg-blue-600" value="classic">
+            <TabsList className="bg-gray-700 rounded-lg p-1 mb-3">
+              <TabsTrigger
+                className="text-grey-100 data-[state=active]:text-white data-[state=active]:bg-blue-600"
+                value="classic"
+              >
                 Classic
               </TabsTrigger>
-              <TabsTrigger className="text-white data-[state=active]:bg-blue-600" value="emoji">
+              <TabsTrigger
+                className="text-grey-100 data-[state=active]:text-white data-[state=active]:bg-blue-600"
+                value="emoji"
+              >
                 Emoji
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="classic">
-              <Card className='p-4 bg-card border-0'>
+              <Card className="p-4 bg-card border-0">
                 <AvatarGeneratorForm />
               </Card>
             </TabsContent>
 
             <TabsContent value="emoji">
-              <Card className='p-4 bg-card border-0'>
+              <Card className="p-4 bg-card border-0">
                 <EmojiServiceHealthCheck>
                   <EmojiAvatarGeneratorForm
                     formData={emojiFormData}
