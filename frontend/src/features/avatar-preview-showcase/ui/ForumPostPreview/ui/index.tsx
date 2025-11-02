@@ -8,7 +8,7 @@ import { getImageUrl } from '@/shared/lib/utils';
  * ForumPostPreview component - shows avatar in a forum post context
  */
 export const ForumPostPreview: React.FC<PreviewContextProps> = ({ avatar }) => {
-  const { t } = useTranslation('avatarPreviewShowcase');
+  const { t } = useTranslation('featuresAvatarPreviewShowcase');
   const { shape } = useAvatarShape();
 
   return (

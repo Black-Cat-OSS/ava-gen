@@ -9,7 +9,7 @@ import { getImageUrl } from '@/shared/lib/utils';
  * UserListPreview component - shows avatar in a user list context
  */
 export const UserListPreview: FC<PreviewContextProps> = ({ avatar }) => {
-  const { t } = useTranslation('avatarPreviewShowcase');
+  const { t } = useTranslation('featuresAvatarPreviewShowcase');
   const { shape } = useAvatarShape();
 
   const users = [
