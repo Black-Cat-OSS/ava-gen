@@ -14,7 +14,7 @@ import { IconCopy } from './IconCopy';
  * Shows a Callout with readonly input field and copy button
  */
 export const AvatarLinkCopy: React.FC<AvatarLinkCopyProps> = ({ avatarId, className = '' }) => {
-  const { t } = useTranslation('avatarLinkCopy');
+  const { t } = useTranslation('featuresAvatarLinkCopy');
   const [isCopied, setIsCopied] = useState(false);
   const [avatar, setAvatar] = useState<Avatar | null>(null);
 

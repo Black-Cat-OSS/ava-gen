@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { LanguagePopup } from './LanguagePopup';
 import { I18nextProvider } from 'react-i18next';
 import { PopupProvider } from '../../../lib/contexts';
-import i18n from '../../../lib/i18n';
+import i18n from '@/shared/lib/utils/i18n';
 
 const meta: Meta<typeof LanguagePopup> = {
   title: 'UI/LanguagePopup',

@@ -1,4 +1,4 @@
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import { PalleteApi } from '@/shared/api';
 
 //TODO: Add shared types for Pagination
@@ -12,5 +12,12 @@ export const usePalletes = ({ pick, offset }: UsePalletesParams) => {
     queryKey: ['palletes', pick, offset],
     queryFn: () => PalleteApi.getAll(pick, offset),
     placeholderData: keepPreviousData,
+  });
+};
+
+export const usePalletesSuspense = ({ pick, offset }: UsePalletesParams) => {
+  return useSuspenseQuery({
+    queryKey: ['palletes', pick, offset],
+    queryFn: () => PalleteApi.getAll(pick, offset),
   });
 };

@@ -4,10 +4,10 @@ import { Button, ErrorBoundary } from '@/shared/ui';
 import { lazy, Suspense } from 'react';
 import { Skeleton } from './Skeleton';
 
+const AvatarCircles = lazy(() => import('./AvatarCircles'));
+
 const AvatarWallpaper = () => {
   const { t } = useTranslation();
-
-  const AvatarCircles = lazy(() => import('./AvatarCircles'));
 
   return (
     <div className="text-center mb-8">
