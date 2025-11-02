@@ -21,4 +21,32 @@ i18n
     },
   });
 
+// HMR поддержка для переводов
+if (import.meta.hot) {
+  import.meta.hot.accept('virtual:i18n-resources', async (newModule) => {
+    if (newModule) {
+      // Получаем текущий язык
+      const currentLanguage = i18n.language;
+      
+      // Обновляем ресурсы
+      Object.keys(newModule.i18nResources).forEach((lang) => {
+        Object.keys(newModule.i18nResources[lang]).forEach((namespace) => {
+          i18n.addResourceBundle(
+            lang,
+            namespace,
+            newModule.i18nResources[lang][namespace],
+            true,
+            true
+          );
+        });
+      });
+      
+      // Перезагружаем текущий язык
+      await i18n.changeLanguage(currentLanguage);
+      
+      console.log('🔥 HMR: Переводы обновлены в i18n');
+    }
+  });
+}
+
 export default i18n;

@@ -139,13 +139,40 @@ export const supportedLanguages = ${languagesStr};
       }
     },
 
-    handleHotUpdate({ file, server }) {
+    async handleHotUpdate({ file, server, modules }) {
+      // Проверяем, что это файл перевода
       if (file.includes('locales') && file.endsWith('.json')) {
+        const fileName = file.split(/[/\\]locales[/\\]/)[1] || file;
+        console.log(`\n🔄 HMR: Обновление переводов из ${fileName}`);
+        
+        // Сбрасываем кэш сгенерированного кода
         generatedCode = '';
 
+        // Получаем виртуальный модуль
         const module = server.moduleGraph.getModuleById(resolvedVirtualModuleId);
         if (module) {
+          // Инвалидируем модуль
           server.moduleGraph.invalidateModule(module);
+          
+          // Отправляем HMR событие всем импортерам
+          const timestamp = Date.now();
+          const hmrPayload = {
+            type: 'update' as const,
+            updates: [
+              {
+                type: 'js-update' as const,
+                timestamp,
+                path: virtualModuleId,
+                acceptedPath: virtualModuleId,
+              },
+            ],
+          };
+          
+          server.ws.send(hmrPayload);
+          console.log('✅ HMR: Переводы обновлены');
+          
+          // Возвращаем массив модулей для дальнейшей обработки HMR
+          return [module, ...modules];
         }
 
         return [];
