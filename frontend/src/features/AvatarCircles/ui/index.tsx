@@ -1,10 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from '@tanstack/react-router';
 import { Button, ErrorBoundary } from '@/shared/ui';
-import { lazy, Suspense } from 'react';
+import { Suspense } from 'react';
 import { Skeleton } from './Skeleton';
-
-const AvatarCircles = lazy(() => import('./AvatarCircles'));
+import { AvatarCircles } from './AvatarCircles';
 
 const AvatarWallpaper = () => {
   const { t } = useTranslation();

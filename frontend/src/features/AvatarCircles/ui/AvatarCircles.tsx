@@ -1,7 +1,7 @@
 import { useAvatars, FailImage } from '@/shared';
 import { getImageUrl } from '@/shared/lib/utils';
 
-const AvatarCircles = () => {
+export const AvatarCircles = () => {
   const { data: avatarsData } = useAvatars({ pick: 5, offset: 0 });
 
   return (
@@ -28,5 +28,3 @@ const AvatarCircles = () => {
     </div>
   );
 };
-
-export default AvatarCircles;

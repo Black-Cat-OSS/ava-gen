@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { ErrorBoundary } from '@/shared/ui';
 import { useAvatars } from '@/shared/lib';
 import { AvatarGalleryProvider } from './AvatarGalleryContext';
@@ -39,11 +39,13 @@ const AvatarGalleryFeature = () => {
   return (
     <div className="mb-8">
       <ErrorBoundary>
-        <AvatarGalleryProvider value={contextValue}>
-          <AvatarControls />
-          <AvatarGallery />
-          <LoadMoreButton />
-        </AvatarGalleryProvider>
+        <Suspense fallback={<div>Loading...</div>}>
+          <AvatarGalleryProvider value={contextValue}>
+            <AvatarControls />
+            <AvatarGallery />
+            <LoadMoreButton />
+          </AvatarGalleryProvider>
+        </Suspense>
       </ErrorBoundary>
     </div>
   );
