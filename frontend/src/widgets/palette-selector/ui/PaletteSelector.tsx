@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { usePalletes } from '@/shared/lib/hooks';
+import { usePalletesSuspense } from '@/shared/lib/hooks';
 import { useEffect, useState } from 'react';
 import type { Pallete } from '@/entities';
 import { Button } from '@/shared/ui';
@@ -26,7 +26,7 @@ export interface PaletteSelectorProps {
 export const PaletteSelector = ({ selectedScheme, onPaletteChange }: PaletteSelectorProps) => {
   const [chunk, setChunk] = useState<number>(1);
 
-  const { data, refetch } = usePalletes({ offset: 0, pick: chunk * CHUNK_SIZE });
+  const { data, refetch } = usePalletesSuspense({ offset: 0, pick: chunk * CHUNK_SIZE });
 
   const { t } = useTranslation();
 
