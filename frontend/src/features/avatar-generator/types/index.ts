@@ -25,24 +25,6 @@ export interface CustomColorInputsProps {
 }
 
 /**
- * Props interface for AnglePresets component
- */
-export interface AnglePresetsProps {
-  /**
-   * Current selected angle
-   */
-  currentAngle: number;
-  /**
-   * Callback when preset angle is selected
-   */
-  onAngleSelect: (angle: number) => void;
-  /**
-   * Size of each preset visualizer
-   */
-  size?: number;
-}
-
-/**
  * Background type for emoji avatars
  */
 export type BackgroundType = 'solid' | 'linear' | 'radial';

@@ -1,8 +1,7 @@
-import { lazy, Suspense, useState } from 'react';
-import { Button, ErrorBoundary } from '@/shared/ui';
+import { lazy, Suspense } from 'react';
+import { ErrorBoundary } from '@/shared/ui';
 import { PalettesSkeleton } from './Skeleton';
-import { usePalletes, useLocalTranslations } from '@/shared/lib/hooks';
-import { palettesTranslations } from '../locales/translations';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Страница управления палитрами
@@ -12,35 +11,24 @@ import { palettesTranslations } from '../locales/translations';
 const PalletesGrid = lazy(() => import('./PalletesGrid'));
 
 export const PalettesPage = () => {
-  const [chunk, setChunk] = useState<number>(1);
-  const { t } = useLocalTranslations('palettes', palettesTranslations);
-
-  const { data } = usePalletes({ pick: 10 * chunk, offset: 0 });
-
-  const handleLoadMore = () => {
-    setChunk(prev => prev + 1);
-  };
+  const { t } = useTranslation('pagesPalettes');
 
   return (
-    <ErrorBoundary
-      fallback={
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center text-red-500">{t('errorMessage')}</div>
-        </div>
-      }
-    >
-      <Suspense fallback={<PalettesSkeleton />}>
-        {data && (
-          <>
-            <PalletesGrid data={data} title={t('title')} />
-            <div className="flex justify-center">
-              <Button onClick={handleLoadMore} disabled={!data?.pagination.hasMore}>
-                {t('loadMore')}
-              </Button>
-            </div>
-          </>
-        )}
-      </Suspense>
-    </ErrorBoundary>
+    <>
+      <div className="mb-8 mt-8">
+        <h1 className="text-3xl font-bold text-center">{t('title')}</h1>
+      </div>
+      <ErrorBoundary
+        fallback={
+          <div className="container mx-auto px-4 py-8">
+            <div className="text-center text-red-500">{t('errorMessage')}</div>
+          </div>
+        }
+      >
+        <Suspense fallback={<PalettesSkeleton />}>
+          <PalletesGrid />
+        </Suspense>
+      </ErrorBoundary>
+    </>
   );
 };

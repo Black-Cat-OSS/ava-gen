@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useGenerateAvatar } from '@/shared/lib';
 import { Button, ErrorBoundary } from '@/shared/ui';
 import { AngleVisualizer } from '@/shared/ui';
-import { AnglePresets } from '@/features/avatar-generator/ui';
+import { AnglePresets } from '@/features/angle-presets';
 import { ColorPalette, ColorPaletteError, ColorPaletteSkeleton } from '@/features/color-palette';
 import type { AvatarGeneratorFormInternalProps } from '@/features/avatar-generator/types';
 import { generateMnemonicSeed } from '@/features/avatar-generator/utils';

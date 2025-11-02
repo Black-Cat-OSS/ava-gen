@@ -4,6 +4,8 @@ export * from './LanguageSwitcher';
 export * from './LanguageButton';
 export * from './LoginForm';
 export * from './color-palette';
+export * from './color-preview';
+export * from './angle-presets';
 export * from './avatar-preview-showcase';
 export * from './AvatarCircles';
 export * from './avatar-gallery';

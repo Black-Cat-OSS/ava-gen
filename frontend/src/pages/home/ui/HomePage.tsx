@@ -1,10 +1,10 @@
 import { lazy, Suspense } from 'react';
 import AvatarGalleryFeature from '@/features/avatar-gallery';
 
-export const HomePage = () => {
-  const AvatarPreviewShowcase = lazy(() => import('@/features/avatar-preview-showcase'));
-  const AvatarWallpaper = lazy(() => import('@/features/AvatarCircles'));
+const AvatarPreviewShowcase = lazy(() => import('@/features/avatar-preview-showcase'));
+const AvatarWallpaper = lazy(() => import('@/features/AvatarCircles'));
 
+export const HomePage = () => {
   return (
     <div className="py-8">
       <div className="max-w">

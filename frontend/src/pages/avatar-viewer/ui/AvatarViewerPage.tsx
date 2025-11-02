@@ -4,7 +4,6 @@ import { useSearch } from '@tanstack/react-router';
 import { Button, FailImage } from '@/shared/ui';
 import { Link } from '@tanstack/react-router';
 import { AvatarLinkCopy } from '@/features/avatar-link-copy';
-import { useLocalTranslations } from '@/features/avatar-link-copy/hooks';
 import { AVAILABLE_SIZES, AVAILABLE_FILTERS } from '../constants';
 import { ErrorBoundary } from './ErrorBoundary';
 import { NotFound } from './NotFound';
@@ -12,7 +11,6 @@ import { AvatarInformation } from './AvatarInformation';
 import { useAvatar } from '@/shared/lib/hooks/use-avatar';
 
 export const AvatarViewerPage = () => {
-  useLocalTranslations();
   const { t } = useTranslation();
   const search = useSearch({ from: '/avatar-viewer' });
   const { data: avatar, isLoading, isError, error } = useAvatar(search.id || '');

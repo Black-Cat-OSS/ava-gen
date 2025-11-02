@@ -8,7 +8,7 @@ import {
   EmojiServiceHealthCheck,
 } from '@/features/avatar-generator';
 import type { EmojiAvatarFormData } from '@/features/avatar-generator/types';
-import { Card, Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui';
 import { Description } from './Description';
 
 export const AvatarGeneratorPage = () => {
@@ -58,20 +58,16 @@ export const AvatarGeneratorPage = () => {
             </TabsList>
 
             <TabsContent value="classic">
-              <Card className="p-4 bg-card border-0">
-                <AvatarGeneratorForm />
-              </Card>
+              <AvatarGeneratorForm />
             </TabsContent>
 
             <TabsContent value="emoji">
-              <Card className="p-4 bg-card border-0">
-                <EmojiServiceHealthCheck>
-                  <EmojiAvatarGeneratorForm
-                    formData={emojiFormData}
-                    onFormDataChange={handleEmojiFormDataChange}
-                  />
-                </EmojiServiceHealthCheck>
-              </Card>
+              <EmojiServiceHealthCheck>
+                <EmojiAvatarGeneratorForm
+                  formData={emojiFormData}
+                  onFormDataChange={handleEmojiFormDataChange}
+                />
+              </EmojiServiceHealthCheck>
             </TabsContent>
           </Tabs>
 
