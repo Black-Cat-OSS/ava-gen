@@ -9,7 +9,7 @@ import { getImageUrl } from '@/shared/lib/utils';
  * UserCardPreview component - shows avatar in a user card component context
  */
 export const UserCardPreview: FC<PreviewContextProps> = ({ avatar }) => {
-  const { t } = useTranslation('avatarPreviewShowcase');
+  const { t } = useTranslation('featuresAvatarPreviewShowcase');
   const { shape } = useAvatarShape();
 
   return (

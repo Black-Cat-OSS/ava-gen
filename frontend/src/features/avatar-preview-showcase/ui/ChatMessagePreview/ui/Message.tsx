@@ -8,7 +8,7 @@ import { getImageUrl } from '@/shared/lib/utils';
  * ChatMessagePreview component - shows avatar in a chat interface context
  */
 export const Message: React.FC<PreviewContextProps> = ({ avatar }) => {
-  const { t } = useTranslation('avatarPreviewShowcase');
+  const { t } = useTranslation('featuresAvatarPreviewShowcase');
   const { shape } = useAvatarShape();
 
   return (

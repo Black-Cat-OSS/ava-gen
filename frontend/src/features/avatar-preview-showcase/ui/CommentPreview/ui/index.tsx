@@ -10,7 +10,7 @@ import { getImageUrl } from '@/shared/lib/utils';
  * CommentPreview component - shows avatar in a blog comment context
  */
 export const CommentPreview: React.FC<PreviewContextProps> = ({ avatar }) => {
-  const { t } = useTranslation('avatarPreviewShowcase');
+  const { t } = useTranslation('featuresAvatarPreviewShowcase');
   const { shape } = useAvatarShape();
 
   return (
