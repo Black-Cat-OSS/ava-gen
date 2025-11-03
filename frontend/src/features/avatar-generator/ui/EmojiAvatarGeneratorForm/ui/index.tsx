@@ -77,7 +77,6 @@ const EmojiAvatarGeneratorFormInternal: React.FC<EmojiAvatarGeneratorFormProps> 
         onPrimaryColorChange={color => handleInputChange('primaryColor', color)}
         onForeignColorChange={color => handleInputChange('foreignColor', color)}
         disabled={disabled}
-        t={t}
       />
 
       {formData.backgroundType === 'linear' && (
