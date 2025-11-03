@@ -1,3 +1,6 @@
+/**
+ * @deprecated Use avatar-classic-generator instead
+ */
 export { AvatarGeneratorForm } from './ui/AvatarGeneratorForm';
 export { AvatarLinkCopySection } from './ui/AvatarLinkCopySection';
 export { EmojiAvatarGeneratorForm } from './ui/EmojiAvatarGeneratorForm';

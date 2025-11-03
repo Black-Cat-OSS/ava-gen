@@ -1,4 +1,5 @@
-import React from 'react';
+import type { IColorScheme } from '@/shared/api/generator/types';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 /**
@@ -15,11 +16,23 @@ import { useTranslation } from 'react-i18next';
 export const ColorPreview: React.FC<{
   primaryColor: string;
   foreignColor: string;
-  onPrimaryColorChange: (color: string) => void;
-  onForeignColorChange: (color: string) => void;
+  // @deprecated use onChange instead
+  onPrimaryColorChange?: (color: string) => void;
+  // @deprecated use onChange instead
+  onForeignColorChange?: (color: string) => void;
+  onChange?: (scheme: IColorScheme) => void;
   disabled?: boolean;
-}> = ({ primaryColor, foreignColor, onPrimaryColorChange, onForeignColorChange, disabled }) => {
+}> = ({ primaryColor, foreignColor, onChange, disabled }) => {
   const { t } = useTranslation('featuresColorPreview');
+
+  const [colorScheme, setColorScheme] = useState<IColorScheme>({
+    primaryColor: primaryColor ?? '#ffffff',
+    foreignColor: foreignColor ?? '#000000',
+  });
+
+  useEffect(() => {
+    setColorScheme({ primaryColor, foreignColor });
+  }, [primaryColor, foreignColor]);
 
   return (
     <div className="grid grid-cols-2 grid-rows-[20px_auto] gap-2">
@@ -28,8 +41,11 @@ export const ColorPreview: React.FC<{
       </strong>
       <input
         type="color"
-        value={primaryColor}
-        onChange={e => onPrimaryColorChange(e.target.value)}
+        value={colorScheme.primaryColor}
+        onChange={e => {
+          setColorScheme({ ...colorScheme, primaryColor: e.target.value });
+          onChange?.(colorScheme);
+        }}
         disabled={disabled}
         className="w-full rounded-md border border-border bg-background col-start-1 row-start-2"
       />
@@ -39,8 +55,11 @@ export const ColorPreview: React.FC<{
       </strong>
       <input
         type="color"
-        value={foreignColor}
-        onChange={e => onForeignColorChange(e.target.value)}
+        value={colorScheme.foreignColor}
+        onChange={e => {
+          setColorScheme({ ...colorScheme, foreignColor: e.target.value });
+          onChange?.(colorScheme);
+        }}
         disabled={disabled}
         className="w-full rounded-md border border-border bg-background col-start-2 row-start-2"
       />

@@ -1,10 +1,4 @@
 import { useContext } from 'react';
-import { AvatarGeneratorContext } from './AvatarGeneratorContextDefinition';
+import { AvatarGeneratorContext } from './AvatarGeneratorContext';
 
-export const useAvatarGeneratorContext = () => {
-  const context = useContext(AvatarGeneratorContext);
-  if (context === undefined) {
-    throw new Error('useAvatarGeneratorContext must be used within an AvatarGeneratorProvider');
-  }
-  return context;
-};
+export const useAvatarGeneratorContext = () => useContext(AvatarGeneratorContext);

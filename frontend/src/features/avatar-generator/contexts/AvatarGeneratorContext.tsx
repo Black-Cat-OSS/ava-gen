@@ -1,17 +1,12 @@
-import { useState, type ReactNode } from 'react';
-import { AvatarGeneratorContext } from './AvatarGeneratorContextDefinition';
+import { createContext } from 'react';
 import type { GenerateAvatarResponse } from '@/shared/api';
 
-interface AvatarGeneratorProviderProps {
-  children: ReactNode;
+interface AvatarGeneratorContextType {
+  generatedAvatar: GenerateAvatarResponse | null;
+  setGeneratedAvatar: (avatar: GenerateAvatarResponse | null) => void;
 }
 
-export const AvatarGeneratorProvider = ({ children }: AvatarGeneratorProviderProps) => {
-  const [generatedAvatar, setGeneratedAvatar] = useState<GenerateAvatarResponse | null>(null);
-
-  return (
-    <AvatarGeneratorContext.Provider value={{ generatedAvatar, setGeneratedAvatar }}>
-      {children}
-    </AvatarGeneratorContext.Provider>
-  );
-};
+export const AvatarGeneratorContext = createContext<AvatarGeneratorContextType>({
+  generatedAvatar: null,
+  setGeneratedAvatar: () => {},
+});
