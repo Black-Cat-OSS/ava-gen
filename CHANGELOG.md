@@ -44,6 +44,12 @@
 - **ui:** Fixed theming for preloader
   ([c01da21](https://github.com/Black-Cat-OSS/ava-gen/commit/c01da2119ef2a98da785b39deafeb80408b2e121))
 
+
+## [Unreleased]
+
+* chore: Release version 0.0.10 ([c0d710a](https://github.com/Black-Cat-OSS/ava-gen/commit/c0d710a))
+
+
 ## [0.0.8](https://github.com/Black-Cat-OSS/ava-gen/compare/v0.0.7...v0.0.8) (2025-10-19)
 
 ### Features
