@@ -1,18 +1,18 @@
-export type EmojiSize = 'small' | 'medium' | 'large';
-export type BackgroundType = 'solid' | 'linear' | 'radial';
+export type EmojiSize = Record<'small' | 'medium' | 'large', string>;
+export type BackgroundType = Record<'solid' | 'linear' | 'radial', string>;
 export type GeneratorType = 'pixelize' | 'wave' | 'emoji';
 
-export interface BaseGenerateParams {
+export interface IColorScheme {
   primaryColor?: string;
   foreignColor?: string;
   colorScheme?: string;
 }
 
-export interface GenerateAvatarParams extends BaseGenerateParams {
+export interface GenerateAvatarParams extends IColorScheme {
   seed?: string;
 }
 
-export interface GenerateAvatarResponse extends BaseGenerateParams {
+export interface GenerateAvatarResponse extends IColorScheme {
   id: string;
   name: string;
   filePath: string;
@@ -21,7 +21,7 @@ export interface GenerateAvatarResponse extends BaseGenerateParams {
   generatorType?: string;
 }
 
-export interface GenerateEmojiAvatarParams extends BaseGenerateParams {
+export interface GenerateEmojiAvatarParams extends IColorScheme {
   emoji: string;
   backgroundType: BackgroundType;
   angle?: number;
