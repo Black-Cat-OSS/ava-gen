@@ -1,4 +1,4 @@
-import React, { Suspense, useState } from 'react';
+import React, { Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, ErrorBoundary } from '@/shared/ui';
 import { ColorPalette, ColorPaletteError, ColorPaletteSkeleton } from '@/features/color-palette';
@@ -6,12 +6,11 @@ import { EmojiPickerComponent } from '@/features/avatar-generator/ui';
 import { BackgroundTypeSelector } from '@/features/avatar-generator/ui';
 import { EmojiSizeSelector } from '@/features/avatar-generator/ui';
 import { AnglePresets } from '@/features/angle-presets';
-import { GeneratorApi } from '@/shared/api';
-import { useAvatarGeneratorContext } from '@/features/avatar-generator/contexts';
 import type { EmojiAvatarGeneratorFormProps } from '@/features/avatar-generator/types';
-import type { Avatar } from '@/entities/avatar';
 import { ColorPreview } from '@/features/color-preview';
-import { SuccessMessage } from './SuccessMessage';
+// import { useGenerateAvatar } from '@/shared/lib/hooks';
+// import { useForm } from 'react-hook-form';
+// import type { FormData } from '../types';
 
 /**
  * Internal form component that uses color palette context
@@ -22,43 +21,17 @@ const EmojiAvatarGeneratorFormInternal: React.FC<EmojiAvatarGeneratorFormProps> 
   disabled = false,
 }) => {
   const { t } = useTranslation();
-  const { setGeneratedAvatar } = useAvatarGeneratorContext();
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedAvatar, setGeneratedAvatarLocal] = useState<Avatar | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsGenerating(true);
-    setError(null);
-
-    try {
-      const params = {
-        emoji: formData.emoji,
-        backgroundType: formData.backgroundType,
-        primaryColor: formData.primaryColor || undefined,
-        foreignColor: formData.foreignColor || undefined,
-        angle: formData.backgroundType === 'linear' ? formData.angle : undefined,
-        emojiSize: formData.emojiSize,
-      };
-
-      const result = await GeneratorApi.v3.generate(params);
-      setGeneratedAvatarLocal(result);
-      setGeneratedAvatar(result);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to generate emoji avatar';
-      setError(errorMessage);
-    } finally {
-      setIsGenerating(false);
-    }
-  };
+  // const { v3 } = useGenerateAvatar();
+  // const { register, handleSubmit } = useForm<FormData>({
+  //   defaultValues: formData,
+  // });
 
   const handleInputChange = (field: keyof typeof formData, value: string | number) => {
     onFormDataChange(field, value);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form className="space-y-6">
       <EmojiPickerComponent
         selectedEmoji={formData.emoji}
         onEmojiSelect={emoji => handleInputChange('emoji', emoji)}
@@ -70,7 +43,6 @@ const EmojiAvatarGeneratorFormInternal: React.FC<EmojiAvatarGeneratorFormProps> 
         disabled={disabled}
       />
       <ColorPalette />
-
       <ColorPreview
         primaryColor={formData.primaryColor}
         foreignColor={formData.foreignColor}
@@ -78,7 +50,6 @@ const EmojiAvatarGeneratorFormInternal: React.FC<EmojiAvatarGeneratorFormProps> 
         onForeignColorChange={color => handleInputChange('foreignColor', color)}
         disabled={disabled}
       />
-
       {formData.backgroundType === 'linear' && (
         <div className="space-y-3">
           <strong className="block text-sm text-foreground">
@@ -90,32 +61,15 @@ const EmojiAvatarGeneratorFormInternal: React.FC<EmojiAvatarGeneratorFormProps> 
           />
         </div>
       )}
-
       <EmojiSizeSelector
         selectedSize={formData.emojiSize}
         onSizeSelect={size => handleInputChange('emojiSize', size)}
         disabled={disabled}
       />
 
-      <Button
-        type="submit"
-        disabled={disabled || !formData.emoji || isGenerating}
-        className="w-full"
-      >
-        {isGenerating
-          ? t('features.avatarGenerator.generating')
-          : t('features.avatarGenerator.generateEmojiAvatar')}
+      <Button type="submit" className="w-full">
+        {t('features.avatarGenerator.generateEmojiAvatar')}
       </Button>
-
-      {generatedAvatar && <SuccessMessage avatar={generatedAvatar} t={t} />}
-
-      {error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-md">
-          <p className="text-red-800 text-sm">
-            {t('features.avatarGenerator.error')}: {error}
-          </p>
-        </div>
-      )}
     </form>
   );
 };

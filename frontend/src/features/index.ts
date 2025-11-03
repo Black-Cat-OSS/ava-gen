@@ -9,3 +9,4 @@ export * from './angle-presets';
 export * from './avatar-preview-showcase';
 export * from './AvatarCircles';
 export * from './avatar-gallery';
+export * from './avatar-classic-generator';

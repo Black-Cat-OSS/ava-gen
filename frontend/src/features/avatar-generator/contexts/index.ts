@@ -1,3 +1,2 @@
-export * from './AvatarGeneratorContextDefinition';
-export * from './AvatarGeneratorContext';
-export * from './useAvatarGeneratorContext';
+export { AvatarGeneratorProvider } from '../providers';
+export { useAvatarGeneratorContext } from './useAvatarGeneratorContext';

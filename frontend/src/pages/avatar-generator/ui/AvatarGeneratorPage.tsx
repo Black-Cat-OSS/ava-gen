@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  AvatarGeneratorForm,
   AvatarLinkCopySection,
   AvatarGeneratorProvider,
   EmojiAvatarGeneratorForm,
@@ -10,6 +9,7 @@ import {
 import type { EmojiAvatarFormData } from '@/features/avatar-generator/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui';
 import { Description } from './Description';
+import { ClassicGeneratorForm } from '@/features';
 
 export const AvatarGeneratorPage = () => {
   const { t } = useTranslation();
@@ -58,7 +58,8 @@ export const AvatarGeneratorPage = () => {
             </TabsList>
 
             <TabsContent value="classic">
-              <AvatarGeneratorForm />
+              {/* <AvatarGeneratorForm /> */}
+              <ClassicGeneratorForm />
             </TabsContent>
 
             <TabsContent value="emoji">

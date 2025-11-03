@@ -3,6 +3,7 @@ import type { ColorPalette, ColorScheme } from '../types/types';
 
 /**
  * Interface for the color palette context value
+ * @deprecated do not use it anymore, use the new context instead
  */
 export interface ColorPaletteContextValue {
   /** Currently selected color scheme */

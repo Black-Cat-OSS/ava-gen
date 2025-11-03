@@ -9,9 +9,19 @@ import { PaletteSelector } from '@/widgets';
  * Props for the ColorPalette component
  */
 export interface ColorPaletteProps {
-  /** Currently selected color scheme */
+  /**
+   * Currently selected color scheme
+   * @optional
+   * @description The palette that is currently selected. If provided, the component will highlight it in the UI.
+   */
   selectedScheme?: Pallete;
-  /** Callback when palette is changed */
+
+  /**
+   * Callback function triggered when user selects a different palette
+   * @optional
+   * @param palette - The newly selected color palette
+   * @description Called when the user clicks on a palette option. Use this to update the parent component's state.
+   */
   onPaletteChange?: (palette: Pallete) => void;
 }
 
