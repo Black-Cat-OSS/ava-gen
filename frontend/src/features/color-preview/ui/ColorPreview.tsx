@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Color preview component for primary and foreign colors selection
@@ -9,7 +10,6 @@ import React from 'react';
  * @param props.onPrimaryColorChange - Callback for primary color change
  * @param props.onForeignColorChange - Callback for foreign color change
  * @param props.disabled - Whether the inputs are disabled
- * @param props.t - Translation function
  * @returns JSX element
  */
 export const ColorPreview: React.FC<{
@@ -18,12 +18,13 @@ export const ColorPreview: React.FC<{
   onPrimaryColorChange: (color: string) => void;
   onForeignColorChange: (color: string) => void;
   disabled?: boolean;
-  t: (key: string) => string;
-}> = ({ primaryColor, foreignColor, onPrimaryColorChange, onForeignColorChange, disabled, t }) => {
+}> = ({ primaryColor, foreignColor, onPrimaryColorChange, onForeignColorChange, disabled }) => {
+  const { t } = useTranslation('featuresColorPreview');
+
   return (
     <div className="grid grid-cols-2 grid-rows-[20px_auto] gap-2">
       <strong className="block h-5 text-sm text-foreground col-start-1 row-start-1">
-        {t('features.avatarGenerator.primaryColor')}
+        {t('primaryColor')}
       </strong>
       <input
         type="color"
@@ -34,7 +35,7 @@ export const ColorPreview: React.FC<{
       />
 
       <strong className="block h-5 text-sm text-foreground col-start-2 row-start-1">
-        {t('features.avatarGenerator.foreignColor')}
+        {t('foreignColor')}
       </strong>
       <input
         type="color"
