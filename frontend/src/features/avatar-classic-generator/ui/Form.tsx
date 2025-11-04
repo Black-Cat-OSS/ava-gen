@@ -3,10 +3,12 @@ import { AnglePresets, ColorPalette, ColorPreview } from '@/features';
 import {
   AngleVisualizer,
   Button,
+  getImageUrl,
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
+  useGenerateAvatar,
   usePalletes,
 } from '@/shared';
 import type { IColorScheme, GeneratorType } from '@/shared/api/generator/types';
@@ -22,12 +24,16 @@ type FormData = {
 
 export const ClassicGeneratorForm = () => {
   const { data } = usePalletes({ pick: 1, offset: 0 });
+  const { v1, v2 } = useGenerateAvatar();
+  const { mutate: generateAvatar, isSuccess, data: avatarData } = v1;
+  const { mutate: generateAvatarV2, isSuccess: isSuccessV2, data: avatarDataV2 } = v2;
 
   const { control, handleSubmit, watch, setValue } = useForm<FormData>({
     defaultValues: {
       color: {
         primaryColor: data?.items?.[0]?.primaryColor ?? '#ffffff',
         foreignColor: data?.items?.[0]?.foreignColor ?? '#000000',
+        colorScheme: data?.items?.[0]?.colorScheme ?? 'default',
       },
       generatorType: 'pixelize',
       angle: 90,
@@ -48,7 +54,23 @@ export const ClassicGeneratorForm = () => {
   }, [data, setValue]);
 
   const onSubmit = (data: FormData) => {
-    console.log(data);
+
+    if (data.generatorType === 'gradient') {
+      generateAvatarV2({
+        primaryColor: data.color.primaryColor,
+        foreignColor: data.color.foreignColor,
+        colorScheme: data.color.colorScheme,
+        angle: data.angle,
+      });
+      return;
+    }
+
+    generateAvatar({
+      primaryColor: data.color.primaryColor,
+      foreignColor: data.color.foreignColor,
+      colorScheme: data.color.colorScheme,
+      type: data.generatorType as GeneratorType,
+    });
   };
 
   return (
@@ -141,6 +163,14 @@ export const ClassicGeneratorForm = () => {
           </Button>
         </div>
       </form>
+
+      {/* SHIT CODE HERE */}
+      {isSuccess && <div>Avatar generated successfully</div>}
+      {avatarData && <img src={getImageUrl(avatarData.id, { size: 8 })} alt="Avatar" />}
+      {isSuccessV2 && <div>Gradient avatar generated successfully</div>}
+      {avatarDataV2 && (
+        <img src={getImageUrl(avatarDataV2.id, { size: 8 })} alt="Gradient Avatar" />
+      )}
     </div>
   );
 };
