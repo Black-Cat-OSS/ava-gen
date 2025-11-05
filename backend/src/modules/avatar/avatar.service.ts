@@ -32,11 +32,6 @@ export class AvatarService {
     this.logger.log('Generating new avatar');
 
     try {
-      // Validate seed length
-      if (dto.seed && dto.seed.length > 32) {
-        throw new BadRequestException('Seed must not exceed 32 characters');
-      }
-
       // Generate avatar object
       const avatarObject = await this.avatarGenerator.generateAvatar(
         dto.primaryColor,

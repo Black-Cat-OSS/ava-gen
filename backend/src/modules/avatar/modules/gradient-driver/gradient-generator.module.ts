@@ -38,7 +38,7 @@ export class GradientGeneratorModule implements IGeneratorStrategy {
     primaryColor?: string,
     foreignColor?: string,
     colorScheme?: string,
-    seed?: string,
+    _seed?: string,
     angle?: number,
   ): Promise<AvatarObject> {
     this.logger.log('Generating new gradient avatar');
@@ -58,55 +58,18 @@ export class GradientGeneratorModule implements IGeneratorStrategy {
       }
     }
 
-    // Gradient generator doesn't use seed for reproducibility
-    const uniqueSeed = uuidv4();
+    // Gradient doesn't use seed - it's deterministic based on colors and angle
 
     // Generate images for all required sizes (4n to 9n)
     const avatarObject: AvatarObject = {
       meta_data_name: id,
       meta_data_created_at: now,
-      image_4n: await this.generateImageForSize(
-        16,
-        finalPrimaryColor,
-        finalForeignColor,
-        uniqueSeed,
-        angle,
-      ), // 2^4 = 16
-      image_5n: await this.generateImageForSize(
-        32,
-        finalPrimaryColor,
-        finalForeignColor,
-        uniqueSeed,
-        angle,
-      ), // 2^5 = 32
-      image_6n: await this.generateImageForSize(
-        64,
-        finalPrimaryColor,
-        finalForeignColor,
-        uniqueSeed,
-        angle,
-      ), // 2^6 = 64
-      image_7n: await this.generateImageForSize(
-        128,
-        finalPrimaryColor,
-        finalForeignColor,
-        uniqueSeed,
-        angle,
-      ), // 2^7 = 128
-      image_8n: await this.generateImageForSize(
-        256,
-        finalPrimaryColor,
-        finalForeignColor,
-        uniqueSeed,
-        angle,
-      ), // 2^8 = 256
-      image_9n: await this.generateImageForSize(
-        512,
-        finalPrimaryColor,
-        finalForeignColor,
-        uniqueSeed,
-        angle,
-      ), // 2^9 = 512
+      image_4n: await this.generateImageForSize(16, finalPrimaryColor, finalForeignColor, angle), // 2^4 = 16
+      image_5n: await this.generateImageForSize(32, finalPrimaryColor, finalForeignColor, angle), // 2^5 = 32
+      image_6n: await this.generateImageForSize(64, finalPrimaryColor, finalForeignColor, angle), // 2^6 = 64
+      image_7n: await this.generateImageForSize(128, finalPrimaryColor, finalForeignColor, angle), // 2^7 = 128
+      image_8n: await this.generateImageForSize(256, finalPrimaryColor, finalForeignColor, angle), // 2^8 = 256
+      image_9n: await this.generateImageForSize(512, finalPrimaryColor, finalForeignColor, angle), // 2^9 = 512
     };
 
     this.logger.log(`Gradient avatar generated with ID: ${id}`);
@@ -117,7 +80,6 @@ export class GradientGeneratorModule implements IGeneratorStrategy {
     size: number,
     primaryColor?: string,
     foreignColor?: string,
-    seed?: string,
     angle?: number,
   ): Promise<Buffer> {
     const canvas = Buffer.alloc(size * size * 4);
@@ -166,27 +128,21 @@ export class GradientGeneratorModule implements IGeneratorStrategy {
       .toBuffer();
   }
 
-  private createSeededRandom(seed: number): () => number {
-    let value = seed;
-    return () => {
-      value = (value * 9301 + 49297) % 233280;
-      return value / 233280;
-    };
-  }
-
-  private seedToNumber(seed: string): number {
-    let hash = 0;
-    for (let i = 0; i < seed.length; i++) {
-      const char = seed.charCodeAt(i);
-      hash = (hash << 5) - hash + char;
-      hash = hash & hash; // Convert to 32-bit integer
-    }
-    return Math.abs(hash) / 2147483647; // Normalize to 0-1
-  }
-
   private hexToRgb(hex: string): { r: number; g: number; b: number } {
-    const convertedHex = convertNamedColorToHex(hex);
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(convertedHex);
+    let convertedHex = convertNamedColorToHex(hex);
+
+    // Remove # if present
+    convertedHex = convertedHex.replace(/^#/, '');
+
+    // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+    if (convertedHex.length === 3) {
+      convertedHex = convertedHex
+        .split('')
+        .map(char => char + char)
+        .join('');
+    }
+
+    const result = /^([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(convertedHex);
 
     if (!result) {
       // Default to blue if color is invalid

@@ -50,7 +50,7 @@ export class PixelizeGeneratorModule implements IGeneratorStrategy {
       }
     }
 
-    const uniqueSeed = seed ? seed + '-' + Date.now() + '-' + Math.random() : uuidv4();
+    const uniqueSeed = seed || uuidv4();
 
     // Generate images for all required sizes (4n to 9n)
     const avatarObject: AvatarObject = {
@@ -176,8 +176,20 @@ export class PixelizeGeneratorModule implements IGeneratorStrategy {
   }
 
   private hexToRgb(hex: string): { r: number; g: number; b: number } {
-    const convertedHex = convertNamedColorToHex(hex);
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(convertedHex);
+    let convertedHex = convertNamedColorToHex(hex);
+
+    // Remove # if present
+    convertedHex = convertedHex.replace(/^#/, '');
+
+    // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+    if (convertedHex.length === 3) {
+      convertedHex = convertedHex
+        .split('')
+        .map(char => char + char)
+        .join('');
+    }
+
+    const result = /^([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(convertedHex);
 
     if (!result) {
       // Default to blue if color is invalid

@@ -1,5 +1,5 @@
 import { IsOptional, IsString, MaxLength, IsEnum, IsNumber, Min, Max } from 'class-validator';
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional, ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { FilterType } from '../../../common/enums/filter.enum';
 
@@ -28,14 +28,14 @@ export class GenerateAvatarDto {
   @IsString()
   type?: string;
 
-  @ApiPropertyOptional({
-    description: 'Seed for avatar generation (max 32 characters)',
+  @ApiProperty({
+    description: 'Seed phrase for avatar generation (required, max 32 characters)',
     maxLength: 32,
+    example: 'my-unique-seed-phrase',
   })
-  @IsOptional()
   @IsString()
   @MaxLength(32, { message: 'Seed must not exceed 32 characters' })
-  seed?: string;
+  seed: string;
 }
 
 export class GetAvatarDto {

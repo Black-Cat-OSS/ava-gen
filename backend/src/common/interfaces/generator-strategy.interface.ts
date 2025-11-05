@@ -15,8 +15,8 @@ export interface IGeneratorStrategy {
    * @param {string} primaryColor - Основной цвет
    * @param {string} foreignColor - Дополнительный цвет
    * @param {string} colorScheme - Цветовая схема
-   * @param {string} seed - Сид для генерации
-   * @param {number} angle - Угол поворота (для градиентных генераторов)
+   * @param {string} seed - Сид для генерации (обязателен для pixelize/wave, игнорируется для gradient)
+   * @param {number} angle - Угол поворота (обязателен для gradient, игнорируется для pixelize/wave)
    * @returns {Promise<AvatarObject>} Объект аватара
    * @throws {Error} Если генерация не удалась
    */
