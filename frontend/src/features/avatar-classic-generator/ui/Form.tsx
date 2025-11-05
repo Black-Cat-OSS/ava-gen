@@ -2,6 +2,7 @@ import type { Pallete } from '@/entities';
 import { AnglePresets, ColorPalette, ColorPreview } from '@/features';
 import { useAvatarGeneratorContext } from '@/features/avatar-generator/contexts';
 import { SeedPhrase } from '@/features/seed-phrase';
+import { useSeedGenerator } from '@/features/seed-phrase/hooks/use-seed-generator';
 import {
   AngleVisualizer,
   Button,
@@ -12,7 +13,6 @@ import {
   TabsTrigger,
   useGenerateAvatar,
   usePalletes,
-  useSeedGenerator,
 } from '@/shared';
 import type { IColorScheme, GeneratorType } from '@/shared/api/generator/types';
 import { t } from 'i18next';

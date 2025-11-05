@@ -1,5 +1,5 @@
 import { Button, Textarea } from '@/shared/ui';
-import { useInitialSeed } from '@/shared/lib/hooks';
+import { useInitialSeed } from '../hooks/use-seed-generator';
 import { t } from 'i18next';
 import { useEffect } from 'react';
 
