@@ -32,7 +32,7 @@ export const ClassicGeneratorForm = () => {
   const { mutate: generateAvatar } = v1;
   const { mutate: generateAvatarV2 } = v2;
   const { setGeneratedAvatar } = useAvatarGeneratorContext();
-  const { generateSeed, isGenerating } = useSeedGenerator();
+  const { mutateAsync: generateSeed, isPending: isGenerating } = useSeedGenerator();
 
   const { control, handleSubmit, watch, setValue } = useForm<FormData>({
     defaultValues: {

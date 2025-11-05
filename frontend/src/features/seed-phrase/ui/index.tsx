@@ -1,6 +1,7 @@
 import { Button, Textarea } from '@/shared/ui';
+import { useInitialSeed } from '@/shared/lib/hooks';
 import { t } from 'i18next';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 /**
  * Компонент для ввода и генерации seed-фразы
@@ -27,31 +28,13 @@ export const SeedPhrase = ({
   disabled = false,
   isGenerating = false,
 }: SeedPhraseProps) => {
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const { data: initialSeed, isLoading: isInitialLoading } = useInitialSeed();
 
   useEffect(() => {
-    const loadInitialSeed = async () => {
-      if (value) {
-        setIsInitialLoading(false);
-        return;
-      }
-
-      try {
-        const response = await fetch('https://random-word-api.herokuapp.com/word?number=12');
-
-        if (response.ok) {
-          const words: string[] = await response.json();
-          const seedPhrase = words.join('-').slice(0, 32);
-          onChange(seedPhrase);
-        }
-      } finally {
-        setIsInitialLoading(false);
-      }
-    };
-
-    loadInitialSeed();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (initialSeed && !value) {
+      onChange(initialSeed);
+    }
+  }, [initialSeed, value, onChange]);
 
   return (
     <div className="space-y-2">
