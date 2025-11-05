@@ -1,5 +1,6 @@
-import { Button, InputField } from '@/shared/ui';
+import { Button, Textarea } from '@/shared/ui';
 import { t } from 'i18next';
+import { useEffect, useState } from 'react';
 
 /**
  * Компонент для ввода и генерации seed-фразы
@@ -26,6 +27,32 @@ export const SeedPhrase = ({
   disabled = false,
   isGenerating = false,
 }: SeedPhraseProps) => {
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+
+  useEffect(() => {
+    const loadInitialSeed = async () => {
+      if (value) {
+        setIsInitialLoading(false);
+        return;
+      }
+
+      try {
+        const response = await fetch('https://random-word-api.herokuapp.com/word?number=12');
+
+        if (response.ok) {
+          const words: string[] = await response.json();
+          const seedPhrase = words.join('-').slice(0, 32);
+          onChange(seedPhrase);
+        }
+      } finally {
+        setIsInitialLoading(false);
+      }
+    };
+
+    loadInitialSeed();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
@@ -38,21 +65,25 @@ export const SeedPhrase = ({
           size="sm"
           onClick={onGenerate}
           className="text-xs"
-          disabled={disabled || isGenerating}
+          disabled={disabled || isGenerating || isInitialLoading}
         >
           {isGenerating
             ? t('features.avatarGenerator.generating')
             : t('features.avatarGenerator.generateSeed')}
         </Button>
       </div>
-      <InputField
-        type="text"
+      <Textarea
         value={value}
         onChange={e => onChange(e.target.value)}
-        placeholder={t('features.avatarGenerator.seedPlaceholder')}
+        placeholder={
+          isInitialLoading
+            ? 'Loading seed phrase...'
+            : t('features.avatarGenerator.seedPlaceholder')
+        }
         maxLength={32}
-        label=""
         disabled={disabled}
+        readOnly={isInitialLoading}
+        className="min-h-[60px] resize-none"
       />
       <p className="text-xs text-muted-foreground">
         {t('features.avatarGenerator.seedDescription')}
