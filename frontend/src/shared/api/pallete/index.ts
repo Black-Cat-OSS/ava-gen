@@ -5,23 +5,23 @@ import type { Pallete } from '@/entities';
 export const PalleteApi: ApiRequest<Pallete> = {
   getAll: async (pick: number, offset: number): Promise<ApiPagination<Pallete>> => {
     const response = await apiClient.get<ApiPagination<Pallete>>(
-      `/api/palettes?pick=${pick}&offset=${offset}`,
+      `/api/v1/palettes?pick=${pick}&offset=${offset}`,
     );
     return response.data;
   },
   getById: async (id: string): Promise<Pallete> => {
-    const response = await apiClient.get<Pallete>(`/api/${id}`);
+    const response = await apiClient.get<Pallete>(`/api/v1/palettes/${id}`);
     return response.data;
   },
   post: async (data: Pallete): Promise<Pallete> => {
-    const response = await apiClient.post<Pallete>('/api', data);
+    const response = await apiClient.post<Pallete>('/api/v1/palettes', data);
     return response.data;
   },
   put: async (id: string, data: Pallete): Promise<Pallete> => {
-    const response = await apiClient.put<Pallete>(`/api/${id}`, data);
+    const response = await apiClient.put<Pallete>(`/api/v1/palettes/${id}`, data);
     return response.data;
   },
   delete: async (id: string): Promise<void> => {
-    await apiClient.delete<void>(`/api/${id}`);
+    await apiClient.delete<void>(`/api/v1/palettes/${id}`);
   },
 };

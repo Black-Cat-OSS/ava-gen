@@ -9,28 +9,28 @@ export const AvatarApi: ApiRequest<Avatar> = {
     if (offset) searchParams.append('offset', offset.toString());
 
     const query = searchParams.toString();
-    const endpoint = query ? `/api/list?${query}` : '/api/list';
+    const endpoint = query ? `/api/v1/list?${query}` : '/api/v1/list';
 
     const response = await apiClient.get<ApiPagination<Avatar>>(endpoint);
     return response.data;
   },
 
   getById: async (id: string): Promise<Avatar> => {
-    const response = await apiClient.get<Avatar>(`/api/${id}`);
+    const response = await apiClient.get<Avatar>(`/api/v1/${id}`);
     return response.data;
   },
 
   post: async (data: Avatar): Promise<Avatar> => {
-    const response = await apiClient.post<Avatar>('/api', data);
+    const response = await apiClient.post<Avatar>('/api/v1', data);
     return response.data;
   },
 
   put: async (id: string, data: Avatar): Promise<Avatar> => {
-    const response = await apiClient.put<Avatar>(`/api/${id}`, data);
+    const response = await apiClient.put<Avatar>(`/api/v1/${id}`, data);
     return response.data;
   },
 
   delete: async (id: string): Promise<void> => {
-    await apiClient.delete<void>(`/api/${id}`);
+    await apiClient.delete<void>(`/api/v1/${id}`);
   },
 };

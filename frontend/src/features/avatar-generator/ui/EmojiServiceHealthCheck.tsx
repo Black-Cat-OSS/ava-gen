@@ -13,10 +13,10 @@ interface HealthCheckResponse {
 
 /**
  * Component for checking emoji service health before rendering emoji form
- * 
+ *
  * Periodically checks healthcheck endpoint to verify Twemoji CDN availability.
  * Shows warning callout when service is unavailable.
- * 
+ *
  * @param props - Component props
  * @returns JSX element
  */
@@ -32,13 +32,15 @@ export const EmojiServiceHealthCheck: React.FC<EmojiServiceHealthCheckProps> = (
   const checkHealth = async () => {
     try {
       setIsChecking(true);
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || ''}/api/emoji/health`);
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL || ''}/api/v1/emoji/health`,
+      );
       const health: HealthCheckResponse = await response.json();
-      
+
       const twemojiAvailable = health.available ?? false;
       setIsHealthy(twemojiAvailable);
       setLastChecked(new Date());
-      
+
       if (!twemojiAvailable) {
         console.warn('Twemoji CDN is not available - emoji avatar generation may fail');
       }
@@ -53,10 +55,10 @@ export const EmojiServiceHealthCheck: React.FC<EmojiServiceHealthCheckProps> = (
 
   useEffect(() => {
     checkHealth();
-    
+
     // Check every 30 seconds
     const interval = setInterval(checkHealth, 30000);
-    
+
     return () => clearInterval(interval);
   }, []);
 
@@ -68,22 +70,17 @@ export const EmojiServiceHealthCheck: React.FC<EmojiServiceHealthCheckProps> = (
     >
       <div className="space-y-4">
         <div className="flex gap-2">
-          <Button
-            onClick={checkHealth}
-            disabled={isChecking}
-            variant="outline"
-            size="sm"
-          >
-            {isChecking 
-              ? t('features.avatarGenerator.healthCheck.checking') 
-              : t('features.avatarGenerator.healthCheck.retry')
-            }
+          <Button onClick={checkHealth} disabled={isChecking} variant="outline" size="sm">
+            {isChecking
+              ? t('features.avatarGenerator.healthCheck.checking')
+              : t('features.avatarGenerator.healthCheck.retry')}
           </Button>
         </div>
-        
+
         {lastChecked && (
           <p className="text-sm text-muted-foreground">
-            {t('features.avatarGenerator.healthCheck.lastChecked')}: {lastChecked.toLocaleTimeString()}
+            {t('features.avatarGenerator.healthCheck.lastChecked')}:{' '}
+            {lastChecked.toLocaleTimeString()}
           </p>
         )}
       </div>
