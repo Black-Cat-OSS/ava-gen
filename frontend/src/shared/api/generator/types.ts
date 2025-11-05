@@ -28,5 +28,8 @@ export interface GenerateEmojiAvatarParams extends IColorScheme {
   emojiSize?: EmojiSize;
 }
 
-export type GenerateAvatarProcedural = GenerateAvatarParams & { type: GeneratorType };
+export type GenerateAvatarProcedural = GenerateAvatarParams & {
+  type: GeneratorType;
+  seed: string;
+};
 export type GenerateAvatarAngular = GenerateAvatarParams & { angle: number };

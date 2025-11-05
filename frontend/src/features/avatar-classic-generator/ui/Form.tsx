@@ -1,6 +1,7 @@
 import type { Pallete } from '@/entities';
 import { AnglePresets, ColorPalette, ColorPreview } from '@/features';
 import { useAvatarGeneratorContext } from '@/features/avatar-generator/contexts';
+import { SeedPhrase } from '@/features/seed-phrase';
 import {
   AngleVisualizer,
   Button,
@@ -11,6 +12,7 @@ import {
   TabsTrigger,
   useGenerateAvatar,
   usePalletes,
+  useSeedGenerator,
 } from '@/shared';
 import type { IColorScheme, GeneratorType } from '@/shared/api/generator/types';
 import { t } from 'i18next';
@@ -21,6 +23,7 @@ type FormData = {
   color: Required<IColorScheme>;
   generatorType: Required<GeneratorType>;
   angle: number;
+  seed: string;
 };
 
 export const ClassicGeneratorForm = () => {
@@ -29,6 +32,7 @@ export const ClassicGeneratorForm = () => {
   const { mutate: generateAvatar } = v1;
   const { mutate: generateAvatarV2 } = v2;
   const { setGeneratedAvatar } = useAvatarGeneratorContext();
+  const { generateSeed, isGenerating } = useSeedGenerator();
 
   const { control, handleSubmit, watch, setValue } = useForm<FormData>({
     defaultValues: {
@@ -39,6 +43,7 @@ export const ClassicGeneratorForm = () => {
       },
       generatorType: 'pixelize',
       angle: 90,
+      seed: '',
     },
   });
 
@@ -61,6 +66,11 @@ export const ClassicGeneratorForm = () => {
     }
   }, [isSuccess, result, setGeneratedAvatar]);
 
+  const handleGenerateSeed = async () => {
+    const newSeed = await generateSeed();
+    setValue('seed', newSeed);
+  };
+
   const onSubmit = (data: FormData) => {
     if (data.generatorType === 'gradient') {
       generateAvatarV2({
@@ -77,6 +87,7 @@ export const ClassicGeneratorForm = () => {
       foreignColor: data.color.foreignColor,
       colorScheme: data.color.colorScheme,
       type: data.generatorType as GeneratorType,
+      seed: data.seed,
     });
   };
 
@@ -99,6 +110,20 @@ export const ClassicGeneratorForm = () => {
             </>
           )}
           name="color"
+        />
+
+        <Controller
+          control={control}
+          render={({ field }) => (
+            <SeedPhrase
+              value={field.value}
+              onChange={field.onChange}
+              onGenerate={handleGenerateSeed}
+              isGenerating={isGenerating}
+              disabled={watch('generatorType') === 'gradient'}
+            />
+          )}
+          name="seed"
         />
 
         <Controller
