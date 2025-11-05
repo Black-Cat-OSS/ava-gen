@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe, Logger } from '@nestjs/common';
+import { ValidationPipe, Logger, VersioningType } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './modules/app/app.module';
 import { YamlConfigService } from './config/modules/yaml-driver/yaml-config.service';
@@ -34,6 +34,12 @@ async function bootstrap() {
     loggerService.debug('Setting global API prefix...');
     app.setGlobalPrefix('api');
 
+    loggerService.debug('Enabling API versioning...');
+    app.enableVersioning({
+      type: VersioningType.URI,
+      defaultVersion: '1',
+    });
+
     loggerService.debug('Setting up global validation pipe...');
     app.useGlobalPipes(
       new ValidationPipe({
@@ -51,7 +57,7 @@ async function bootstrap() {
     const config = new DocumentBuilder()
       .setTitle('Avatar Generation API')
       .setDescription('API for generating and managing avatars similar to GitHub/GitLab')
-      .setVersion('0.0.1')
+      .setVersion('1.0.0')
       .addTag('Avatar', 'Avatar generation and management endpoints')
       .build();
 

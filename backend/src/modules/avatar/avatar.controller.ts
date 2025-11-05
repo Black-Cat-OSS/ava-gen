@@ -11,6 +11,7 @@ import {
   ValidationPipe,
   UsePipes,
   Controller,
+  Version,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { Response } from 'express';
@@ -24,7 +25,8 @@ import { GenerateAvatarV3Dto } from './dto/generate-avatar-v3.dto';
 export class AvatarController {
   constructor(private readonly avatarService: AvatarService) {}
 
-  @Post('v1/generate')
+  @Post('generate')
+  @Version('1')
   @ApiOperation({ summary: 'Generate a new avatar (API v1)' })
   @ApiResponse({ status: 201, description: 'Avatar generated successfully' })
   @UsePipes(new ValidationPipe({ transform: true }))
@@ -32,7 +34,8 @@ export class AvatarController {
     return await this.avatarService.generateAvatar(dto);
   }
 
-  @Post('v2/generate')
+  @Post('generate')
+  @Version('2')
   @ApiOperation({ summary: 'Generate gradient avatar (API v2)' })
   @ApiResponse({ status: 201, description: 'Gradient avatar generated successfully' })
   @UsePipes(new ValidationPipe({ transform: true }))
@@ -40,7 +43,8 @@ export class AvatarController {
     return await this.avatarService.generateAvatarV2(dto);
   }
 
-  @Post('v3/generate')
+  @Post('generate')
+  @Version('3')
   @ApiOperation({ summary: 'Generate emoji avatar (API v3)' })
   @ApiResponse({ status: 201, description: 'Emoji avatar generated successfully' })
   @UsePipes(new ValidationPipe({ transform: true }))
@@ -96,10 +100,6 @@ export class AvatarController {
 
     res.json(result);
   }
-
-
-
-
 
   @Get(':id')
   @ApiOperation({ summary: 'Get avatar by ID' })
