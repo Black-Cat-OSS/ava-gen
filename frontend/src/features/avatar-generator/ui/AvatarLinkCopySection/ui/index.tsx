@@ -14,7 +14,7 @@ export const AvatarLinkCopySection = () => {
 
   return (
     <div className="mt-6">
-      <AvatarLinkCopy avatarId={generatedAvatar.id} size={128} filter="" />
+      <AvatarLinkCopy avatarId={generatedAvatar.id} size={8} />
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import type { Pallete } from '@/entities';
 import { AnglePresets, ColorPalette, ColorPreview } from '@/features';
+import { useAvatarGeneratorContext } from '@/features/avatar-generator/contexts';
 import {
   AngleVisualizer,
   Button,
@@ -24,9 +25,10 @@ type FormData = {
 
 export const ClassicGeneratorForm = () => {
   const { data } = usePalletes({ pick: 1, offset: 0 });
-  const { v1, v2 } = useGenerateAvatar();
-  const { mutate: generateAvatar, isSuccess, data: avatarData } = v1;
-  const { mutate: generateAvatarV2, isSuccess: isSuccessV2, data: avatarDataV2 } = v2;
+  const { v1, v2, result, isSuccess, isLoading } = useGenerateAvatar();
+  const { mutate: generateAvatar } = v1;
+  const { mutate: generateAvatarV2 } = v2;
+  const { setGeneratedAvatar } = useAvatarGeneratorContext();
 
   const { control, handleSubmit, watch, setValue } = useForm<FormData>({
     defaultValues: {
@@ -53,8 +55,13 @@ export const ClassicGeneratorForm = () => {
     }
   }, [data, setValue]);
 
-  const onSubmit = (data: FormData) => {
+  useEffect(() => {
+    if (isSuccess && result) {
+      setGeneratedAvatar(result);
+    }
+  }, [isSuccess, result, setGeneratedAvatar]);
 
+  const onSubmit = (data: FormData) => {
     if (data.generatorType === 'gradient') {
       generateAvatarV2({
         primaryColor: data.color.primaryColor,
@@ -158,18 +165,25 @@ export const ClassicGeneratorForm = () => {
           name="generatorType"
         />
         <div className="flex justify-center">
-          <Button type="submit" className="w-full">
-            Generate Classic Avatar
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? t('features.avatarGenerator.generating') : 'Generate Classic Avatar'}
           </Button>
         </div>
       </form>
 
-      {/* SHIT CODE HERE */}
-      {isSuccess && <div>Avatar generated successfully</div>}
-      {avatarData && <img src={getImageUrl(avatarData.id, { size: 8 })} alt="Avatar" />}
-      {isSuccessV2 && <div>Gradient avatar generated successfully</div>}
-      {avatarDataV2 && (
-        <img src={getImageUrl(avatarDataV2.id, { size: 8 })} alt="Gradient Avatar" />
+      {isSuccess && result && (
+        <div className="mt-6 space-y-4">
+          <div className="text-center text-sm text-green-600 dark:text-green-400">
+            {t('features.avatarGenerator.success')}
+          </div>
+          <div className="flex justify-center">
+            <img
+              src={getImageUrl(result.id, { size: 8 })}
+              alt="Generated Avatar"
+              className="rounded-lg shadow-lg"
+            />
+          </div>
+        </div>
       )}
     </div>
   );
