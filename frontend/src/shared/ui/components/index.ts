@@ -21,3 +21,4 @@ export { FailImage } from './FailImage';
 export { Tabs, TabsContent, TabsList, TabsTrigger } from './Tabs';
 export { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from './Card';
 export { Separator } from './Separator';
+export { Textarea } from './Textarea';
