@@ -38,10 +38,8 @@ export const SeedPhrase = ({
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <label className="block text-sm font-medium text-foreground">
-          {t('features.avatarGenerator.seed')}
-        </label>
+      <div className="flex items-center justify-between align-center">
+        <strong className="text-sm text-foreground">{t('features.avatarGenerator.seed')}</strong>
         <Button
           type="button"
           variant="outline"
@@ -63,7 +61,7 @@ export const SeedPhrase = ({
             ? 'Loading seed phrase...'
             : t('features.avatarGenerator.seedPlaceholder')
         }
-        maxLength={32}
+        maxLength={255}
         disabled={disabled}
         readOnly={isInitialLoading}
         className="min-h-[60px] resize-none"

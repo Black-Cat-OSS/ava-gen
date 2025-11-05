@@ -13,7 +13,7 @@ const fetchRandomWords = async (): Promise<string> => {
   }
 
   const words: string[] = await response.json();
-  return words.join('-').slice(0, 32);
+  return words.join('-');
 };
 
 /**
