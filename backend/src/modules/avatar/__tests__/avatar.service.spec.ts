@@ -186,14 +186,14 @@ describe('AvatarService', () => {
       expect(mockAvatarRepository.save).toHaveBeenCalledWith(mockAvatar);
     });
 
-    it('should throw BadRequestException for seed longer than 32 characters', async () => {
+    it('should throw BadRequestException for seed longer than 255 characters', async () => {
       const dto: GenerateAvatarDto = {
-        seed: 'a'.repeat(33), // 33 characters
+        seed: 'a'.repeat(256), // 256 characters
       };
 
       await expect(service.generateAvatar(dto)).rejects.toThrow(BadRequestException);
       await expect(service.generateAvatar(dto)).rejects.toThrow(
-        'Seed must not exceed 32 characters',
+        'Seed must not exceed 255 characters',
       );
     });
 
