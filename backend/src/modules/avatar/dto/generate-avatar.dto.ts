@@ -29,12 +29,12 @@ export class GenerateAvatarDto {
   type?: string;
 
   @ApiProperty({
-    description: 'Seed phrase for avatar generation (required, max 32 characters)',
-    maxLength: 32,
+    description: 'Seed phrase for avatar generation (required, max 255 characters)',
+    maxLength: 255,
     example: 'my-unique-seed-phrase',
   })
   @IsString()
-  @MaxLength(32, { message: 'Seed must not exceed 32 characters' })
+  @MaxLength(255, { message: 'Seed must not exceed 255 characters' })
   seed: string;
 }
 
