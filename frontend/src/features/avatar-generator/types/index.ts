@@ -1,3 +1,5 @@
+import type { Pallete } from '@/entities';
+
 /**
  * Props interface for AvatarGeneratorFormInternal component
  */
@@ -30,8 +32,7 @@ export type EmojiSize = 'small' | 'medium' | 'large';
 export interface EmojiAvatarFormData {
   emoji: string;
   backgroundType: BackgroundType;
-  primaryColor: string;
-  foreignColor: string;
+  color: Pallete | null;
   angle: number;
   emojiSize: EmojiSize;
 }
@@ -101,7 +102,10 @@ export interface EmojiAvatarGeneratorFormProps {
   /**
    * Callback when form data changes
    */
-  onFormDataChange: (field: keyof EmojiAvatarFormData, value: string | number) => void;
+  onFormDataChange: <Field extends keyof EmojiAvatarFormData>(
+    field: Field,
+    value: EmojiAvatarFormData[Field],
+  ) => void;
   /**
    * Whether the form is disabled
    */

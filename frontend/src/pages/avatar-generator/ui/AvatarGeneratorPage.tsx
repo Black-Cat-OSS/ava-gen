@@ -1,7 +1,5 @@
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AvatarGeneratorProvider, EmojiServiceHealthCheck } from '@/features/avatar-generator';
-import type { EmojiAvatarFormData } from '@/features/avatar-generator/types';
+import { AvatarGeneratorProvider } from '@/features/avatar-generator';
 import { EmojiGeneratorForm } from '@/features/avatar-emoji-generator';
 import { AvatarLinkCopySection, ClassicGeneratorForm } from '@/features';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui';
@@ -9,22 +7,6 @@ import { Description } from './Description';
 
 export const AvatarGeneratorPage = () => {
   const { t } = useTranslation();
-
-  const [emojiFormData, setEmojiFormData] = useState<EmojiAvatarFormData>({
-    emoji: '😀',
-    backgroundType: 'solid',
-    primaryColor: '#3b82f6',
-    foreignColor: '#ef4444',
-    angle: 90,
-    emojiSize: 'large',
-  });
-
-  const handleEmojiFormDataChange = (field: keyof EmojiAvatarFormData, value: string | number) => {
-    setEmojiFormData(prev => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
 
   return (
     <AvatarGeneratorProvider>
@@ -57,12 +39,7 @@ export const AvatarGeneratorPage = () => {
           </TabsContent>
 
           <TabsContent value="emoji">
-            <EmojiServiceHealthCheck>
-              <EmojiGeneratorForm
-                formData={emojiFormData}
-                onFormDataChange={handleEmojiFormDataChange}
-              />
-            </EmojiServiceHealthCheck>
+            <EmojiGeneratorForm />
           </TabsContent>
         </Tabs>
 
