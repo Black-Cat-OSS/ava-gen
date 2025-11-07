@@ -53,12 +53,14 @@ export const EmojiGeneratorForm = () => {
   }, [isSuccess, result, setGeneratedAvatar]);
 
   const onSubmit = (data: EmojiAvatarFormData) => {
+    const primaryColor = data.color?.primaryColor ?? DEFAULT_COLOR.primaryColor;
+    const foreignColor = data.color?.foreignColor ?? DEFAULT_COLOR.foreignColor;
+
     generateEmojiAvatar({
       emoji: data.emoji,
       backgroundType: data.backgroundType,
-      primaryColor: data.color?.primaryColor ?? DEFAULT_COLOR.primaryColor,
-      foreignColor: data.color?.foreignColor ?? DEFAULT_COLOR.foreignColor,
-      colorScheme: data.color?.colorScheme ?? DEFAULT_COLOR.colorScheme,
+      primaryColor,
+      foreignColor,
       angle: data.angle,
       emojiSize: data.emojiSize,
     });

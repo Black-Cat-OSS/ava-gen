@@ -21,9 +21,11 @@ export interface GenerateAvatarResponse extends IColorScheme {
   generatorType?: string;
 }
 
-export interface GenerateEmojiAvatarParams extends IColorScheme {
+export interface GenerateEmojiAvatarParams {
   emoji: string;
   backgroundType: BackgroundType;
+  primaryColor?: string;
+  foreignColor?: string;
   angle?: number;
   emojiSize?: EmojiSize;
 }

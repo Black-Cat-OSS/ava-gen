@@ -6,7 +6,6 @@ import { useSeedGenerator } from '@/features/seed-phrase/hooks/use-seed-generato
 import {
   AngleVisualizer,
   Button,
-  getImageUrl,
   Tabs,
   TabsContent,
   TabsList,
@@ -193,21 +192,6 @@ export const ClassicGeneratorForm = () => {
           </Button>
         </div>
       </form>
-
-      {isSuccess && result && (
-        <div className="mt-6 space-y-4">
-          <div className="text-center text-sm text-green-600 dark:text-green-400">
-            {t('features.avatarGenerator.success')}
-          </div>
-          <div className="flex justify-center">
-            <img
-              src={getImageUrl(result.id, { size: 8 })}
-              alt="Generated Avatar"
-              className="rounded-lg shadow-lg"
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 };

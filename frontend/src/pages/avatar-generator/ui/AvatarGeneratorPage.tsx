@@ -1,7 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import { AvatarGeneratorProvider } from '@/features/avatar-generator';
-import { EmojiGeneratorForm } from '@/features/avatar-emoji-generator';
-import { AvatarLinkCopySection, ClassicGeneratorForm } from '@/features';
+import {
+  AvatarLinkCopySection,
+  AvatarPreviewSection,
+  ClassicGeneratorForm,
+  EmojiGeneratorForm,
+} from '@/features';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui';
 import { Description } from './Description';
 
@@ -43,6 +47,7 @@ export const AvatarGeneratorPage = () => {
           </TabsContent>
         </Tabs>
 
+        <AvatarPreviewSection />
         <AvatarLinkCopySection />
 
         <Description />
