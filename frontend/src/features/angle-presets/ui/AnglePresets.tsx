@@ -20,8 +20,8 @@ export const AnglePresets: FC<AnglePresetsProps> = ({
   const presetAngles = [0, 45, 90, 135, 180, 225, 270, 315];
 
   return (
-    <div className="flex flex-col gap-3 bg-gray-700 rounded-lg p-4">
-      <div className="grid grid-cols-2 gap-3">
+    <div className="@container/angle-presets flex flex-col gap-3 bg-gray-700 rounded-lg p-4 min-w-[calc(70px*3)]">
+      <div className="grid grid-cols-[repeat(2,minmax(70px,1fr))] @lg:grid-cols-[repeat(4,minmax(70px,1fr))] @xl:grid-cols-[repeat(8,minmax(70px,1fr))] gap-3">
         {presetAngles.map(presetAngle => (
           <button
             key={presetAngle}
