@@ -179,7 +179,7 @@
       "colorScheme": "Farbschema",
       "seed": "Seed",
       "seedPlaceholder": "Eindeutigen Seed eingeben",
-      "seedDescription": "Seed bestimmt die Einzigartigkeit des Avatars (max. 32 Zeichen)",
+      "seedDescription": "Seed bestimmt die Einzigartigkeit des Avatars (max. 255 Zeichen)",
       "generate": "Avatar generieren",
       "generating": "Generierung...",
       "success": "Avatar erfolgreich generiert!",

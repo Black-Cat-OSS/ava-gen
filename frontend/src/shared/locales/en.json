@@ -183,7 +183,7 @@
       "colorScheme": "Color Scheme",
       "seed": "Seed",
       "seedPlaceholder": "Enter unique seed",
-      "seedDescription": "Seed determines avatar uniqueness (max 32 characters)",
+      "seedDescription": "Seed determines avatar uniqueness (max 255 characters)",
       "generate": "Generate Avatar",
       "generating": "Generating...",
       "success": "Avatar generated successfully!",

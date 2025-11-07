@@ -1,6 +1,6 @@
 import { Button, Textarea } from '@/shared/ui';
 import { useInitialSeed } from '../hooks/use-seed-generator';
-import { t } from 'i18next';
+import { useTranslation } from 'react-i18next';
 import { useEffect } from 'react';
 
 /**
@@ -28,6 +28,7 @@ export const SeedPhrase = ({
   disabled = false,
   isGenerating = false,
 }: SeedPhraseProps) => {
+  const { t } = useTranslation('featuresSeedPhrase');
   const { data: initialSeed, isLoading: isInitialLoading } = useInitialSeed();
 
   useEffect(() => {
@@ -39,7 +40,7 @@ export const SeedPhrase = ({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between align-center">
-        <strong className="text-sm text-foreground">{t('features.avatarGenerator.seed')}</strong>
+        <strong className="text-sm text-foreground">{t('seedPhrase.label')}</strong>
         <Button
           type="button"
           variant="outline"
@@ -48,27 +49,19 @@ export const SeedPhrase = ({
           className="text-xs"
           disabled={disabled || isGenerating || isInitialLoading}
         >
-          {isGenerating
-            ? t('features.avatarGenerator.generating')
-            : t('features.avatarGenerator.generateSeed')}
+          {isGenerating ? t('seedPhrase.generating') : t('seedPhrase.generate')}
         </Button>
       </div>
       <Textarea
         value={value}
         onChange={e => onChange(e.target.value)}
-        placeholder={
-          isInitialLoading
-            ? 'Loading seed phrase...'
-            : t('features.avatarGenerator.seedPlaceholder')
-        }
+        placeholder={isInitialLoading ? t('seedPhrase.loading') : t('seedPhrase.placeholder')}
         maxLength={255}
         disabled={disabled}
         readOnly={isInitialLoading}
         className="min-h-[60px] resize-none"
       />
-      <p className="text-xs text-muted-foreground">
-        {t('features.avatarGenerator.seedDescription')}
-      </p>
+      <p className="text-xs text-muted-foreground">{t('seedPhrase.description')}</p>
     </div>
   );
 };

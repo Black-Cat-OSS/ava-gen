@@ -179,7 +179,7 @@
       "colorScheme": "Esquema de Colores",
       "seed": "Semilla",
       "seedPlaceholder": "Ingresa una semilla única",
-      "seedDescription": "La semilla determina la unicidad del avatar (máx. 32 caracteres)",
+      "seedDescription": "La semilla determina la unicidad del avatar (máx. 255 caracteres)",
       "generate": "Generar Avatar",
       "generating": "Generando...",
       "success": "¡Avatar generado exitosamente!",

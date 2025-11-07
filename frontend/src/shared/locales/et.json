@@ -179,7 +179,7 @@
       "colorScheme": "Värviskeem",
       "seed": "Seemne",
       "seedPlaceholder": "Sisesta ainulaadne seemne",
-      "seedDescription": "Seemne määrab avatari ainulaadsuse (maks. 32 tähemärki)",
+      "seedDescription": "Seemne määrab avatari ainulaadsuse (maks. 255 tähemärki)",
       "generate": "Genereeri avatar",
       "generating": "Genereerimine...",
       "success": "Avatar edukalt genereeritud!",
