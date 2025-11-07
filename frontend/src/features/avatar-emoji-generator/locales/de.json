@@ -1,0 +1,27 @@
+{
+  "form": {
+    "title": "Emoji",
+    "description": "Erstellen Sie Avatare mit Emoji auf benutzerdefinierten Hintergründen",
+    "backgroundType": {
+      "label": "Hintergrundtyp",
+      "options": {
+        "solid": "Einfarbig",
+        "radial": "Radial",
+        "linear": "Linear"
+      }
+    },
+    "emojiSize": {
+      "label": "Emoji-Größe",
+      "options": {
+        "small": "Klein",
+        "medium": "Mittel",
+        "large": "Groß"
+      }
+    },
+    "gradientAngle": "Gradientwinkel",
+    "generateButton": {
+      "default": "Emoji-Avatar generieren",
+      "loading": "Generierung..."
+    }
+  }
+}

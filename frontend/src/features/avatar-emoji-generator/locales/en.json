@@ -1,0 +1,27 @@
+{
+  "form": {
+    "title": "Emoji",
+    "description": "Create avatars with emoji on custom backgrounds",
+    "backgroundType": {
+      "label": "Background Type",
+      "options": {
+        "solid": "Solid",
+        "radial": "Radial",
+        "linear": "Linear"
+      }
+    },
+    "emojiSize": {
+      "label": "Emoji Size",
+      "options": {
+        "small": "Small",
+        "medium": "Medium",
+        "large": "Large"
+      }
+    },
+    "gradientAngle": "Gradient Angle",
+    "generateButton": {
+      "default": "Generate Emoji Avatar",
+      "loading": "Generating..."
+    }
+  }
+}

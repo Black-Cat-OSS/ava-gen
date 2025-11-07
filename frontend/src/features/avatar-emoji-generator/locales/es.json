@@ -1,0 +1,27 @@
+{
+  "form": {
+    "title": "Emoji",
+    "description": "Crea avatares con emoji en fondos personalizados",
+    "backgroundType": {
+      "label": "Tipo de fondo",
+      "options": {
+        "solid": "Sólido",
+        "radial": "Radial",
+        "linear": "Lineal"
+      }
+    },
+    "emojiSize": {
+      "label": "Tamaño del emoji",
+      "options": {
+        "small": "Pequeño",
+        "medium": "Mediano",
+        "large": "Grande"
+      }
+    },
+    "gradientAngle": "Ángulo del gradiente",
+    "generateButton": {
+      "default": "Generar avatar de emoji",
+      "loading": "Generando..."
+    }
+  }
+}

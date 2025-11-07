@@ -1,0 +1,27 @@
+{
+  "form": {
+    "title": "Emoji",
+    "description": "Loo emoji ja kohandatud taustaga avatarid",
+    "backgroundType": {
+      "label": "Taustatüüp",
+      "options": {
+        "solid": "Ühtlane",
+        "radial": "Radiaalne",
+        "linear": "Lineaarne"
+      }
+    },
+    "emojiSize": {
+      "label": "Emoji suurus",
+      "options": {
+        "small": "Väike",
+        "medium": "Keskmine",
+        "large": "Suur"
+      }
+    },
+    "gradientAngle": "Gradiendi nurk",
+    "generateButton": {
+      "default": "Genereeri emoji avatar",
+      "loading": "Genereerimine..."
+    }
+  }
+}
