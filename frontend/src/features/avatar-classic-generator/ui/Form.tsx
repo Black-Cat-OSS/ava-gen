@@ -153,37 +153,35 @@ export const ClassicGeneratorForm = () => {
               <TabsContent value="pixelize"></TabsContent>
               <TabsContent value="wave"></TabsContent>
               <TabsContent value="gradient">
-                <div className="flex items-center gap-1">
-                  <Controller
-                    control={control}
-                    render={({ field }) => (
-                      <>
-                        <AnglePresets
-                          currentAngle={field.value}
-                          onAngleSelect={angle => {
-                            field.onChange(angle);
-                          }}
-                          colorScheme={watch('color')}
-                          size={70}
+                <Controller
+                  control={control}
+                  render={({ field }) => (
+                    <div className="grid grid-cols-[1fr_3fr]">
+                      <AnglePresets
+                        currentAngle={field.value}
+                        onAngleSelect={angle => {
+                          field.onChange(angle);
+                        }}
+                        colorScheme={watch('color')}
+                        size={70}
+                      />
+                      <div className="flex flex-col items-center">
+                        <AngleVisualizer
+                          angle={field.value}
+                          onChange={angle => field.onChange(angle)}
+                          size={230}
                         />
-                        <div className="flex flex-col items-center w-full">
-                          <AngleVisualizer
-                            angle={field.value}
-                            onChange={angle => field.onChange(angle)}
-                            size={230}
-                          />
-                          <p className="text-xs text-muted-foreground text-center mt-2">
-                            {t('features.avatarGenerator.dragToRotate')}
-                          </p>
-                          <p className="text-xs text-muted-foreground text-center mt-2">
-                            {t('features.avatarGenerator.angleDescription')}
-                          </p>
-                        </div>
-                      </>
-                    )}
-                    name="angle"
-                  />
-                </div>
+                        <p className="text-xs text-muted-foreground text-center mt-2">
+                          {t('features.avatarGenerator.dragToRotate')}
+                        </p>
+                        <p className="text-xs text-muted-foreground text-center mt-2">
+                          {t('features.avatarGenerator.angleDescription')}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  name="angle"
+                />
               </TabsContent>
             </Tabs>
           )}
