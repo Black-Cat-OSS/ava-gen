@@ -1,1 +1,0 @@
-export { EmojiAvatarGeneratorForm } from './ui';

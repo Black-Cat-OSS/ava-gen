@@ -1,1 +1,0 @@
-export { AvatarLinkCopySection } from './ui';

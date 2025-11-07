@@ -2,8 +2,10 @@ import { useAvatarGeneratorContext } from '@/features/avatar-generator/contexts'
 import { AvatarLinkCopy } from '@/features/avatar-link-copy';
 
 /**
- * AvatarLinkCopySection component - displays avatar link copy component
- * Uses context to get generated avatar data
+ * Компонент секции копирования ссылки на аватар.
+ *
+ * Показывается только после генерации аватара и предоставляет возможность
+ * скопировать ссылку на результат.
  */
 export const AvatarLinkCopySection = () => {
   const { generatedAvatar } = useAvatarGeneratorContext();

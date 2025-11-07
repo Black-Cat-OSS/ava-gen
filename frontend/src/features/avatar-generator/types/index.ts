@@ -15,16 +15,6 @@ export interface AvatarGeneratorFormInternalProps {
 }
 
 /**
- * Props interface for CustomColorInputs component
- */
-export interface CustomColorInputsProps {
-  primaryColor: string;
-  foreignColor: string;
-  onPrimaryColorChange: (value: string) => void;
-  onForeignColorChange: (value: string) => void;
-}
-
-/**
  * Background type for emoji avatars
  */
 export type BackgroundType = 'solid' | 'linear' | 'radial';

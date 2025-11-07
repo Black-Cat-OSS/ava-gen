@@ -1,15 +1,11 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  AvatarLinkCopySection,
-  AvatarGeneratorProvider,
-  EmojiAvatarGeneratorForm,
-  EmojiServiceHealthCheck,
-} from '@/features/avatar-generator';
+import { AvatarGeneratorProvider, EmojiServiceHealthCheck } from '@/features/avatar-generator';
 import type { EmojiAvatarFormData } from '@/features/avatar-generator/types';
+import { EmojiGeneratorForm } from '@/features/avatar-emoji-generator';
+import { AvatarLinkCopySection, ClassicGeneratorForm } from '@/features';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui';
 import { Description } from './Description';
-import { ClassicGeneratorForm } from '@/features';
 
 export const AvatarGeneratorPage = () => {
   const { t } = useTranslation();
@@ -57,13 +53,12 @@ export const AvatarGeneratorPage = () => {
           </TabsList>
 
           <TabsContent value="classic">
-            {/* <AvatarGeneratorForm /> */}
             <ClassicGeneratorForm />
           </TabsContent>
 
           <TabsContent value="emoji">
             <EmojiServiceHealthCheck>
-              <EmojiAvatarGeneratorForm
+              <EmojiGeneratorForm
                 formData={emojiFormData}
                 onFormDataChange={handleEmojiFormDataChange}
               />

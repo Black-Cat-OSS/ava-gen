@@ -10,4 +10,6 @@ export * from './avatar-preview-showcase';
 export * from './AvatarCircles';
 export * from './avatar-gallery';
 export * from './avatar-classic-generator';
+export * from './avatar-emoji-generator';
+export * from './avatar-link-copy-section';
 export * from './avatar-link-copy';
