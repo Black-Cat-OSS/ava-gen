@@ -2,14 +2,16 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import type { EmojiSizeSelectorProps } from '../types';
 
+//TODO: remove this component (Shit code)
 /**
  * Component for selecting emoji size relative to avatar
- * 
+ *
  * Provides visual selection between small, medium, and large emoji sizes.
  * Shows visual indicators for each size option.
- * 
+ *
  * @param props - Component props
  * @returns JSX element
+ * @deprecated - never use it!
  */
 export const EmojiSizeSelector: React.FC<EmojiSizeSelectorProps> = ({
   selectedSize,
@@ -62,7 +64,7 @@ export const EmojiSizeSelector: React.FC<EmojiSizeSelectorProps> = ({
       <label className="block text-sm font-medium text-foreground">
         {t('features.avatarGenerator.emojiSize.label')}
       </label>
-      
+
       <div className="grid grid-cols-3 gap-3">
         {sizeOptions.map(({ size, label, description, emojiSize }) => (
           <button
@@ -78,12 +80,8 @@ export const EmojiSizeSelector: React.FC<EmojiSizeSelectorProps> = ({
           >
             <div className="text-center">
               <div className={`${getEmojiScale(size)} mb-2`}>{emojiSize}</div>
-              <div className="text-sm font-medium text-foreground mb-1">
-                {label}
-              </div>
-              <div className="text-xs text-muted-foreground">
-                {description}
-              </div>
+              <div className="text-sm font-medium text-foreground mb-1">{label}</div>
+              <div className="text-xs text-muted-foreground">{description}</div>
             </div>
           </button>
         ))}
