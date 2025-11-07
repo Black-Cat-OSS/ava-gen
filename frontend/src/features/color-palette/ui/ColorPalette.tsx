@@ -36,11 +36,9 @@ export const ColorPalette = ({ selectedScheme, onPaletteChange }: ColorPalettePr
 
   return (
     <div className="space-y-4">
-      <div>
-        <label className="block text-sm font-medium text-foreground">
-          {t('features.avatarGenerator.colorScheme')}
-        </label>
-      </div>
+      <strong className="block text-sm text-foreground">
+        {t('features.avatarGenerator.colorScheme')}
+      </strong>
 
       <ErrorBoundary>
         <Suspense fallback={<ColorPaletteSkeleton />}>
