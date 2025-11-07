@@ -2,14 +2,16 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import type { BackgroundTypeSelectorProps } from '../types';
 
+//TODO: remove this component (Shit code)
 /**
  * Component for selecting background type for emoji avatars
- * 
+ *
  * Provides visual selection between solid, linear gradient, and radial gradient backgrounds.
  * Shows angle input only for linear gradient type.
- * 
+ *
  * @param props - Component props
  * @returns JSX element
+ * @deprecated - never use it!
  */
 export const BackgroundTypeSelector: React.FC<BackgroundTypeSelectorProps> = ({
   selectedType,
@@ -49,7 +51,7 @@ export const BackgroundTypeSelector: React.FC<BackgroundTypeSelectorProps> = ({
       <label className="block text-sm font-medium text-foreground">
         {t('features.avatarGenerator.backgroundType.label')}
       </label>
-      
+
       <div className="grid grid-cols-3 gap-3">
         {backgroundTypes.map(({ type, label, description, icon }) => (
           <button
@@ -65,12 +67,8 @@ export const BackgroundTypeSelector: React.FC<BackgroundTypeSelectorProps> = ({
           >
             <div className="text-center">
               <div className="text-2xl mb-2">{icon}</div>
-              <div className="text-sm font-medium text-foreground mb-1">
-                {label}
-              </div>
-              <div className="text-xs text-muted-foreground">
-                {description}
-              </div>
+              <div className="text-sm font-medium text-foreground mb-1">{label}</div>
+              <div className="text-xs text-muted-foreground">{description}</div>
             </div>
           </button>
         ))}
