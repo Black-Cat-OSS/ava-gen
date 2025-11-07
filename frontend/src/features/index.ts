@@ -13,3 +13,4 @@ export * from './avatar-classic-generator';
 export * from './avatar-emoji-generator';
 export * from './avatar-link-copy-section';
 export * from './avatar-link-copy';
+export * from './avatar-preview-section';
