@@ -1,5 +1,5 @@
-export type EmojiSize = Record<'small' | 'medium' | 'large', string>;
-export type BackgroundType = Record<'solid' | 'linear' | 'radial', string>;
+export type EmojiSize = 'small' | 'medium' | 'large';
+export type BackgroundType = 'solid' | 'linear' | 'radial';
 export type GeneratorType = 'pixelize' | 'wave' | 'emoji' | 'gradient';
 
 export interface IColorScheme {
