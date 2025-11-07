@@ -17,6 +17,7 @@ module.exports = {
         'ci', // изменения в CI/CD
         'build', // изменения в системе сборки
         'revert', // откат предыдущего коммита
+        'deprecate', // deprecated
       ],
     ],
 
