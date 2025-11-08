@@ -1,11 +1,12 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe, Logger, VersioningType } from '@nestjs/common';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { ValidationPipe, Logger, VersioningType, RequestMethod } from '@nestjs/common';
+import { SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './modules/app/app.module';
 import { YamlConfigService } from './config/modules/yaml-driver/yaml-config.service';
 import { LoggerService } from './modules/logger/logger.service';
 import { EmptyResponseInterceptor } from './common/interceptors/empty-response.interceptor';
 import { Reflector } from '@nestjs/core';
+import { buildSwaggerDocument } from './swagger/swagger.factory';
 
 async function bootstrap() {
   const bootstrapLogger = new Logger('Bootstrap');
@@ -32,7 +33,9 @@ async function bootstrap() {
     loggerService.log('Application bootstrap completed successfully');
 
     loggerService.debug('Setting global API prefix...');
-    app.setGlobalPrefix('api');
+    app.setGlobalPrefix('api', {
+      exclude: [{ path: 'swagger/docs', method: RequestMethod.GET }],
+    });
 
     loggerService.debug('Enabling API versioning...');
     app.enableVersioning({
@@ -54,14 +57,7 @@ async function bootstrap() {
 
     //TODO: separate to OpenAPI-module
     loggerService.debug('Setting up Swagger documentation...');
-    const config = new DocumentBuilder()
-      .setTitle('Avatar Generation API')
-      .setDescription('API for generating and managing avatars similar to GitHub/GitLab')
-      .setVersion('1.0.0')
-      .addTag('Avatar', 'Avatar generation and management endpoints')
-      .build();
-
-    const document = SwaggerModule.createDocument(app, config);
+    const document = buildSwaggerDocument(app);
     SwaggerModule.setup('swagger', app, document, {
       customSiteTitle: 'Avatar Generation API',
     });

@@ -52,28 +52,6 @@ export class AvatarController {
     return await this.avatarService.generateAvatarV3(dto);
   }
 
-  @Get('health')
-  @ApiOperation({ summary: 'Health check endpoint' })
-  @ApiResponse({ status: 200, description: 'Health status retrieved' })
-  async healthCheck() {
-    try {
-      const health = await this.avatarService.healthCheck();
-      return {
-        statusCode: HttpStatus.OK,
-        message: 'Health check completed',
-        data: health,
-      };
-    } catch (error) {
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: error.message,
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
-
   @Get('list')
   @ApiOperation({ summary: 'Get list of avatars with pagination' })
   @ApiQuery({

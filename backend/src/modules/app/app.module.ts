@@ -9,6 +9,7 @@ import { HealthModule } from '../health';
 import { CorsMiddlewareModule } from '../../middleware';
 import { CacheModule } from '../cache/cache.module';
 import { PalettesModule } from '../palettes';
+import { SwaggerDocsModule } from '../swagger-docs';
 
 /**
  * Корневой модуль приложения
@@ -28,6 +29,7 @@ import { PalettesModule } from '../palettes';
     AvatarModule,
     HealthModule,
     CorsMiddlewareModule,
+    SwaggerDocsModule,
   ],
 })
 export class AppModule implements OnModuleInit {

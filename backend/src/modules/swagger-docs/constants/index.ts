@@ -1,0 +1,1 @@
+export const SWAGGER_DOC_PATH = 'SWAGGER_DOC_PATH';
