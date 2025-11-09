@@ -99,7 +99,6 @@ services:
       - ../backend/logs:/app/logs
     environment:
       - NODE_ENV=${NODE_ENV:-production}
-      - CONFIG_PATH=./settings.yaml
     dns:
       - 8.8.8.8
       - 8.8.4.4

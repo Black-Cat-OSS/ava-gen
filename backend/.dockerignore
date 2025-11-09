@@ -80,3 +80,5 @@ temp/
 # Other
 *.orig
 *.rej
+
+static/
