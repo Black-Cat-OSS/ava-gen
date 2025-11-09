@@ -16,7 +16,6 @@ export const AvatarViewerPage = () => {
   const { data: avatar, isLoading, isError, error } = useAvatar(search.id || '');
 
   const [size, setSize] = useState(128);
-  const [filter, setFilter] = useState('');
 
   const selectedSizeLabel = AVAILABLE_SIZES.find(s => s.value === size)?.label || `${size}px`;
 
@@ -136,7 +135,6 @@ export const AvatarViewerPage = () => {
                             height: 64,
                             aspectRatio: '1',
                           }}
-                          onClick={() => setFilter(filterOption.value)}
                         >
                           <img
                             src={avatar.id}
@@ -158,7 +156,7 @@ export const AvatarViewerPage = () => {
             </div>
 
             <div className="mt-8">
-              <AvatarLinkCopy avatarId={avatar.id} size={size} filter={filter} />
+              <AvatarLinkCopy avatarId={avatar.id} />
             </div>
           </>
         )}

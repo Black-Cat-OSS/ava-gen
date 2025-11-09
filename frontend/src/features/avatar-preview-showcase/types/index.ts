@@ -1,4 +1,4 @@
-import type { Avatar } from '@/shared/api/avatar';
+import type { Avatar } from '@/entities';
 
 /**
  * Shape of avatar display

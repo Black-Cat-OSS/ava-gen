@@ -1,6 +1,6 @@
 import type { Avatar } from '@/entities';
 import { apiClient } from '@/shared/lib/utils/api-client';
-import type { ApiPagination, ApiRequest } from '@/shared/api/api';
+import type { ApiPagination, ApiRequest } from '@/shared/api';
 
 export const AvatarApi: ApiRequest<Avatar> = {
   getAll: async (pick: number, offset: number): Promise<ApiPagination<Avatar>> => {

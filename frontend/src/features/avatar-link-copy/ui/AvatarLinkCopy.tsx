@@ -12,13 +12,13 @@ import { IconCopy } from './IconCopy';
  * AvatarLinkCopy component - displays avatar URL with copy functionality
  * Shows a Callout with readonly input field and copy button
  */
-export const AvatarLinkCopy: React.FC<AvatarLinkCopyProps> = ({ avatarId, size = 8, filter }) => {
+export const AvatarLinkCopy: React.FC<AvatarLinkCopyProps> = ({ avatarId }) => {
   const { t } = useTranslation('featuresAvatarLinkCopy');
   const [isCopied, setIsCopied] = useState(false);
 
   const avatarUrl = useMemo(() => {
-    return getImageUrl(avatarId, { size, ...(filter && { filter }) });
-  }, [avatarId, size, filter]);
+    return getImageUrl(avatarId, { size: 8 });
+  }, [avatarId]);
 
   const handleCopy = async () => {
     try {

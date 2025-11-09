@@ -8,3 +8,5 @@ export type {
   GenerateAvatarAngular,
 } from './generator/types';
 export type { GenerateEmojiAvatarParams } from './generator/types';
+
+export * from './api';
