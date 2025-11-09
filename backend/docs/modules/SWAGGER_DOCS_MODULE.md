@@ -10,7 +10,7 @@
   - **Ответ:** `application/json`, OpenAPI объект, сгенерированный при старте приложения
   - **Заголовки:** `Cache-Control: no-store`
   - Также доступно по `GET /api/v1/swagger/docs` для клиентов, использующих API-префикс
-- `GET /swagger-json`
+- `GET /swagger/json`
   - **Ответ:** `application/json`, OpenAPI объект в виде JSON
   - Предоставляется напрямую HTTP-адаптером NestJS
 
