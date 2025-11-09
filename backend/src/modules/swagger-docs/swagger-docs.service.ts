@@ -1,24 +1,21 @@
-import { Inject, Injectable, Logger, NotFoundException, StreamableFile } from '@nestjs/common';
-import { createReadStream, existsSync } from 'fs';
-import { SWAGGER_DOC_PATH } from './constants';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { OpenAPIObject } from '@nestjs/swagger';
 
 @Injectable()
 export class SwaggerDocsService {
   private readonly logger = new Logger(SwaggerDocsService.name);
+  private document?: OpenAPIObject;
 
-  constructor(@Inject(SWAGGER_DOC_PATH) private readonly swaggerDocPath: string) {}
+  setDocument(document: OpenAPIObject): void {
+    this.document = document;
+    this.logger.log('Swagger document initialized');
+  }
 
-  getDocument(): StreamableFile {
-    if (!existsSync(this.swaggerDocPath)) {
-      this.logger.error(
-        `Swagger document not found at ${this.swaggerDocPath}. Run "pnpm build" in backend to regenerate static/swagger.json.`,
-      );
+  getDocument(): OpenAPIObject {
+    if (!this.document) {
+      this.logger.error('Swagger document is not initialized yet');
       throw new NotFoundException('Swagger documentation is not generated yet');
     }
-
-    return new StreamableFile(createReadStream(this.swaggerDocPath), {
-      type: 'application/json',
-      disposition: 'inline; filename="swagger.json"',
-    });
+    return this.document;
   }
 }

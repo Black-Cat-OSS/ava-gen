@@ -7,6 +7,7 @@ import { LoggerService } from './modules/logger/logger.service';
 import { EmptyResponseInterceptor } from './common/interceptors/empty-response.interceptor';
 import { Reflector } from '@nestjs/core';
 import { buildSwaggerDocument } from './swagger/swagger.factory';
+import { SwaggerDocsService } from './modules/swagger-docs';
 
 async function bootstrap() {
   const bootstrapLogger = new Logger('Bootstrap');
@@ -27,7 +28,7 @@ async function bootstrap() {
     const loggerService = app.get(LoggerService);
     bootstrapLogger.debug('Logger service retrieved');
 
-    app.useLogger(loggerService); // подключаем pino как глобальный логгер
+    app.useLogger(loggerService);
     bootstrapLogger.log('Global logger configured');
 
     loggerService.log('Application bootstrap completed successfully');
@@ -58,8 +59,17 @@ async function bootstrap() {
     //TODO: separate to OpenAPI-module
     loggerService.debug('Setting up Swagger documentation...');
     const document = buildSwaggerDocument(app);
+    const swaggerDocsService = app.get(SwaggerDocsService);
+    swaggerDocsService.setDocument(document);
+
     SwaggerModule.setup('swagger', app, document, {
       customSiteTitle: 'Avatar Generation API',
+    });
+
+    const httpAdapter = app.getHttpAdapter();
+    httpAdapter.get('/swagger/json', (req, res) => {
+      res.type('application/json; charset=utf-8');
+      res.send(document);
     });
 
     const serverConfig = configService.getServerConfig();

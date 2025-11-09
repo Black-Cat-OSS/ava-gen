@@ -1,5 +1,5 @@
 import { Controller, Get, Header, VERSION_NEUTRAL } from '@nestjs/common';
-import { StreamableFile } from '@nestjs/common';
+import { OpenAPIObject } from '@nestjs/swagger';
 import { SwaggerDocsService } from './swagger-docs.service';
 
 @Controller({
@@ -11,7 +11,8 @@ export class SwaggerDocsController {
 
   @Get()
   @Header('Cache-Control', 'no-store')
-  getSwaggerDocument(): StreamableFile {
+  @Header('Content-Type', 'application/json; charset=utf-8')
+  getSwaggerDocument(): OpenAPIObject {
     return this.swaggerDocsService.getDocument();
   }
 }
