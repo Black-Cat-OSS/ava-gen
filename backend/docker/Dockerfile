@@ -1,11 +1,11 @@
 FROM node:20-bullseye AS deps
 WORKDIR /app
 
-COPY ../package.json .
+COPY backend/package.json .
 
 RUN apt-get update && \
   apt-get install -y --no-install-recommends \
-  curl libvips-dev && \
+  libvips-dev && \
   rm -rf /var/lib/apt/lists/* && \
   npm install
 
@@ -14,9 +14,9 @@ WORKDIR /app
 
 COPY --from=deps /app/node_modules node_modules
 COPY --from=deps /app/package*.json .
-COPY ../src ./src
-COPY ../tsconfig.json .
-COPY ../nest-cli.json .
+COPY backend/src ./src
+COPY backend/tsconfig.json .
+COPY backend/nest-cli.json .
 
 RUN npm run build && \
   rm -rf ./node_modules && \
@@ -29,10 +29,13 @@ WORKDIR /app
 
 COPY --from=builder /app/dist dist
 COPY --from=builder /app/package*.json .
-COPY --from=builder /app/static static
-COPY ../start.sh /app/start.sh
+COPY backend/start.sh /app/start.sh
 
-RUN npm install --production && \
+RUN apt-get update && \
+  apt-get install -y --no-install-recommends \
+  curl && \
+  rm -rf /var/lib/apt/lists/* && \
+  npm install --production && \
   chmod +x /app/start.sh
 
 ENV NODE_ENV=production
