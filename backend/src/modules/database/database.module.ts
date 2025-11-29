@@ -64,7 +64,7 @@ export class DatabaseModule implements OnModuleInit {
   async onModuleInit(): Promise<void> {
     try {
       const dbInfo = this.databaseService.getDatabaseInfo();
-      this.logger.log(`🗄️  DatabaseModule initialized - ${dbInfo.driver} provider active`);
+      this.logger.log(`DatabaseModule initialized - ${dbInfo.driver} provider active`);
     } catch (error) {
       this.logger.error(`DatabaseModule initialization failed: ${error.message}`);
       throw error;
