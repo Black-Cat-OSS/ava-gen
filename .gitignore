@@ -48,6 +48,6 @@ docker/docker-compose.override.yml
 
 _task.md
 _issue.md
-reports/
+reports
 
 NOTE.md
