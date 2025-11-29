@@ -7,6 +7,7 @@ import { LoggerService } from './modules/logger/logger.service';
 import { EmptyResponseInterceptor } from './common/interceptors/empty-response.interceptor';
 import { Reflector } from '@nestjs/core';
 import { SwaggerDocsService } from './modules/swagger-docs';
+import { CorsMiddleware } from './middleware/cors/cors.middleware';
 
 async function bootstrap() {
   const bootstrapLogger = new Logger('Bootstrap');
@@ -31,6 +32,14 @@ async function bootstrap() {
     bootstrapLogger.log('Global logger configured');
 
     loggerService.log('Application bootstrap completed successfully');
+
+    loggerService.debug('Setting up CORS middleware...');
+    const corsMiddleware = app.get(CorsMiddleware);
+    const httpAdapter = app.getHttpAdapter();
+    httpAdapter.use((req, res, next) => {
+      corsMiddleware.use(req, res, next);
+    });
+    loggerService.debug('CORS middleware configured');
 
     loggerService.debug('Setting global API prefix...');
     app.setGlobalPrefix('api', {
