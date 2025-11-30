@@ -9,8 +9,16 @@ Avatar Gen.
 
 ### Запуск Prometheus и Grafana
 
+Для production:
+
 ```bash
-docker compose --profile prometheus --profile grafana up -d
+docker compose -f docker-compose.yml -f monitoring.yaml --profile prometheus --profile grafana up -d
+```
+
+Для development:
+
+```bash
+docker compose -f docker-compose.dev.yml -f monitoring.yaml --profile prometheus --profile grafana up -d
 ```
 
 ### Доступ к сервисам
