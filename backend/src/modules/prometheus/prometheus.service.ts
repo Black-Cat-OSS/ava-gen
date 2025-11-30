@@ -1,5 +1,6 @@
 import { Injectable, OnModuleInit, Logger, OnModuleDestroy } from '@nestjs/common';
 import { Registry, Counter, Histogram, Gauge, collectDefaultMetrics } from 'prom-client';
+import { YamlConfigService } from '../../config/modules/yaml-driver/yaml-config.service';
 
 /**
  * Сервис для управления метриками Prometheus
@@ -14,6 +15,7 @@ export class PrometheusService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(PrometheusService.name);
   private readonly register: Registry;
   private metricsInterval: NodeJS.Timeout | null = null;
+  private isEnabled = false;
 
   public readonly httpRequestsTotal: Counter<string>;
   public readonly httpRequestDuration: Histogram<string>;
@@ -25,7 +27,7 @@ export class PrometheusService implements OnModuleInit, OnModuleDestroy {
   public readonly appMemoryExternal: Gauge<string>;
   public readonly appUptime: Gauge<string>;
 
-  constructor() {
+  constructor(private readonly configService: YamlConfigService) {
     this.register = new Registry();
 
     this.httpRequestsTotal = new Counter({
@@ -87,11 +89,22 @@ export class PrometheusService implements OnModuleInit, OnModuleDestroy {
   }
 
   async onModuleInit(): Promise<void> {
+    const prometheusConfig = this.configService.getPrometheusConfig();
+
+    if (!prometheusConfig || !prometheusConfig.enabled) {
+      this.logger.log('PrometheusService skipped - Metrics collection disabled');
+      return;
+    }
+
     try {
-      collectDefaultMetrics({
-        register: this.register,
-        prefix: 'app_',
-      });
+      this.isEnabled = true;
+
+      if (prometheusConfig.collectDefaultMetrics !== false) {
+        collectDefaultMetrics({
+          register: this.register,
+          prefix: 'app_',
+        });
+      }
 
       this.startResourceMetricsCollection();
 
@@ -124,6 +137,10 @@ export class PrometheusService implements OnModuleInit, OnModuleDestroy {
    * Сбор метрик потребления ресурсов
    */
   private collectResourceMetrics(): void {
+    if (!this.isEnabled) {
+      return;
+    }
+
     try {
       const memUsage = process.memoryUsage();
 
@@ -136,6 +153,15 @@ export class PrometheusService implements OnModuleInit, OnModuleDestroy {
     } catch (error) {
       this.logger.warn(`Failed to collect resource metrics: ${error.message}`);
     }
+  }
+
+  /**
+   * Проверка, включен ли сбор метрик
+   *
+   * @returns {boolean} true если метрики включены
+   */
+  isMetricsEnabled(): boolean {
+    return this.isEnabled;
   }
 
   /**

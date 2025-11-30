@@ -10,6 +10,7 @@ import { CorsMiddlewareModule } from '../../middleware';
 import { CacheModule } from '../cache/cache.module';
 import { PalettesModule } from '../palettes';
 import { SwaggerDocsModule } from '../swagger-docs';
+import { PrometheusModule } from '../prometheus';
 
 /**
  * Корневой модуль приложения
@@ -30,6 +31,7 @@ import { SwaggerDocsModule } from '../swagger-docs';
     HealthModule,
     CorsMiddlewareModule,
     SwaggerDocsModule,
+    PrometheusModule,
   ],
 })
 export class AppModule implements OnModuleInit {

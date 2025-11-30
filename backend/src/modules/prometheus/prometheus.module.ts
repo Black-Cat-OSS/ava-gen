@@ -17,7 +17,7 @@ import { RedisCacheModule } from '../cache/modules/redis-driver';
  * - Эндпоинт /metrics для Prometheus scraping
  */
 @Module({
-  imports: [ConfigModule, CacheModule, RedisCacheModule],
+  imports: [ConfigModule, CacheModule.register(), RedisCacheModule],
   controllers: [PrometheusController],
   providers: [PrometheusService, PrometheusMetricsInterceptor, RedisMetricsService],
   exports: [PrometheusService, PrometheusMetricsInterceptor],
