@@ -1,0 +1,16 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'avatar-gen'
+
+scrape_configs:
+  - job_name: 'avatar-gen-backend'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['avatar-backend:3000']
+        labels:
+          service: 'backend'
+          environment: 'production'
+
+retention_time: 15d
