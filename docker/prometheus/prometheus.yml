@@ -13,5 +13,3 @@ scrape_configs:
           service: 'backend'
           environment: 'production'
     scrape_interval: 15s
-
-retention_time: 15d
