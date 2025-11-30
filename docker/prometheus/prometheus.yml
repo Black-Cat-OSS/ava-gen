@@ -6,7 +6,7 @@ global:
 
 scrape_configs:
   - job_name: 'avatar-gen-backend'
-    metrics_path: '/api/metrics'
+    metrics_path: '/metrics'
     static_configs:
       - targets: ['avatar-backend:3000']
         labels:
