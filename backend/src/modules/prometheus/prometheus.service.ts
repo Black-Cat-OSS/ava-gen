@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
+import { Injectable, OnModuleInit, Logger, OnModuleDestroy } from '@nestjs/common';
 import { Registry, Counter, Histogram, Gauge, collectDefaultMetrics } from 'prom-client';
 
 /**
@@ -10,13 +10,20 @@ import { Registry, Counter, Histogram, Gauge, collectDefaultMetrics } from 'prom
  * - Стандартные метрики Node.js
  */
 @Injectable()
-export class PrometheusService implements OnModuleInit {
+export class PrometheusService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(PrometheusService.name);
   private readonly register: Registry;
+  private metricsInterval: NodeJS.Timeout | null = null;
 
   public readonly httpRequestsTotal: Counter<string>;
   public readonly httpRequestDuration: Histogram<string>;
   public readonly httpActiveRequests: Gauge<string>;
+  public readonly appMemoryRss: Gauge<string>;
+  public readonly appMemoryHeapTotal: Gauge<string>;
+  public readonly appMemoryHeapUsed: Gauge<string>;
+  public readonly appMemoryHeapAvailable: Gauge<string>;
+  public readonly appMemoryExternal: Gauge<string>;
+  public readonly appUptime: Gauge<string>;
 
   constructor() {
     this.register = new Registry();
@@ -41,6 +48,42 @@ export class PrometheusService implements OnModuleInit {
       help: 'Number of active HTTP requests',
       registers: [this.register],
     });
+
+    this.appMemoryRss = new Gauge({
+      name: 'app_memory_rss_bytes',
+      help: 'Resident Set Size memory in bytes',
+      registers: [this.register],
+    });
+
+    this.appMemoryHeapTotal = new Gauge({
+      name: 'app_memory_heap_total_bytes',
+      help: 'Total heap memory in bytes',
+      registers: [this.register],
+    });
+
+    this.appMemoryHeapUsed = new Gauge({
+      name: 'app_memory_heap_used_bytes',
+      help: 'Used heap memory in bytes',
+      registers: [this.register],
+    });
+
+    this.appMemoryHeapAvailable = new Gauge({
+      name: 'app_memory_heap_available_bytes',
+      help: 'Available heap memory in bytes',
+      registers: [this.register],
+    });
+
+    this.appMemoryExternal = new Gauge({
+      name: 'app_memory_external_bytes',
+      help: 'External memory in bytes',
+      registers: [this.register],
+    });
+
+    this.appUptime = new Gauge({
+      name: 'app_uptime_seconds',
+      help: 'Application uptime in seconds',
+      registers: [this.register],
+    });
   }
 
   async onModuleInit(): Promise<void> {
@@ -50,10 +93,48 @@ export class PrometheusService implements OnModuleInit {
         prefix: 'app_',
       });
 
+      this.startResourceMetricsCollection();
+
       this.logger.log('PrometheusService initialized - Metrics collection enabled');
     } catch (error) {
       this.logger.error(`PrometheusService initialization failed: ${error.message}`, error.stack);
       throw error;
+    }
+  }
+
+  async onModuleDestroy(): Promise<void> {
+    if (this.metricsInterval) {
+      clearInterval(this.metricsInterval);
+      this.metricsInterval = null;
+    }
+  }
+
+  /**
+   * Запуск периодического сбора метрик ресурсов
+   */
+  private startResourceMetricsCollection(): void {
+    this.collectResourceMetrics();
+
+    this.metricsInterval = setInterval(() => {
+      this.collectResourceMetrics();
+    }, 15000);
+  }
+
+  /**
+   * Сбор метрик потребления ресурсов
+   */
+  private collectResourceMetrics(): void {
+    try {
+      const memUsage = process.memoryUsage();
+
+      this.appMemoryRss.set(memUsage.rss);
+      this.appMemoryHeapTotal.set(memUsage.heapTotal);
+      this.appMemoryHeapUsed.set(memUsage.heapUsed);
+      this.appMemoryHeapAvailable.set(memUsage.heapTotal - memUsage.heapUsed);
+      this.appMemoryExternal.set(memUsage.external);
+      this.appUptime.set(Math.floor(process.uptime()));
+    } catch (error) {
+      this.logger.warn(`Failed to collect resource metrics: ${error.message}`);
     }
   }
 
