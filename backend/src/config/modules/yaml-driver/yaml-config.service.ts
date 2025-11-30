@@ -101,4 +101,14 @@ export class YamlConfigService implements OnModuleDestroy {
       origins: this.config.app.corsEnabled || [],
     };
   }
+
+  getPrometheusConfig() {
+    return (
+      this.config.app.prometheus || {
+        enabled: true,
+        path: '/metrics',
+        collectDefaultMetrics: true,
+      }
+    );
+  }
 }
