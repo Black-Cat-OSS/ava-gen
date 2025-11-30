@@ -101,6 +101,19 @@ const configSchema = z
             .optional(),
         })
         .optional(),
+      prometheus: z
+        .object({
+          enabled: z.boolean().default(true),
+          path: z.string().default('/metrics'),
+          defaultLabels: z.record(z.string(), z.string()).optional(),
+          collectDefaultMetrics: z.boolean().default(true),
+        })
+        .default({
+          enabled: true,
+          path: '/metrics',
+          collectDefaultMetrics: true,
+        })
+        .optional(),
       cors: z.boolean().default(false).optional(),
       corsEnabled: z.array(z.string()).optional(),
     }),
