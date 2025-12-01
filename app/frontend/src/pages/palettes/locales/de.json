@@ -1,5 +1,6 @@
 {
   "loadMore": "Mehr laden",
   "title": "Farbpaletten",
-  "errorMessage": "Fehler beim Laden der Paletten. Bitte versuchen Sie es später erneut."
+  "errorMessage": "Fehler beim Laden der Paletten. Bitte versuchen Sie es später erneut.",
+  "createPalette": "Palette erstellen"
 }

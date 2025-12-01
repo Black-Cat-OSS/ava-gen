@@ -1,6 +1,6 @@
-import { IsOptional, IsString, MaxLength, IsEnum, IsNumber, Min, Max } from 'class-validator';
+import { IsOptional, IsString, MaxLength, IsEnum, IsNumber, Min, Max, IsBoolean } from 'class-validator';
 import { ApiPropertyOptional, ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { FilterType } from '../../../common/enums/filter.enum';
 import { PaginationDto } from '../../../common/dto/pagination.dto';
 
@@ -22,7 +22,7 @@ export class GenerateAvatarDto {
   colorScheme?: string;
 
   @ApiPropertyOptional({
-    description: 'Generation type (pixelize, wave, etc.)',
+    description: 'Generation type (pixelize, wave, gradient, emoji, lowpoly)',
     example: 'pixelize',
   })
   @IsOptional()
@@ -37,6 +37,50 @@ export class GenerateAvatarDto {
   @IsString()
   @MaxLength(255, { message: 'Seed must not exceed 255 characters' })
   seed: string;
+
+  @ApiPropertyOptional({
+    description: 'Gradient angle in degrees (0-360) - used for gradient and lowpoly types',
+    minimum: 0,
+    maximum: 360,
+    example: 90,
+  })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  @Max(360)
+  angle?: number;
+
+  @ApiPropertyOptional({
+    description: 'Point density for lowpoly generation',
+    enum: ['low', 'medium', 'high'],
+    example: 'medium',
+  })
+  @IsOptional()
+  @IsEnum(['low', 'medium', 'high'])
+  pointDensity?: 'low' | 'medium' | 'high';
+
+  @ApiPropertyOptional({
+    description: 'Color variation percentage for lowpoly (0-100)',
+    minimum: 0,
+    maximum: 100,
+    example: 0,
+  })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  @Max(100)
+  colorVariation?: number;
+
+  @ApiPropertyOptional({
+    description: 'Enable edge detection for lowpoly generation',
+    example: true,
+  })
+  @IsOptional()
+  @Type(() => Boolean)
+  @IsBoolean()
+  edgeDetection?: boolean;
 }
 
 export class GetAvatarDto {

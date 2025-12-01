@@ -5,6 +5,7 @@ import { PixelizeGeneratorModule } from '../pixelize-driver';
 import { WaveGeneratorModule } from '../wave-driver';
 import { GradientGeneratorModule } from '../gradient-driver/gradient-generator.module';
 import { EmojiGeneratorModule } from '../emoji-driver';
+import { LowpolyGeneratorModule } from '../lowpoly-driver';
 import { EmojiService } from '../../../emoji';
 
 /**
@@ -24,6 +25,7 @@ export class GeneratorService {
     private readonly waveGenerator: WaveGeneratorModule,
     private readonly gradientGenerator: GradientGeneratorModule,
     private readonly emojiGenerator: EmojiGeneratorModule,
+    private readonly lowpolyGenerator: LowpolyGeneratorModule,
     private readonly emojiService: EmojiService,
   ) {}
 
@@ -63,6 +65,35 @@ export class GeneratorService {
     );
   }
 
+  async generateLowpolyAvatar(
+    primaryColor?: string,
+    foreignColor?: string,
+    colorScheme?: string,
+    seed?: string,
+    angle?: number,
+    pointDensity?: 'low' | 'medium' | 'high',
+    colorVariation?: number,
+    edgeDetection?: boolean,
+    emoji?: string,
+    emojiSize?: 'small' | 'medium' | 'large',
+    backgroundType?: 'solid' | 'linear' | 'radial',
+  ): Promise<AvatarObject> {
+    this.logger.log('Generating lowpoly avatar');
+    return await this.lowpolyGenerator.generateAvatar(
+      primaryColor,
+      foreignColor,
+      colorScheme,
+      seed,
+      angle,
+      pointDensity,
+      colorVariation,
+      edgeDetection,
+      emoji,
+      emojiSize,
+      backgroundType,
+    );
+  }
+
   async checkTwemojiAvailability(): Promise<boolean> {
     return await this.emojiService.checkTwemojiAvailability();
   }
@@ -84,6 +115,8 @@ export class GeneratorService {
         return this.gradientGenerator;
       case 'emoji':
         return this.emojiGenerator;
+      case 'lowpoly':
+        return this.lowpolyGenerator;
       default:
         throw new BadRequestException(`Unsupported generator type: ${type}`);
     }

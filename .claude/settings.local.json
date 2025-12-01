@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run build:*)",
+      "Bash(while read feature)",
+      "Bash(do if [ -d \"a:\\\\web_apps\\\\ava-gen\\\\app\\\\frontend\\\\src\\\\features$feature\\\\locales\" ])",
+      "Bash(then echo \"$feature: has locales\")",
+      "Bash(fi)",
+      "Bash(done)",
+      "Bash(ls:*)",
+      "Bash(npx tsc:*)"
+    ]
+  }
+}

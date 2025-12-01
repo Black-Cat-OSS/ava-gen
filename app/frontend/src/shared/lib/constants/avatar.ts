@@ -14,6 +14,7 @@ export const AVATAR_FILTERS: Array<{ value: ImageFilters | ''; label: string }> 
   { value: 'grayscale', label: 'Grayscale' },
   { value: 'sepia', label: 'Sepia' },
   { value: 'negative', label: 'Negative' },
+  { value: 'lowpoly', label: 'Lowpoly' },
 ];
 
 export const IMAGE_VIEW_SIZE = 512;

@@ -6,6 +6,7 @@ import {
   ClassicGeneratorForm,
   EmojiGeneratorForm,
 } from '@/features';
+import { LowpolyGeneratorForm } from '@/features/avatar-lowpoly-generator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui';
 import { Description } from './Description';
 
@@ -26,6 +27,7 @@ export const AvatarGeneratorPage = () => {
           <TabsList className="mb-3">
             <TabsTrigger value="classic">Classic</TabsTrigger>
             <TabsTrigger value="emoji">Emoji</TabsTrigger>
+            <TabsTrigger value="lowpoly">Lowpoly</TabsTrigger>
           </TabsList>
 
           <TabsContent value="classic">
@@ -34,6 +36,10 @@ export const AvatarGeneratorPage = () => {
 
           <TabsContent value="emoji">
             <EmojiGeneratorForm />
+          </TabsContent>
+
+          <TabsContent value="lowpoly">
+            <LowpolyGeneratorForm />
           </TabsContent>
         </Tabs>
 

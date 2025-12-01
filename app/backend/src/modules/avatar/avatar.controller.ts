@@ -19,6 +19,7 @@ import { AvatarService } from './avatar.service';
 import { GenerateAvatarDto, GetAvatarDto, ListAvatarsDto } from './dto/generate-avatar.dto';
 import { GenerateAvatarV2Dto } from './dto/generate-avatar-v2.dto';
 import { GenerateAvatarV3Dto } from './dto/generate-avatar-v3.dto';
+import { GenerateAvatarV4Dto } from './dto/generate-avatar-v4.dto';
 
 @ApiTags('Avatar')
 @Controller()
@@ -50,6 +51,15 @@ export class AvatarController {
   @UsePipes(new ValidationPipe({ transform: true }))
   async generateAvatarV3(@Body() dto: GenerateAvatarV3Dto) {
     return await this.avatarService.generateAvatarV3(dto);
+  }
+
+  @Post('generate')
+  @Version('4')
+  @ApiOperation({ summary: 'Generate lowpoly avatar with gradients or emoji (API v4)' })
+  @ApiResponse({ status: 201, description: 'Lowpoly avatar generated successfully' })
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async generateAvatarV4(@Body() dto: GenerateAvatarV4Dto) {
+    return await this.avatarService.generateAvatarV4(dto);
   }
 
   @Get('list')

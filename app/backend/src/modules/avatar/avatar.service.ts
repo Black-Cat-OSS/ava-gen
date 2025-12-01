@@ -9,10 +9,13 @@ import { EmojiService } from '../emoji';
 import { GenerateAvatarDto, GetAvatarDto, ListAvatarsDto } from './dto/generate-avatar.dto';
 import { GenerateAvatarV2Dto } from './dto/generate-avatar-v2.dto';
 import { GenerateAvatarV3Dto } from './dto/generate-avatar-v3.dto';
+import { GenerateAvatarV4Dto } from './dto/generate-avatar-v4.dto';
 import { ColorPaletteDto } from './dto/color-palette.dto';
 import { Avatar } from './avatar.entity';
 import { PalettesService } from '../palettes';
 import { PerformanceMonitor } from './utils/performance-monitor.util';
+import { WorkerPoolService } from './utils/worker-pool.service';
+import { FilterType } from '../../common/enums/filter.enum';
 
 @Injectable()
 export class AvatarService {
@@ -27,6 +30,7 @@ export class AvatarService {
     private readonly cacheService: CacheService,
     private readonly emojiService: EmojiService,
     private readonly palettesService: PalettesService,
+    private readonly workerPoolService?: WorkerPoolService,
   ) {}
 
   async generateAvatar(dto: GenerateAvatarDto) {
@@ -184,6 +188,65 @@ export class AvatarService {
     } catch (error) {
       PerformanceMonitor.stop(operationId);
       this.logger.error(`Failed to generate emoji avatar: ${error.message}`, error);
+      throw error;
+    }
+  }
+
+  async generateAvatarV4(dto: GenerateAvatarV4Dto) {
+    this.logger.log('Generating new lowpoly avatar (v4)');
+
+    const operationId = `avatar-v4-${Date.now()}`;
+    PerformanceMonitor.start(operationId);
+
+    try {
+      // Generate lowpoly avatar with optional emoji overlay
+      const avatarObject = await this.avatarGenerator.generateLowpolyAvatar(
+        dto.primaryColor,
+        dto.foreignColor,
+        dto.colorScheme,
+        undefined,
+        dto.angle,
+        dto.pointDensity,
+        dto.colorVariation,
+        dto.edgeDetection,
+        dto.emoji, // Pass emoji to generator (undefined if not provided)
+        dto.emojiSize,
+        dto.backgroundType,
+      );
+
+      const filePath = await this.storageService.saveAvatar(avatarObject);
+
+      const avatar = this.avatarRepository.create({
+        id: avatarObject.meta_data_name,
+        name: avatarObject.meta_data_name,
+        filePath,
+        primaryColor: dto.primaryColor,
+        foreignColor: dto.foreignColor,
+        colorScheme: dto.colorScheme,
+        seed: undefined,
+        generatorType: 'lowpoly',
+      });
+
+      const savedAvatar = await this.avatarRepository.save(avatar);
+
+      const metrics = PerformanceMonitor.stop(operationId);
+
+      if (metrics) {
+        this.logger.log(
+          `Lowpoly avatar generated successfully with ID: ${savedAvatar.id} | Total: ${PerformanceMonitor.formatMetrics(metrics)}`,
+        );
+      } else {
+        this.logger.log(`Lowpoly avatar generated successfully with ID: ${savedAvatar.id}`);
+      }
+
+      return {
+        id: savedAvatar.id,
+        createdAt: savedAvatar.createdAt,
+        version: savedAvatar.version,
+      };
+    } catch (error) {
+      PerformanceMonitor.stop(operationId);
+      this.logger.error(`Failed to generate lowpoly avatar: ${error.message}`, error);
       throw error;
     }
   }
@@ -521,4 +584,5 @@ export class AvatarService {
 
     return { palettes };
   }
+
 }
