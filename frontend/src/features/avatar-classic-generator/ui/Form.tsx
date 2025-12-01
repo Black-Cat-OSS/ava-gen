@@ -129,25 +129,10 @@ export const ClassicGeneratorForm = () => {
           control={control}
           render={({ field }) => (
             <Tabs value={field.value} onValueChange={field.onChange}>
-              <TabsList className="bg-gray-700 rounded-lg p-1 mb-3">
-                <TabsTrigger
-                  value="pixelize"
-                  className="text-grey-100 data-[state=active]:text-white data-[state=active]:bg-blue-600"
-                >
-                  Pixelize
-                </TabsTrigger>
-                <TabsTrigger
-                  value="wave"
-                  className="text-grey-100 data-[state=active]:text-white data-[state=active]:bg-blue-600"
-                >
-                  Wave
-                </TabsTrigger>
-                <TabsTrigger
-                  value="gradient"
-                  className="text-grey-100 data-[state=active]:text-white data-[state=active]:bg-blue-600"
-                >
-                  Gradient
-                </TabsTrigger>
+              <TabsList className="mb-3">
+                <TabsTrigger value="pixelize">Pixelize</TabsTrigger>
+                <TabsTrigger value="wave">Wave</TabsTrigger>
+                <TabsTrigger value="gradient">Gradient</TabsTrigger>
               </TabsList>
               <TabsContent value="pixelize"></TabsContent>
               <TabsContent value="wave"></TabsContent>

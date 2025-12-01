@@ -23,19 +23,9 @@ export const AvatarGeneratorPage = () => {
         </div>
 
         <Tabs defaultValue="classic" className="mb-6">
-          <TabsList className="bg-gray-700 rounded-lg p-1 mb-3">
-            <TabsTrigger
-              className="text-grey-100 data-[state=active]:text-white data-[state=active]:bg-blue-600"
-              value="classic"
-            >
-              Classic
-            </TabsTrigger>
-            <TabsTrigger
-              className="text-grey-100 data-[state=active]:text-white data-[state=active]:bg-blue-600"
-              value="emoji"
-            >
-              Emoji
-            </TabsTrigger>
+          <TabsList className="mb-3">
+            <TabsTrigger value="classic">Classic</TabsTrigger>
+            <TabsTrigger value="emoji">Emoji</TabsTrigger>
           </TabsList>
 
           <TabsContent value="classic">

@@ -99,23 +99,14 @@ export const EmojiGeneratorForm = () => {
                   </strong>
 
                   <Tabs value={field.value} onValueChange={field.onChange}>
-                    <TabsList className="bg-gray-700 rounded-lg p-1 mb-3">
-                      <TabsTrigger
-                        value="solid"
-                        className="text-grey-100 data-[state=active]:text-white data-[state=active]:bg-blue-600"
-                      >
+                    <TabsList className="mb-3">
+                      <TabsTrigger value="solid">
                         {t('form.backgroundType.options.solid')}
                       </TabsTrigger>
-                      <TabsTrigger
-                        value="radial"
-                        className="text-grey-100 data-[state=active]:text-white data-[state=active]:bg-blue-600"
-                      >
+                      <TabsTrigger value="radial">
                         {t('form.backgroundType.options.radial')}
                       </TabsTrigger>
-                      <TabsTrigger
-                        value="linear"
-                        className="text-grey-100 data-[state=active]:text-white data-[state=active]:bg-blue-600"
-                      >
+                      <TabsTrigger value="linear">
                         {t('form.backgroundType.options.linear')}
                       </TabsTrigger>
                     </TabsList>
@@ -172,25 +163,10 @@ export const EmojiGeneratorForm = () => {
                     {t('form.emojiSize.label')}
                   </strong>
                   <Tabs value={field.value} onValueChange={field.onChange}>
-                    <TabsList className="bg-gray-700 rounded-lg p-1 mb-3">
-                      <TabsTrigger
-                        value="small"
-                        className="text-grey-100 data-[state=active]:text-white data-[state=active]:bg-blue-600"
-                      >
-                        {t('form.emojiSize.options.small')}
-                      </TabsTrigger>
-                      <TabsTrigger
-                        value="medium"
-                        className="text-grey-100 data-[state=active]:text-white data-[state=active]:bg-blue-600"
-                      >
-                        {t('form.emojiSize.options.medium')}
-                      </TabsTrigger>
-                      <TabsTrigger
-                        value="large"
-                        className="text-grey-100 data-[state=active]:text-white data-[state=active]:bg-blue-600"
-                      >
-                        {t('form.emojiSize.options.large')}
-                      </TabsTrigger>
+                    <TabsList className="mb-3">
+                      <TabsTrigger value="small">{t('form.emojiSize.options.small')}</TabsTrigger>
+                      <TabsTrigger value="medium">{t('form.emojiSize.options.medium')}</TabsTrigger>
+                      <TabsTrigger value="large">{t('form.emojiSize.options.large')}</TabsTrigger>
                     </TabsList>
                   </Tabs>
                 </div>
