@@ -104,6 +104,7 @@ services:
     networks:
       - backend-db
       - external
+      - external-dev
 
   redis:
     image: redis:7-alpine
