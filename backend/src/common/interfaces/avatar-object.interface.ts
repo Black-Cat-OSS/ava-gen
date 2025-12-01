@@ -8,6 +8,12 @@ export interface AvatarObject {
   image_7n: Buffer;
   image_8n: Buffer;
   image_9n: Buffer;
+  lowpoly_image_4n?: Buffer;
+  lowpoly_image_5n?: Buffer;
+  lowpoly_image_6n?: Buffer;
+  lowpoly_image_7n?: Buffer;
+  lowpoly_image_8n?: Buffer;
+  lowpoly_image_9n?: Buffer;
 }
 
 export interface ColorScheme {

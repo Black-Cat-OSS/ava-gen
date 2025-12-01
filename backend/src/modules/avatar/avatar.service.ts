@@ -13,6 +13,10 @@ import { ColorPaletteDto } from './dto/color-palette.dto';
 import { Avatar } from './avatar.entity';
 import { PalettesService } from '../palettes';
 import { PerformanceMonitor } from './utils/performance-monitor.util';
+import { WorkerPoolService } from './utils/worker-pool.service';
+import { LowpolyFilterStep } from './pipelines/filters/lowpoly-filter.step';
+import { FilterType } from '../../common/enums/filter.enum';
+import { LowpolyWorkerMessage } from './interfaces/worker-message.interface';
 
 @Injectable()
 export class AvatarService {
@@ -27,6 +31,8 @@ export class AvatarService {
     private readonly cacheService: CacheService,
     private readonly emojiService: EmojiService,
     private readonly palettesService: PalettesService,
+    private readonly workerPoolService?: WorkerPoolService,
+    private readonly lowpolyFilterStep?: LowpolyFilterStep,
   ) {}
 
   async generateAvatar(dto: GenerateAvatarDto) {
@@ -220,6 +226,11 @@ export class AvatarService {
 
       // Если есть фильтр, сначала проверяем кеш отфильтрованного изображения
       if (dto.filter) {
+        // Специальная обработка для lowpoly фильтра
+        if (dto.filter === FilterType.LOWPOLY) {
+          return await this.handleLowpolyFilter(id, avatar, size);
+        }
+
         const filteredCacheKey = `avatar:image:${id}:${size}:${dto.filter}`;
 
         // Если кеширование включено, проверяем кеш отфильтрованного изображения
@@ -518,5 +529,142 @@ export class AvatarService {
     this.logger.log(`Returning ${palettes.length} color palettes`);
 
     return { palettes };
+  }
+
+  private async handleLowpolyFilter(
+    id: string,
+    avatar: Avatar,
+    size: number,
+  ): Promise<{ id: string; image: Buffer; contentType: string; createdAt: Date; version: string }> {
+    const filteredCacheKey = `avatar:image:${id}:${size}:lowpoly`;
+
+    if (this.cacheService) {
+      try {
+        const cached = await this.cacheService.getBuffer(filteredCacheKey);
+        if (cached) {
+          this.logger.debug(
+            `[CACHE] LOWPOLY HIT: ${id}:${size} loaded from cache (${cached.length} bytes)`,
+          );
+          return {
+            id: avatar.id,
+            image: cached,
+            contentType: 'image/png',
+            createdAt: avatar.createdAt,
+            version: avatar.version,
+          };
+        }
+      } catch (error) {
+        this.logger.debug(`[CACHE] LOWPOLY ERROR: ${error.message}`);
+      }
+    }
+
+    this.logger.debug(`[LOWPOLY] Loading AvatarObject for ${id}...`);
+    const avatarObject = await this.storageService.loadAvatar(id);
+
+    const lowpolyKey = `lowpoly_image_${size}n` as keyof typeof avatarObject;
+    let lowpolyImage = avatarObject[lowpolyKey] as Buffer | undefined;
+
+    if (!lowpolyImage) {
+      this.logger.log(`[LOWPOLY] Lowpoly versions not found, generating for all sizes...`);
+
+      const sizes = [
+        { key: 'image_4n' as const, lowpolyKey: 'lowpoly_image_4n' as const, size: 16 },
+        { key: 'image_5n' as const, lowpolyKey: 'lowpoly_image_5n' as const, size: 32 },
+        { key: 'image_6n' as const, lowpolyKey: 'lowpoly_image_6n' as const, size: 64 },
+        { key: 'image_7n' as const, lowpolyKey: 'lowpoly_image_7n' as const, size: 128 },
+        { key: 'image_8n' as const, lowpolyKey: 'lowpoly_image_8n' as const, size: 256 },
+        { key: 'image_9n' as const, lowpolyKey: 'lowpoly_image_9n' as const, size: 512 },
+      ];
+
+      if (this.workerPoolService?.isEnabled() && this.workerPoolService) {
+        try {
+          this.logger.log(`[LOWPOLY] Using workers for parallel processing...`);
+          const tasks = sizes.map(({ key, lowpolyKey: lpKey, size: imgSize }) => {
+            const originalImage = avatarObject[key];
+            if (!originalImage || !Buffer.isBuffer(originalImage)) {
+              throw new Error(`Original image ${key} not found for avatar ${id}`);
+            }
+
+            const taskId = `${id}-lowpoly-${imgSize}`;
+            const message: LowpolyWorkerMessage = {
+              type: 'lowpoly',
+              taskId,
+              imageBuffer: originalImage,
+              size: imgSize,
+            };
+
+            return this.workerPoolService
+              .executeTask(message, 'lowpoly-worker.js')
+              .then(buffer => ({ lowpolyKey: lpKey, buffer }));
+          });
+
+          const results = await Promise.all(tasks);
+          for (const { lowpolyKey: lpKey, buffer } of results) {
+            (avatarObject as any)[lpKey] = buffer;
+          }
+
+          this.logger.log(`[LOWPOLY] Successfully generated all lowpoly versions via workers`);
+        } catch (error) {
+          this.logger.warn(
+            `[LOWPOLY] Parallel generation failed, falling back to sequential: ${error.message}`,
+          );
+          await this.generateLowpolySequentially(avatarObject, sizes);
+        }
+      } else {
+        this.logger.log(`[LOWPOLY] Workers not available, using sequential processing...`);
+        await this.generateLowpolySequentially(avatarObject, sizes);
+      }
+
+      this.logger.debug(`[LOWPOLY] Saving updated AvatarObject to storage...`);
+      await this.storageService.saveAvatar(avatarObject);
+      this.logger.log(`[LOWPOLY] AvatarObject updated and saved`);
+
+      lowpolyImage = avatarObject[lowpolyKey] as Buffer;
+    } else {
+      this.logger.debug(`[LOWPOLY] Lowpoly version found in AvatarObject for size ${size}`);
+    }
+
+    if (!lowpolyImage || !Buffer.isBuffer(lowpolyImage)) {
+      throw new Error(`Failed to get lowpoly image for size ${size}`);
+    }
+
+    if (this.cacheService) {
+      try {
+        await this.cacheService.setBuffer(filteredCacheKey, lowpolyImage, 'filtered');
+        this.logger.debug(`[CACHE] Lowpoly ${id}:${size} successfully cached`);
+      } catch (error) {
+        this.logger.warn(`[CACHE] Failed to cache lowpoly: ${error.message}`);
+      }
+    }
+
+    return {
+      id: avatar.id,
+      image: lowpolyImage,
+      contentType: 'image/png',
+      createdAt: avatar.createdAt,
+      version: avatar.version,
+    };
+  }
+
+  private async generateLowpolySequentially(
+    avatarObject: any,
+    sizes: Array<{ key: string; lowpolyKey: string; size: number }>,
+  ): Promise<void> {
+    if (!this.lowpolyFilterStep) {
+      throw new Error('LowpolyFilterStep is not available');
+    }
+
+    for (const { key, lowpolyKey, size: imgSize } of sizes) {
+      const originalImage = avatarObject[key];
+      if (!originalImage || !Buffer.isBuffer(originalImage)) {
+        this.logger.warn(`[LOWPOLY] Original image ${key} not found, skipping`);
+        continue;
+      }
+
+      this.logger.debug(`[LOWPOLY] Processing size ${imgSize} sequentially...`);
+      const lowpolyBuffer = await this.lowpolyFilterStep.process(originalImage);
+      avatarObject[lowpolyKey] = lowpolyBuffer;
+      this.logger.debug(`[LOWPOLY] Size ${imgSize} processed`);
+    }
   }
 }
