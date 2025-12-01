@@ -4,6 +4,9 @@ import sharp from 'sharp';
 import { AvatarObject, ColorScheme } from '../../../../common/interfaces/avatar-object.interface';
 import { IGeneratorStrategy } from '../../../../common/interfaces/generator-strategy.interface';
 import { EmojiService } from '../../../../modules/emoji';
+import { WorkerPoolService } from '../../utils/worker-pool.service';
+import { EmojiWorkerMessage } from '../../interfaces/worker-message.interface';
+import { PerformanceMonitor } from '../../utils/performance-monitor.util';
 
 /**
  * Генератор эмодзи-аватаров
@@ -18,7 +21,10 @@ export class EmojiGeneratorModule implements IGeneratorStrategy {
   private readonly logger = new Logger(EmojiGeneratorModule.name);
   private readonly emojiCache = new Map<string, Buffer>();
 
-  constructor(private readonly emojiService: EmojiService) {}
+  constructor(
+    private readonly emojiService: EmojiService,
+    private readonly workerPoolService?: WorkerPoolService,
+  ) {}
 
   private readonly colorSchemes: ColorScheme[] = [
     // Basic color schemes
@@ -56,87 +62,123 @@ export class EmojiGeneratorModule implements IGeneratorStrategy {
 
     const id = uuidv4();
     const now = new Date();
+    const operationId = `emoji-${id}`;
 
-    // Determine colors
-    let finalPrimaryColor = primaryColor;
-    let finalForeignColor = foreignColor;
+    const activeWorkers = this.workerPoolService?.getActiveWorkersCount();
+    const maxWorkers = this.workerPoolService?.getMaxWorkers();
+    PerformanceMonitor.start(operationId, activeWorkers, maxWorkers);
 
-    if (colorScheme) {
-      const scheme = this.colorSchemes.find(s => s.name === colorScheme);
-      if (scheme) {
-        finalPrimaryColor = scheme.primaryColor;
-        finalForeignColor = scheme.foreignColor;
+    try {
+      let finalPrimaryColor = primaryColor;
+      let finalForeignColor = foreignColor;
+
+      if (colorScheme) {
+        const scheme = this.colorSchemes.find(s => s.name === colorScheme);
+        if (scheme) {
+          finalPrimaryColor = scheme.primaryColor;
+          finalForeignColor = scheme.foreignColor;
+        }
       }
+
+      const finalEmoji = emoji || '😀';
+      const finalBackgroundType = backgroundType || 'solid';
+      const finalEmojiSize = emojiSize || 'large';
+
+      const sizes = [
+        { key: 'image_4n' as const, size: 16 },
+        { key: 'image_5n' as const, size: 32 },
+        { key: 'image_6n' as const, size: 64 },
+        { key: 'image_7n' as const, size: 128 },
+        { key: 'image_8n' as const, size: 256 },
+        { key: 'image_9n' as const, size: 512 },
+      ];
+
+      let imageBuffers: Record<string, Buffer>;
+
+      if (this.workerPoolService?.isEnabled()) {
+        try {
+          const tasks = sizes.map(({ key, size }) => {
+            const taskId = `${id}-${size}`;
+            const message: EmojiWorkerMessage = {
+              type: 'emoji',
+              taskId,
+              size,
+              primaryColor: finalPrimaryColor,
+              foreignColor: finalForeignColor,
+              emoji: finalEmoji,
+              backgroundType: finalBackgroundType,
+              emojiSize: finalEmojiSize,
+              angle,
+            };
+            return this.workerPoolService
+              .executeTask(message, 'emoji-worker.js')
+              .then(buffer => ({ key, buffer }));
+          });
+
+          const results = await Promise.all(tasks);
+          imageBuffers = Object.fromEntries(results.map(r => [r.key, r.buffer]));
+        } catch (error) {
+          this.logger.warn(
+            `Parallel generation failed, falling back to sequential: ${error.message}`,
+          );
+          imageBuffers = await this.generateSequentially(
+            sizes,
+            finalPrimaryColor,
+            finalForeignColor,
+            finalEmoji,
+            finalBackgroundType,
+            finalEmojiSize,
+            angle,
+          );
+        }
+      } else {
+        imageBuffers = await this.generateSequentially(
+          sizes,
+          finalPrimaryColor,
+          finalForeignColor,
+          finalEmoji,
+          finalBackgroundType,
+          finalEmojiSize,
+          angle,
+        );
+      }
+
+      const avatarObject: AvatarObject = {
+        meta_data_name: id,
+        meta_data_created_at: now,
+        meta_data_payload: {
+          emoji: finalEmoji,
+          backgroundType: finalBackgroundType,
+          emojiSize: finalEmojiSize,
+          angle: angle,
+        },
+        image_4n: imageBuffers.image_4n,
+        image_5n: imageBuffers.image_5n,
+        image_6n: imageBuffers.image_6n,
+        image_7n: imageBuffers.image_7n,
+        image_8n: imageBuffers.image_8n,
+        image_9n: imageBuffers.image_9n,
+      };
+
+      const metrics = PerformanceMonitor.stop(
+        operationId,
+        this.workerPoolService?.getActiveWorkersCount(),
+        this.workerPoolService?.getMaxWorkers(),
+      );
+
+      if (metrics) {
+        this.logger.log(
+          `Emoji avatar generated with ID: ${id} | ${PerformanceMonitor.formatMetrics(metrics)}`,
+        );
+      } else {
+        this.logger.log(`Emoji avatar generated with ID: ${id}`);
+      }
+
+      return avatarObject;
+    } catch (error) {
+      PerformanceMonitor.stop(operationId);
+      throw error;
     }
-
-    // Generate images for all required sizes (4n to 9n)
-    const avatarObject: AvatarObject = {
-      meta_data_name: id,
-      meta_data_created_at: now,
-      meta_data_payload: {
-        emoji: emoji || '😀',
-        backgroundType: backgroundType || 'solid',
-        emojiSize: emojiSize || 'large',
-        angle: angle,
-      },
-      image_4n: await this.generateImageForSize(
-        16,
-        finalPrimaryColor,
-        finalForeignColor,
-        emoji || '😀',
-        backgroundType || 'solid',
-        emojiSize || 'large',
-        angle,
-      ), // 2^4 = 16
-      image_5n: await this.generateImageForSize(
-        32,
-        finalPrimaryColor,
-        finalForeignColor,
-        emoji || '😀',
-        backgroundType || 'solid',
-        emojiSize || 'large',
-        angle,
-      ), // 2^5 = 32
-      image_6n: await this.generateImageForSize(
-        64,
-        finalPrimaryColor,
-        finalForeignColor,
-        emoji || '😀',
-        backgroundType || 'solid',
-        emojiSize || 'large',
-        angle,
-      ), // 2^6 = 64
-      image_7n: await this.generateImageForSize(
-        128,
-        finalPrimaryColor,
-        finalForeignColor,
-        emoji || '😀',
-        backgroundType || 'solid',
-        emojiSize || 'large',
-        angle,
-      ), // 2^7 = 128
-      image_8n: await this.generateImageForSize(
-        256,
-        finalPrimaryColor,
-        finalForeignColor,
-        emoji || '😀',
-        backgroundType || 'solid',
-        emojiSize || 'large',
-        angle,
-      ), // 2^8 = 256
-      image_9n: await this.generateImageForSize(
-        512,
-        finalPrimaryColor,
-        finalForeignColor,
-        emoji || '😀',
-        backgroundType || 'solid',
-        emojiSize || 'large',
-        angle,
-      ), // 2^9 = 512
-    };
-
-    this.logger.log(`Emoji avatar generated with ID: ${id}`);
-    return avatarObject;
   }
 
   /**
@@ -146,6 +188,30 @@ export class EmojiGeneratorModule implements IGeneratorStrategy {
    */
   async checkTwemojiAvailability(): Promise<boolean> {
     return await this.emojiService.checkTwemojiAvailability();
+  }
+
+  private async generateSequentially(
+    sizes: Array<{ key: string; size: number }>,
+    primaryColor?: string,
+    foreignColor?: string,
+    emoji?: string,
+    backgroundType?: 'solid' | 'linear' | 'radial',
+    emojiSize?: 'small' | 'medium' | 'large',
+    angle?: number,
+  ): Promise<Record<string, Buffer>> {
+    const results: Record<string, Buffer> = {};
+    for (const { key, size } of sizes) {
+      results[key] = await this.generateImageForSize(
+        size,
+        primaryColor,
+        foreignColor,
+        emoji,
+        backgroundType,
+        emojiSize,
+        angle,
+      );
+    }
+    return results;
   }
 
   private async generateImageForSize(
@@ -198,7 +264,10 @@ export class EmojiGeneratorModule implements IGeneratorStrategy {
     throw new Error(`Unsupported background type: ${backgroundType}`);
   }
 
-  private async generateSolidBackground(size: number, color: { r: number; g: number; b: number }): Promise<Buffer> {
+  private async generateSolidBackground(
+    size: number,
+    color: { r: number; g: number; b: number },
+  ): Promise<Buffer> {
     const canvas = Buffer.alloc(size * size * 4);
 
     for (let y = 0; y < size; y++) {
@@ -313,7 +382,7 @@ export class EmojiGeneratorModule implements IGeneratorStrategy {
     emojiSize: 'small' | 'medium' | 'large',
   ): Promise<Buffer> {
     const cacheKey = `${emoji}-${avatarSize}-${emojiSize}`;
-    
+
     if (this.emojiCache.has(cacheKey)) {
       return this.emojiCache.get(cacheKey)!;
     }
@@ -321,7 +390,7 @@ export class EmojiGeneratorModule implements IGeneratorStrategy {
     try {
       // Fetch SVG from EmojiService
       const svgBuffer = await this.emojiService.fetchEmojiSvg(emoji);
-      
+
       // Calculate emoji size based on avatar size
       const sizeMultiplier = emojiSize === 'small' ? 0.4 : emojiSize === 'medium' ? 0.6 : 0.8;
       const emojiPixelSize = Math.round(avatarSize * sizeMultiplier);

@@ -12,6 +12,7 @@ import { GenerateAvatarV3Dto } from './dto/generate-avatar-v3.dto';
 import { ColorPaletteDto } from './dto/color-palette.dto';
 import { Avatar } from './avatar.entity';
 import { PalettesService } from '../palettes';
+import { PerformanceMonitor } from './utils/performance-monitor.util';
 
 @Injectable()
 export class AvatarService {
@@ -31,8 +32,10 @@ export class AvatarService {
   async generateAvatar(dto: GenerateAvatarDto) {
     this.logger.log('Generating new avatar');
 
+    const operationId = `avatar-${Date.now()}`;
+    PerformanceMonitor.start(operationId);
+
     try {
-      // Generate avatar object
       const avatarObject = await this.avatarGenerator.generateAvatar(
         dto.primaryColor,
         dto.foreignColor,
@@ -41,10 +44,8 @@ export class AvatarService {
         dto.type || 'pixelize',
       );
 
-      // Save to file system
       const filePath = await this.storageService.saveAvatar(avatarObject);
 
-      // Save metadata to database using TypeORM
       const avatar = this.avatarRepository.create({
         id: avatarObject.meta_data_name,
         name: avatarObject.meta_data_name,
@@ -58,7 +59,15 @@ export class AvatarService {
 
       const savedAvatar = await this.avatarRepository.save(avatar);
 
-      this.logger.log(`Avatar generated successfully with ID: ${savedAvatar.id}`);
+      const metrics = PerformanceMonitor.stop(operationId);
+
+      if (metrics) {
+        this.logger.log(
+          `Avatar generated successfully with ID: ${savedAvatar.id} | Total: ${PerformanceMonitor.formatMetrics(metrics)}`,
+        );
+      } else {
+        this.logger.log(`Avatar generated successfully with ID: ${savedAvatar.id}`);
+      }
 
       return {
         id: savedAvatar.id,
@@ -66,6 +75,7 @@ export class AvatarService {
         version: savedAvatar.version,
       };
     } catch (error) {
+      PerformanceMonitor.stop(operationId);
       this.logger.error(`Failed to generate avatar: ${error.message}`, error);
       throw error;
     }
@@ -74,21 +84,21 @@ export class AvatarService {
   async generateAvatarV2(dto: GenerateAvatarV2Dto) {
     this.logger.log('Generating new gradient avatar (v2)');
 
+    const operationId = `avatar-v2-${Date.now()}`;
+    PerformanceMonitor.start(operationId);
+
     try {
-      // Generate avatar object with gradient type and angle
       const avatarObject = await this.avatarGenerator.generateAvatar(
         dto.primaryColor,
         dto.foreignColor,
         dto.colorScheme,
-        undefined, // Gradient generator doesn't use seed
+        undefined,
         'gradient',
         dto.angle,
       );
 
-      // Save to file system
       const filePath = await this.storageService.saveAvatar(avatarObject);
 
-      // Save metadata to database using TypeORM
       const avatar = this.avatarRepository.create({
         id: avatarObject.meta_data_name,
         name: avatarObject.meta_data_name,
@@ -96,13 +106,21 @@ export class AvatarService {
         primaryColor: dto.primaryColor,
         foreignColor: dto.foreignColor,
         colorScheme: dto.colorScheme,
-        seed: undefined, // Gradient generator doesn't use seed
+        seed: undefined,
         generatorType: 'gradient',
       });
 
       const savedAvatar = await this.avatarRepository.save(avatar);
 
-      this.logger.log(`Gradient avatar generated successfully with ID: ${savedAvatar.id}`);
+      const metrics = PerformanceMonitor.stop(operationId);
+
+      if (metrics) {
+        this.logger.log(
+          `Gradient avatar generated successfully with ID: ${savedAvatar.id} | Total: ${PerformanceMonitor.formatMetrics(metrics)}`,
+        );
+      } else {
+        this.logger.log(`Gradient avatar generated successfully with ID: ${savedAvatar.id}`);
+      }
 
       return {
         id: savedAvatar.id,
@@ -110,6 +128,7 @@ export class AvatarService {
         version: savedAvatar.version,
       };
     } catch (error) {
+      PerformanceMonitor.stop(operationId);
       this.logger.error(`Failed to generate gradient avatar: ${error.message}`, error);
       throw error;
     }
@@ -118,36 +137,44 @@ export class AvatarService {
   async generateAvatarV3(dto: GenerateAvatarV3Dto) {
     this.logger.log('Generating new emoji avatar (v3)');
 
+    const operationId = `avatar-v3-${Date.now()}`;
+    PerformanceMonitor.start(operationId);
+
     try {
-      // Generate avatar object with emoji type
       const avatarObject = await this.avatarGenerator.generateEmojiAvatar(
         dto.emoji,
         dto.backgroundType,
         dto.primaryColor,
         dto.foreignColor,
-        undefined, // Emoji generator doesn't use colorScheme
+        undefined,
         dto.angle,
         dto.emojiSize,
       );
 
-      // Save to file system
       const filePath = await this.storageService.saveAvatar(avatarObject);
 
-      // Save metadata to database using TypeORM
       const avatar = this.avatarRepository.create({
         id: avatarObject.meta_data_name,
         name: avatarObject.meta_data_name,
         filePath,
         primaryColor: dto.primaryColor,
         foreignColor: dto.foreignColor,
-        colorScheme: undefined, // Emoji generator doesn't use colorScheme
-        seed: undefined, // Emoji generator doesn't use seed
+        colorScheme: undefined,
+        seed: undefined,
         generatorType: 'emoji',
       });
 
       const savedAvatar = await this.avatarRepository.save(avatar);
 
-      this.logger.log(`Emoji avatar generated successfully with ID: ${savedAvatar.id}`);
+      const metrics = PerformanceMonitor.stop(operationId);
+
+      if (metrics) {
+        this.logger.log(
+          `Emoji avatar generated successfully with ID: ${savedAvatar.id} | Total: ${PerformanceMonitor.formatMetrics(metrics)}`,
+        );
+      } else {
+        this.logger.log(`Emoji avatar generated successfully with ID: ${savedAvatar.id}`);
+      }
 
       return {
         id: savedAvatar.id,
@@ -155,6 +182,7 @@ export class AvatarService {
         version: savedAvatar.version,
       };
     } catch (error) {
+      PerformanceMonitor.stop(operationId);
       this.logger.error(`Failed to generate emoji avatar: ${error.message}`, error);
       throw error;
     }
