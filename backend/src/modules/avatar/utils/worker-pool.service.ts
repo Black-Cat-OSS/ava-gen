@@ -58,6 +58,14 @@ export class WorkerPoolService implements OnModuleDestroy {
     return this.isWorkersEnabled;
   }
 
+  getActiveWorkersCount(): number {
+    return this.activeWorkers;
+  }
+
+  getMaxWorkers(): number {
+    return this.maxWorkers;
+  }
+
   async executeTask(message: WorkerMessage, workerPath: string, timeout = 30000): Promise<Buffer> {
     if (!this.isWorkersEnabled) {
       throw new Error('Worker pool is disabled (single CPU core detected)');

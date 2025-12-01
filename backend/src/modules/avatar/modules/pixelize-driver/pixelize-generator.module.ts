@@ -7,6 +7,7 @@ import { PalettesService } from '../../../../modules/palettes';
 import { convertNamedColorToHex } from '../../../../modules/palettes/utils/color-converter.util';
 import { WorkerPoolService } from '../../utils/worker-pool.service';
 import { PixelizeWorkerMessage } from '../../interfaces/worker-message.interface';
+import { PerformanceMonitor } from '../../utils/performance-monitor.util';
 
 @Injectable()
 export class PixelizeGeneratorModule implements IGeneratorStrategy {
@@ -42,55 +43,68 @@ export class PixelizeGeneratorModule implements IGeneratorStrategy {
 
     const id = uuidv4();
     const now = new Date();
+    const operationId = `pixelize-${id}`;
 
-    // Determine colors
-    let finalPrimaryColor = primaryColor;
-    let finalForeignColor = foreignColor;
+    const activeWorkers = this.workerPoolService?.getActiveWorkersCount();
+    const maxWorkers = this.workerPoolService?.getMaxWorkers();
+    PerformanceMonitor.start(operationId, activeWorkers, maxWorkers);
 
-    if (colorScheme) {
-      const scheme = this.colorSchemes.find(s => s.name === colorScheme);
-      if (scheme) {
-        finalPrimaryColor = scheme.primaryColor;
-        finalForeignColor = scheme.foreignColor;
+    try {
+      let finalPrimaryColor = primaryColor;
+      let finalForeignColor = foreignColor;
+
+      if (colorScheme) {
+        const scheme = this.colorSchemes.find(s => s.name === colorScheme);
+        if (scheme) {
+          finalPrimaryColor = scheme.primaryColor;
+          finalForeignColor = scheme.foreignColor;
+        }
       }
-    }
 
-    const uniqueSeed = seed || uuidv4();
+      const uniqueSeed = seed || uuidv4();
 
-    const sizes = [
-      { key: 'image_4n' as const, size: 16 },
-      { key: 'image_5n' as const, size: 32 },
-      { key: 'image_6n' as const, size: 64 },
-      { key: 'image_7n' as const, size: 128 },
-      { key: 'image_8n' as const, size: 256 },
-      { key: 'image_9n' as const, size: 512 },
-    ];
+      const sizes = [
+        { key: 'image_4n' as const, size: 16 },
+        { key: 'image_5n' as const, size: 32 },
+        { key: 'image_6n' as const, size: 64 },
+        { key: 'image_7n' as const, size: 128 },
+        { key: 'image_8n' as const, size: 256 },
+        { key: 'image_9n' as const, size: 512 },
+      ];
 
-    let imageBuffers: Record<string, Buffer>;
+      let imageBuffers: Record<string, Buffer>;
 
-    if (this.workerPoolService?.isEnabled()) {
-      try {
-        const tasks = sizes.map(({ key, size }) => {
-          const taskId = `${id}-${size}`;
-          const message: PixelizeWorkerMessage = {
-            type: 'pixelize',
-            taskId,
-            size,
-            primaryColor: finalPrimaryColor,
-            foreignColor: finalForeignColor,
-            seed: uniqueSeed,
-          };
-          return this.workerPoolService
-            .executeTask(message, 'pixelize-worker.js')
-            .then(buffer => ({ key, buffer }));
-        });
+      if (this.workerPoolService?.isEnabled()) {
+        try {
+          const tasks = sizes.map(({ key, size }) => {
+            const taskId = `${id}-${size}`;
+            const message: PixelizeWorkerMessage = {
+              type: 'pixelize',
+              taskId,
+              size,
+              primaryColor: finalPrimaryColor,
+              foreignColor: finalForeignColor,
+              seed: uniqueSeed,
+            };
+            return this.workerPoolService
+              .executeTask(message, 'pixelize-worker.js')
+              .then(buffer => ({ key, buffer }));
+          });
 
-        const results = await Promise.all(tasks);
-        imageBuffers = Object.fromEntries(results.map(r => [r.key, r.buffer]));
-      } catch (error) {
-        this.logger.warn(
-          `Parallel generation failed, falling back to sequential: ${error.message}`,
-        );
+          const results = await Promise.all(tasks);
+          imageBuffers = Object.fromEntries(results.map(r => [r.key, r.buffer]));
+        } catch (error) {
+          this.logger.warn(
+            `Parallel generation failed, falling back to sequential: ${error.message}`,
+          );
+          imageBuffers = await this.generateSequentially(
+            sizes,
+            finalPrimaryColor,
+            finalForeignColor,
+            uniqueSeed,
+          );
+        }
+      } else {
         imageBuffers = await this.generateSequentially(
           sizes,
           finalPrimaryColor,
@@ -98,28 +112,37 @@ export class PixelizeGeneratorModule implements IGeneratorStrategy {
           uniqueSeed,
         );
       }
-    } else {
-      imageBuffers = await this.generateSequentially(
-        sizes,
-        finalPrimaryColor,
-        finalForeignColor,
-        uniqueSeed,
+
+      const avatarObject: AvatarObject = {
+        meta_data_name: id,
+        meta_data_created_at: now,
+        image_4n: imageBuffers.image_4n,
+        image_5n: imageBuffers.image_5n,
+        image_6n: imageBuffers.image_6n,
+        image_7n: imageBuffers.image_7n,
+        image_8n: imageBuffers.image_8n,
+        image_9n: imageBuffers.image_9n,
+      };
+
+      const metrics = PerformanceMonitor.stop(
+        operationId,
+        this.workerPoolService?.getActiveWorkersCount(),
+        this.workerPoolService?.getMaxWorkers(),
       );
+
+      if (metrics) {
+        this.logger.log(
+          `Pixelize avatar generated with ID: ${id} | ${PerformanceMonitor.formatMetrics(metrics)}`,
+        );
+      } else {
+        this.logger.log(`Pixelize avatar generated with ID: ${id}`);
+      }
+
+      return avatarObject;
+    } catch (error) {
+      PerformanceMonitor.stop(operationId);
+      throw error;
     }
-
-    const avatarObject: AvatarObject = {
-      meta_data_name: id,
-      meta_data_created_at: now,
-      image_4n: imageBuffers.image_4n,
-      image_5n: imageBuffers.image_5n,
-      image_6n: imageBuffers.image_6n,
-      image_7n: imageBuffers.image_7n,
-      image_8n: imageBuffers.image_8n,
-      image_9n: imageBuffers.image_9n,
-    };
-
-    this.logger.log(`Pixelize avatar generated with ID: ${id}`);
-    return avatarObject;
   }
 
   private async generateSequentially(
