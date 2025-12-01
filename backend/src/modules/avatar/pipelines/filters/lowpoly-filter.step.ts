@@ -20,10 +20,20 @@ export class LowpolyFilterStep implements IPipelineStep<Buffer> {
    * Применить lowpoly фильтр к изображению
    *
    * @param {Buffer} imageBuffer - Буфер изображения
+   * @param {string} generatorType - Тип генератора (опционально)
+   * @param {string} primaryColor - Основной цвет для градиента (опционально)
+   * @param {string} foreignColor - Дополнительный цвет для градиента (опционально)
+   * @param {number} angle - Угол для градиента (опционально)
    * @returns {Promise<Buffer>} Обработанный буфер изображения
    */
-  async process(imageBuffer: Buffer): Promise<Buffer> {
-    const { data, info } = await sharp(imageBuffer)
+  async process(
+    imageBuffer: Buffer,
+    generatorType?: string,
+    primaryColor?: string,
+    foreignColor?: string,
+    angle?: number,
+  ): Promise<Buffer> {
+    const { info } = await sharp(imageBuffer)
       .ensureAlpha()
       .raw()
       .toBuffer({ resolveWithObject: true });
@@ -31,9 +41,72 @@ export class LowpolyFilterStep implements IPipelineStep<Buffer> {
     const width = info.width;
     const height = info.height;
 
-    const points = this.generatePoints(data, width, height);
+    let backgroundBuffer: Buffer | null = null;
+    let emojiBuffer: Buffer | null = null;
+    let sourceImageBuffer = imageBuffer;
+
+    if (generatorType === 'gradient') {
+      backgroundBuffer = await this.generateLinearGradientBackground(
+        width,
+        primaryColor,
+        foreignColor,
+        angle,
+      );
+      sourceImageBuffer = backgroundBuffer;
+    } else if (generatorType === 'emoji') {
+      backgroundBuffer = await this.generateLinearGradientBackground(
+        width,
+        primaryColor,
+        foreignColor,
+        angle,
+      );
+      emojiBuffer = await this.extractEmojiFromImage(imageBuffer);
+
+      if (emojiBuffer) {
+        const compositeBuffer = await sharp(backgroundBuffer)
+          .composite([
+            {
+              input: emojiBuffer,
+              gravity: 'center',
+            },
+          ])
+          .png()
+          .toBuffer();
+
+        sourceImageBuffer = compositeBuffer;
+      } else {
+        sourceImageBuffer = backgroundBuffer;
+      }
+    }
+
+    const sourceData = await sharp(sourceImageBuffer)
+      .ensureAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+
+    const points = this.generatePoints(sourceData.data, width, height);
     const triangles = this.triangulate(points);
-    return await this.renderTriangles(triangles, points, data, width, height);
+    const lowpolyResult = await this.renderTriangles(
+      triangles,
+      points,
+      sourceData.data,
+      width,
+      height,
+    );
+
+    if (backgroundBuffer && generatorType === 'gradient') {
+      return await sharp(backgroundBuffer)
+        .composite([
+          {
+            input: lowpolyResult,
+            blend: 'over',
+          },
+        ])
+        .png()
+        .toBuffer();
+    }
+
+    return lowpolyResult;
   }
 
   private generatePoints(data: Buffer, width: number, height: number): Point[] {
@@ -205,6 +278,95 @@ export class LowpolyFilterStep implements IPipelineStep<Buffer> {
     const v = (dot00 * dot12 - dot01 * dot02) * invDenom;
 
     return u >= 0 && v >= 0 && u + v <= 1;
+  }
+
+  private hexToRgb(hex: string): { r: number; g: number; b: number } {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result
+      ? {
+          r: parseInt(result[1], 16),
+          g: parseInt(result[2], 16),
+          b: parseInt(result[3], 16),
+        }
+      : { r: 59, g: 130, b: 246 };
+  }
+
+  private async generateLinearGradientBackground(
+    size: number,
+    primaryColor?: string,
+    foreignColor?: string,
+    angle?: number,
+  ): Promise<Buffer> {
+    const canvas = Buffer.alloc(size * size * 4);
+    const gradientAngle = angle !== undefined ? angle : 90;
+    const primaryRgb = this.hexToRgb(primaryColor || '#3B82F6');
+    const foreignRgb = this.hexToRgb(foreignColor || '#60A5FA');
+    const angleRad = (gradientAngle * Math.PI) / 180;
+
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        const index = (y * size + x) * 4;
+        const nx = (x / (size - 1)) * 2 - 1;
+        const ny = (y / (size - 1)) * 2 - 1;
+        const t = (nx * Math.cos(angleRad) + ny * Math.sin(angleRad) + 1) / 2;
+        const clampedT = Math.max(0, Math.min(1, t));
+
+        canvas[index] = Math.round(primaryRgb.r + (foreignRgb.r - primaryRgb.r) * clampedT);
+        canvas[index + 1] = Math.round(primaryRgb.g + (foreignRgb.g - primaryRgb.g) * clampedT);
+        canvas[index + 2] = Math.round(primaryRgb.b + (foreignRgb.b - primaryRgb.b) * clampedT);
+        canvas[index + 3] = 255;
+      }
+    }
+
+    return await sharp(canvas, {
+      raw: {
+        width: size,
+        height: size,
+        channels: 4,
+      },
+    })
+      .png()
+      .toBuffer();
+  }
+
+  private async extractEmojiFromImage(imageBuffer: Buffer): Promise<Buffer> {
+    const { data: imageData, info } = await sharp(imageBuffer)
+      .ensureAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+    const width = info.width;
+    const height = info.height;
+    const emojiBuffer = Buffer.alloc(width * height * 4);
+    const alphaThreshold = 10;
+
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const index = (y * width + x) * 4;
+        const alpha = imageData[index + 3];
+
+        if (alpha > alphaThreshold) {
+          emojiBuffer[index] = imageData[index];
+          emojiBuffer[index + 1] = imageData[index + 1];
+          emojiBuffer[index + 2] = imageData[index + 2];
+          emojiBuffer[index + 3] = imageData[index + 3];
+        } else {
+          emojiBuffer[index] = 0;
+          emojiBuffer[index + 1] = 0;
+          emojiBuffer[index + 2] = 0;
+          emojiBuffer[index + 3] = 0;
+        }
+      }
+    }
+
+    return await sharp(emojiBuffer, {
+      raw: {
+        width: width,
+        height: height,
+        channels: 4,
+      },
+    })
+      .png()
+      .toBuffer();
   }
 
   private async renderTriangles(
