@@ -11,14 +11,31 @@ import { IconCopy } from './IconCopy';
 /**
  * AvatarLinkCopy component - displays avatar URL with copy functionality
  * Shows a Callout with readonly input field and copy button
+ *
+ * @param props - Component props
+ * @param props.avatarId - Avatar identifier
+ * @param props.size - Optional avatar size (4-9), defaults to 8
+ * @param props.filter - Optional filter ('grayscale', 'sepia', 'negative'), defaults to undefined
  */
-export const AvatarLinkCopy: React.FC<AvatarLinkCopyProps> = ({ avatarId }) => {
+export const AvatarLinkCopy: React.FC<AvatarLinkCopyProps> = ({ avatarId, size, filter }) => {
   const { t } = useTranslation('featuresAvatarLinkCopy');
   const [isCopied, setIsCopied] = useState(false);
 
   const avatarUrl = useMemo(() => {
-    return getImageUrl(avatarId, { size: 8 });
-  }, [avatarId]);
+    const params: {
+      size?: 4 | 5 | 6 | 7 | 8 | 9;
+      filter?: 'grayscale' | 'sepia' | 'negative';
+    } = {};
+    if (size !== undefined) {
+      params.size = size as 4 | 5 | 6 | 7 | 8 | 9;
+    } else {
+      params.size = 8;
+    }
+    if (filter && ['grayscale', 'sepia', 'negative'].includes(filter)) {
+      params.filter = filter as 'grayscale' | 'sepia' | 'negative';
+    }
+    return getImageUrl(avatarId, params);
+  }, [avatarId, size, filter]);
 
   const handleCopy = async () => {
     try {
