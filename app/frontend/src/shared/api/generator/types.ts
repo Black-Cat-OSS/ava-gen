@@ -1,6 +1,7 @@
 export type EmojiSize = 'small' | 'medium' | 'large';
 export type BackgroundType = 'solid' | 'linear' | 'radial';
-export type GeneratorType = 'pixelize' | 'wave' | 'emoji' | 'gradient';
+export type GeneratorType = 'pixelize' | 'wave' | 'emoji' | 'gradient' | 'lowpoly';
+export type PointDensity = 'low' | 'medium' | 'high';
 
 export interface IColorScheme {
   primaryColor?: string;
@@ -27,6 +28,19 @@ export interface GenerateEmojiAvatarParams {
   primaryColor?: string;
   foreignColor?: string;
   angle?: number;
+  emojiSize?: EmojiSize;
+}
+
+export interface GenerateLowpolyAvatarParams {
+  emoji?: string;
+  backgroundType: BackgroundType;
+  primaryColor?: string;
+  foreignColor?: string;
+  colorScheme?: string;
+  angle?: number;
+  pointDensity?: PointDensity;
+  colorVariation?: number;
+  edgeDetection?: boolean;
   emojiSize?: EmojiSize;
 }
 

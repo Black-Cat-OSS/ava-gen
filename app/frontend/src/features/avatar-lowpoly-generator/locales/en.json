@@ -1,0 +1,48 @@
+{
+  "form": {
+    "useEmoji": {
+      "label": "Add Emoji",
+      "options": {
+        "no": "Gradient Only",
+        "yes": "With Emoji"
+      }
+    },
+    "backgroundType": {
+      "label": "Background Type",
+      "options": {
+        "solid": "Solid",
+        "radial": "Radial",
+        "linear": "Linear"
+      }
+    },
+    "emojiSize": {
+      "label": "Emoji Size",
+      "options": {
+        "small": "Small",
+        "medium": "Medium",
+        "large": "Large"
+      }
+    },
+    "pointDensity": {
+      "label": "Triangle Density",
+      "options": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High"
+      }
+    },
+    "colorVariation": {
+      "label": "Color Variation"
+    },
+    "edgeDetection": {
+      "label": "Edge Detection",
+      "options": {
+        "off": "Off",
+        "on": "On"
+      }
+    },
+    "gradientAngle": "Gradient Angle",
+    "submit": "Generate Lowpoly Avatar",
+    "generating": "Generating..."
+  }
+}

@@ -30,9 +30,4 @@ export type Pallete = {
    * Дата последнего обновления палитры в формате ISO 8601
    */
   updatedAt: string;
-
-  /**
-   * Цветовая схема палитры
-   */
-  colorScheme: string;
 };

@@ -3,6 +3,7 @@ import { PixelizeGeneratorModule } from '../pixelize-driver';
 import { WaveGeneratorModule } from '../wave-driver';
 import { GradientGeneratorModule } from '../gradient-driver/gradient-generator.module';
 import { EmojiGeneratorModule } from '../emoji-driver';
+import { LowpolyGeneratorModule } from '../lowpoly-driver';
 import { GeneratorService } from './generator.service';
 import { EmojiModule } from '../../../emoji';
 
@@ -32,6 +33,7 @@ export class GeneratorModule {
         WaveGeneratorModule,
         GradientGeneratorModule,
         EmojiGeneratorModule,
+        LowpolyGeneratorModule,
       ],
       exports: [GeneratorService],
     };

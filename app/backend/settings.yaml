@@ -53,6 +53,11 @@ app:
   server:
     host: '0.0.0.0'
     port: 3000
+  cors: true
+  corsEnabled:
+    - 'http://localhost:12965'
+    - 'http://localhost:5173'
+    - 'http://localhost:3000'
   database:
     driver: 'postgresql'
     connection:

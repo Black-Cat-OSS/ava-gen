@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "build": "npm run build --workspaces && rm -rf app/backend/dist/static/* && cp -r app/frontend/dist/* app/backend/static/",
-    "start": "npm run start --workspaces app/backend",
+    "start": "npm run start --workspaces backend",
     "lint": "npm run lint --workspaces",
     "lint:fix": "npm run lint:fix --workspaces",
     "format": "prettier --write \"**/*.{js,ts,tsx,json,md,yml,yaml}\"",

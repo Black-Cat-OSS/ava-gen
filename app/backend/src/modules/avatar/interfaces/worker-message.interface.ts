@@ -38,11 +38,21 @@ export interface EmojiWorkerMessage extends BaseWorkerMessage {
   angle?: number;
 }
 
+export interface LowpolyWorkerMessage extends BaseWorkerMessage {
+  type: 'lowpoly';
+  imageBuffer: Buffer;
+  size: number;
+  pointDensity?: 'low' | 'medium' | 'high';
+  colorVariation?: number;
+  edgeDetection?: boolean;
+}
+
 export type WorkerMessage =
   | PixelizeWorkerMessage
   | WaveWorkerMessage
   | GradientWorkerMessage
-  | EmojiWorkerMessage;
+  | EmojiWorkerMessage
+  | LowpolyWorkerMessage;
 
 export interface WorkerResponse {
   taskId: string;

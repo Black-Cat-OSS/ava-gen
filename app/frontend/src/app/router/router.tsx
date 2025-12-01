@@ -6,6 +6,7 @@ import { AvatarViewerPage } from '@/pages';
 import { DevStackPage } from '@/pages';
 import { LoginPage } from '@/pages';
 import { PalettesPage } from '@/pages';
+import PalettesAdd from '@/pages/palettes-add';
 import { DefaultLayout, CenterLayout } from '@/shared/ui';
 
 // Create the root route
@@ -95,6 +96,16 @@ const palettesRoute = createRoute({
   ),
 });
 
+const paletesAddRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/palettes-add',
+  component: () => (
+    <DefaultLayout>
+      <PalettesAdd />
+    </DefaultLayout>
+  )
+})
+
 // Create the route tree
 const routeTree = rootRoute.addChildren([
   indexRoute,
@@ -104,6 +115,7 @@ const routeTree = rootRoute.addChildren([
   devStackRoute,
   loginRoute,
   palettesRoute,
+  paletesAddRoute
 ]);
 
 // Create the router
