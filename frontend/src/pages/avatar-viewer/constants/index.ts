@@ -1,10 +1,10 @@
 export const AVAILABLE_SIZES = [
-  { value: 16, label: '16px' },
-  { value: 32, label: '32px' },
-  { value: 64, label: '64px' },
-  { value: 128, label: '128px' },
-  { value: 256, label: '256px' },
-  { value: 512, label: '512px' },
+  { value: 4, label: '16px', pixels: 16 },
+  { value: 5, label: '32px', pixels: 32 },
+  { value: 6, label: '64px', pixels: 64 },
+  { value: 7, label: '128px', pixels: 128 },
+  { value: 8, label: '256px', pixels: 256 },
+  { value: 9, label: '512px', pixels: 512 },
 ];
 
 export const AVAILABLE_FILTERS = [
@@ -13,3 +13,5 @@ export const AVAILABLE_FILTERS = [
   { value: 'sepia', label: 'Sepia' },
   { value: 'negative', label: 'Negative' },
 ];
+
+export const IMAGE_VIEW_SIZE = 512;
