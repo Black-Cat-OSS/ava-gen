@@ -1,4 +1,6 @@
 export * from './use-avatars';
+export * from './use-avatar';
+export * from './use-avatar-image';
 export * from './use-generator';
 export * from './use-theme';
 export * from './use-theme-utils';
