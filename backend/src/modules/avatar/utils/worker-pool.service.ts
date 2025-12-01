@@ -31,6 +31,17 @@ export class WorkerPoolService implements OnModuleDestroy {
       this.logger.warn(
         `Worker pool disabled: only ${cpuCount} CPU core(s) detected. Sequential generation will be used.`,
       );
+      this.logger.warn(
+        `Performance warning: Avatar generation will be slower without parallel processing.`,
+      );
+      this.logger.warn(
+        `Recommendation: Allocate at least 2 CPU cores to the application for optimal performance.`,
+      );
+      if (process.env.DOCKER_CONTAINER || process.env.KUBERNETES_SERVICE_HOST) {
+        this.logger.warn(
+          `For Docker: Use '--cpus="2"' or set 'deploy.resources.limits.cpus: "2"' in docker-compose.yml`,
+        );
+      }
     } else {
       const defaultMaxWorkers = Math.max(1, Math.floor(cpuCount / 2));
       const maxWorkersEnv = process.env.AVATAR_WORKER_MAX_THREADS;
