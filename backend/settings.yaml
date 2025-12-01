@@ -13,43 +13,43 @@ app:
       connection:
         maxRetries: 3
         retryDelay: 2000
-  
+
   # Секция кеширования (опциональна)
   # Если отсутствует - кеширование отключено (модуль не загружается)
   # Если type: 'disabled' - модуль загружается с no-op стратегией
   cache:
-    type: 'redis'  # redis | memcached | memory | disabled
-    warn_memory_level: 80  # Процент использования памяти для warning [0-100], опционально
-    
+    type: 'redis' # redis | memcached | memory | disabled
+    warn_memory_level: 80 # Процент использования памяти для warning [0-100], опционально
+
     # TTL настройки (в секундах) - едины для всех драйверов, опциональны
     ttl:
-      avatars: 86400      # 24 часа, по умолчанию
-      metadata: 3600      # 1 час, по умолчанию
-      lists: 300          # 5 минут, по умолчанию
-      exists: 300         # 5 минут, по умолчанию
-      default: 3600       # TTL по умолчанию если не указан конкретный, опционально
-    
+      avatars: 86400 # 24 часа, по умолчанию
+      metadata: 3600 # 1 час, по умолчанию
+      lists: 300 # 5 минут, по умолчанию
+      exists: 300 # 5 минут, по умолчанию
+      default: 3600 # TTL по умолчанию если не указан конкретный, опционально
+
     # Настройки специфичные для Redis
     redis:
       host: 'redis'
       port: 6379
-      password: ''        # опционально
-      db: 0               # опционально, по умолчанию 0
+      password: '' # опционально
+      db: 0 # опционально, по умолчанию 0
       max_memory: '256mb' # Лимит памяти Redis, опционально
-      connection:         # Настройки reconnection, опционально
-        maxRetries: 3     # Максимальное количество попыток подключения
-        retryDelay: 2000  # Задержка между попытками в мс
-    
+      connection: # Настройки reconnection, опционально
+        maxRetries: 3 # Максимальное количество попыток подключения
+        retryDelay: 2000 # Задержка между попытками в мс
+
     # Настройки специфичные для Memcached
     memcached:
-      hosts: ['memcached:11211']  # Можно указать несколько серверов
-      max_memory: 256             # Лимит памяти в MB, опционально
-    
+      hosts: ['memcached:11211'] # Можно указать несколько серверов
+      max_memory: 256 # Лимит памяти в MB, опционально
+
     # Настройки специфичные для in-memory cache
     memory:
-      max_items: 1000    # Максимальное количество элементов, опционально
-      max_memory: 100    # Лимит памяти в MB, опционально
-  
+      max_items: 1000 # Максимальное количество элементов, опционально
+      max_memory: 100 # Лимит памяти в MB, опционально
+
   server:
     host: '0.0.0.0'
     port: 3000
@@ -71,4 +71,8 @@ app:
     level: 'info' # trace, debug, info, warn, error, fatal
     verbose: false # включает debug уровень логирования
     pretty: true # красивый вывод в консоль
+  prometheus:
+    enabled: true # включение/выключение сбора метрик
+    path: '/metrics' # путь для эндпоинта метрик
+    collectDefaultMetrics: true # сбор стандартных Node.js метрик
 

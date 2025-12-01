@@ -8,6 +8,7 @@ import { EmptyResponseInterceptor } from './common/interceptors/empty-response.i
 import { Reflector } from '@nestjs/core';
 import { SwaggerDocsService } from './modules/swagger-docs';
 import { CorsMiddleware } from './middleware/cors/cors.middleware';
+import { PrometheusMetricsInterceptor, PrometheusService } from './modules/prometheus';
 
 async function bootstrap() {
   const bootstrapLogger = new Logger('Bootstrap');
@@ -63,6 +64,18 @@ async function bootstrap() {
 
     loggerService.debug('Setting up global empty response interceptor...');
     app.useGlobalInterceptors(new EmptyResponseInterceptor(app.get(Reflector)));
+
+    const prometheusConfig = configService.getPrometheusConfig();
+    if (prometheusConfig && prometheusConfig.enabled) {
+      loggerService.debug('Setting up Prometheus metrics interceptor...');
+      try {
+        const prometheusService = app.get(PrometheusService);
+        app.useGlobalInterceptors(new PrometheusMetricsInterceptor(prometheusService));
+        loggerService.debug('Prometheus metrics interceptor configured');
+      } catch (error) {
+        loggerService.warn(`Failed to setup Prometheus metrics interceptor: ${error.message}`);
+      }
+    }
 
     loggerService.debug('Setting up Swagger documentation...');
     const swaggerDocsService = app.get(SwaggerDocsService);
