@@ -593,6 +593,9 @@ export class AvatarService {
               taskId,
               imageBuffer: originalImage,
               size: imgSize,
+              generatorType: avatar.generatorType,
+              primaryColor: avatar.primaryColor,
+              foreignColor: avatar.foreignColor,
             };
 
             return this.workerPoolService
@@ -610,11 +613,23 @@ export class AvatarService {
           this.logger.warn(
             `[LOWPOLY] Parallel generation failed, falling back to sequential: ${error.message}`,
           );
-          await this.generateLowpolySequentially(avatarObject, sizes);
+          await this.generateLowpolySequentially(
+            avatarObject,
+            sizes,
+            generatorType,
+            avatar.primaryColor,
+            avatar.foreignColor,
+          );
         }
       } else {
         this.logger.log(`[LOWPOLY] Workers not available, using sequential processing...`);
-        await this.generateLowpolySequentially(avatarObject, sizes);
+        await this.generateLowpolySequentially(
+          avatarObject,
+          sizes,
+          generatorType,
+          avatar.primaryColor,
+          avatar.foreignColor,
+        );
       }
 
       this.logger.debug(`[LOWPOLY] Saving updated AvatarObject to storage...`);
@@ -651,6 +666,9 @@ export class AvatarService {
   private async generateLowpolySequentially(
     avatarObject: any,
     sizes: Array<{ key: string; lowpolyKey: string; size: number }>,
+    generatorType?: string,
+    primaryColor?: string,
+    foreignColor?: string,
   ): Promise<void> {
     if (!this.lowpolyFilterStep) {
       throw new Error('LowpolyFilterStep is not available');
@@ -664,7 +682,12 @@ export class AvatarService {
       }
 
       this.logger.debug(`[LOWPOLY] Processing size ${imgSize} sequentially...`);
-      const lowpolyBuffer = await this.lowpolyFilterStep.process(originalImage);
+      const lowpolyBuffer = await this.lowpolyFilterStep.process(
+        originalImage,
+        generatorType,
+        primaryColor,
+        foreignColor,
+      );
       avatarObject[lowpolyKey] = lowpolyBuffer;
       this.logger.debug(`[LOWPOLY] Size ${imgSize} processed`);
     }
