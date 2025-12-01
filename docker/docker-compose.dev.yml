@@ -27,62 +27,6 @@ services:
       - internal
       - external
 
-  minio:
-    image: minio/minio:latest
-    container_name: minio
-    profiles:
-      - i-am-fullstack
-      - i-am-frontender
-      - backend-dev
-      - only-cloud
-    environment:
-      MINIO_ROOT_USER: test-access-key
-      MINIO_ROOT_PASSWORD: test-secret-key
-      MINIO_DEFAULT_BUCKETS: avatar-gen-test
-    ports:
-      - '9000:9000'
-      - '9001:9001'
-    volumes:
-      - minio_data:/data
-    command: server /data --console-address ":9001"
-    healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
-    networks:
-      - internal
-      - external
-
-  postgres:
-    image: postgres:17-alpine
-    container_name: postgres
-    profiles:
-      - i-am-frontender
-      - backend-dev
-      - i-am-fullstack
-      - only-cloud
-    environment:
-      POSTGRES_DB: avatar_gen
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_INITDB_ARGS: '--encoding=UTF-8 --lc-collate=C --lc-ctype=C'
-    ports:
-      - '5432:5432'
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    restart: unless-stopped
-    healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres -d avatar_gen']
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-    networks:
-      - backend-db
-      - external
-
   avatar-backend:
     profiles:
       - i-am-fullstack
@@ -192,13 +136,9 @@ services:
       - internal
 
 volumes:
-  postgres_data:
-    driver: local
   certbot_data:
     driver: local
   certbot_www:
-    driver: local
-  minio_data:
     driver: local
 
 networks:
@@ -210,8 +150,3 @@ networks:
     driver: bridge
     internal: true
     name: avatar-gen-internal
-
-  backend-db:
-    driver: bridge
-    internal: true
-    name: avatar-gen-backend-db

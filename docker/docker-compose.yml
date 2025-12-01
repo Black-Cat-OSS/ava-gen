@@ -23,68 +23,6 @@ services:
       - internal
       - external
 
-  postgres:
-    image: postgres:17-alpine
-    container_name: avatar-gen-postgres
-    profiles:
-      - postgresql
-    environment:
-      POSTGRES_DB: avatar_gen
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_INITDB_ARGS: '--encoding=UTF-8 --lc-collate=C --lc-ctype=C'
-    ports:
-      - '5432:5432'
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    restart: unless-stopped
-    healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres -d avatar_gen']
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-    networks:
-      - backend-db
-
-  redis:
-    image: redis:7-alpine
-    container_name: avatar-gen-redis
-    profiles:
-      - redis
-    ports:
-      - '6379:6379'
-    volumes:
-      - redis_data:/data
-    command: redis-server --appendonly yes
-    restart: unless-stopped
-    healthcheck:
-      test: ['CMD', 'redis-cli', 'ping']
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
-    networks:
-      - backend-cache
-
-  memcached:
-    image: memcached:1.6-alpine
-    container_name: avatar-gen-memcached
-    profiles:
-      - memcached
-    ports:
-      - '11211:11211'
-    command: memcached -m 256
-    restart: unless-stopped
-    healthcheck:
-      test: ['CMD', 'nc', '-z', 'localhost', '11211']
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
-    networks:
-      - backend-cache
-
   avatar-backend:
     build:
       context: ..
@@ -135,12 +73,6 @@ services:
       - internal
 
 volumes:
-  postgres_data:
-    driver: local
-  redis_data:
-    driver: local
-  memcached_data:
-    driver: local
   certbot_data:
     driver: local
   certbot_www:
@@ -155,13 +87,3 @@ networks:
     driver: bridge
     internal: false
     name: avatar-gen-internal
-
-  backend-db:
-    driver: bridge
-    internal: true
-    name: avatar-gen-backend-db
-
-  backend-cache:
-    driver: bridge
-    internal: true
-    name: avatar-gen-backend-cache
