@@ -6,8 +6,103 @@ import { LowpolyWorkerMessage, WorkerResponse } from '../interfaces/worker-messa
 
 type Point = [number, number];
 
-async function generateLowpolyImage(imageBuffer: Buffer): Promise<Buffer> {
-  const { data, info } = await sharp(imageBuffer)
+function hexToRgb(hex: string): { r: number; g: number; b: number } {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16),
+      }
+    : { r: 59, g: 130, b: 246 };
+}
+
+async function generateLinearGradientBackground(
+  size: number,
+  primaryColor?: string,
+  foreignColor?: string,
+  angle?: number,
+): Promise<Buffer> {
+  const canvas = Buffer.alloc(size * size * 4);
+  const gradientAngle = angle !== undefined ? angle : 90;
+  const primaryRgb = hexToRgb(primaryColor || '#3B82F6');
+  const foreignRgb = hexToRgb(foreignColor || '#60A5FA');
+  const angleRad = (gradientAngle * Math.PI) / 180;
+
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const index = (y * size + x) * 4;
+      const nx = (x / (size - 1)) * 2 - 1;
+      const ny = (y / (size - 1)) * 2 - 1;
+      const t = (nx * Math.cos(angleRad) + ny * Math.sin(angleRad) + 1) / 2;
+      const clampedT = Math.max(0, Math.min(1, t));
+
+      canvas[index] = Math.round(primaryRgb.r + (foreignRgb.r - primaryRgb.r) * clampedT);
+      canvas[index + 1] = Math.round(primaryRgb.g + (foreignRgb.g - primaryRgb.g) * clampedT);
+      canvas[index + 2] = Math.round(primaryRgb.b + (foreignRgb.b - primaryRgb.b) * clampedT);
+      canvas[index + 3] = 255;
+    }
+  }
+
+  return await sharp(canvas, {
+    raw: {
+      width: size,
+      height: size,
+      channels: 4,
+    },
+  })
+    .png()
+    .toBuffer();
+}
+
+async function extractEmojiFromImage(imageBuffer: Buffer): Promise<Buffer> {
+  const { data: imageData, info } = await sharp(imageBuffer)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const width = info.width;
+  const height = info.height;
+  const emojiBuffer = Buffer.alloc(width * height * 4);
+  const alphaThreshold = 10;
+
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const index = (y * width + x) * 4;
+      const alpha = imageData[index + 3];
+
+      if (alpha > alphaThreshold) {
+        emojiBuffer[index] = imageData[index];
+        emojiBuffer[index + 1] = imageData[index + 1];
+        emojiBuffer[index + 2] = imageData[index + 2];
+        emojiBuffer[index + 3] = imageData[index + 3];
+      } else {
+        emojiBuffer[index] = 0;
+        emojiBuffer[index + 1] = 0;
+        emojiBuffer[index + 2] = 0;
+        emojiBuffer[index + 3] = 0;
+      }
+    }
+  }
+
+  return await sharp(emojiBuffer, {
+    raw: {
+      width: width,
+      height: height,
+      channels: 4,
+    },
+  })
+    .png()
+    .toBuffer();
+}
+
+async function generateLowpolyImage(
+  imageBuffer: Buffer,
+  generatorType?: string,
+  primaryColor?: string,
+  foreignColor?: string,
+  angle?: number,
+): Promise<Buffer> {
+  const { info } = await sharp(imageBuffer)
     .ensureAlpha()
     .raw()
     .toBuffer({ resolveWithObject: true });
@@ -15,11 +110,66 @@ async function generateLowpolyImage(imageBuffer: Buffer): Promise<Buffer> {
   const width = info.width;
   const height = info.height;
 
-  const points = generatePoints(data, width, height);
-  const triangles = triangulate(points);
-  const result = await renderTriangles(triangles, points, data, width, height);
+  let backgroundBuffer: Buffer | null = null;
+  let emojiBuffer: Buffer | null = null;
+  let sourceImageBuffer = imageBuffer;
 
-  return result;
+  if (generatorType === 'gradient') {
+    backgroundBuffer = await generateLinearGradientBackground(
+      width,
+      primaryColor,
+      foreignColor,
+      angle,
+    );
+    sourceImageBuffer = backgroundBuffer;
+  } else if (generatorType === 'emoji') {
+    backgroundBuffer = await generateLinearGradientBackground(
+      width,
+      primaryColor,
+      foreignColor,
+      angle,
+    );
+    emojiBuffer = await extractEmojiFromImage(imageBuffer);
+
+    if (emojiBuffer) {
+      const compositeBuffer = await sharp(backgroundBuffer)
+        .composite([
+          {
+            input: emojiBuffer,
+            gravity: 'center',
+          },
+        ])
+        .png()
+        .toBuffer();
+
+      sourceImageBuffer = compositeBuffer;
+    } else {
+      sourceImageBuffer = backgroundBuffer;
+    }
+  }
+
+  const sourceData = await sharp(sourceImageBuffer)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+
+  const points = generatePoints(sourceData.data, width, height);
+  const triangles = triangulate(points);
+  const lowpolyResult = await renderTriangles(triangles, points, sourceData.data, width, height);
+
+  if (backgroundBuffer && generatorType === 'gradient') {
+    return await sharp(backgroundBuffer)
+      .composite([
+        {
+          input: lowpolyResult,
+          blend: 'over',
+        },
+      ])
+      .png()
+      .toBuffer();
+  }
+
+  return lowpolyResult;
 }
 
 function generatePoints(data: Buffer, width: number, height: number): Point[] {
@@ -254,7 +404,13 @@ async function renderTriangles(
 if (parentPort) {
   parentPort.on('message', async (message: LowpolyWorkerMessage) => {
     try {
-      const buffer = await generateLowpolyImage(message.imageBuffer);
+      const buffer = await generateLowpolyImage(
+        message.imageBuffer,
+        message.generatorType,
+        message.primaryColor,
+        message.foreignColor,
+        message.angle,
+      );
 
       const arrayBuffer =
         buffer.buffer instanceof ArrayBuffer
