@@ -7,6 +7,7 @@ import { GeneratorModule } from './modules/generator';
 import { StorageModule } from '../storage/storage.module';
 import { FilterModule } from './pipelines/filters/filter.module';
 import { EmojiModule } from '../emoji';
+import { WorkerPoolService } from './utils/worker-pool.service';
 
 /**
  * Модуль для работы с сущностью Avatar
@@ -37,7 +38,7 @@ import { EmojiModule } from '../emoji';
     EmojiModule,
   ],
   controllers: [AvatarController],
-  providers: [AvatarService],
-  exports: [TypeOrmModule],
+  providers: [AvatarService, WorkerPoolService],
+  exports: [TypeOrmModule, WorkerPoolService],
 })
 export class AvatarModule {}

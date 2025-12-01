@@ -5,6 +5,8 @@ import { AvatarObject, ColorScheme } from '../../../../common/interfaces/avatar-
 import { IGeneratorStrategy } from '../../../../common/interfaces/generator-strategy.interface';
 import { PalettesService } from '../../../../modules/palettes';
 import { convertNamedColorToHex } from '../../../../modules/palettes/utils/color-converter.util';
+import { WorkerPoolService } from '../../utils/worker-pool.service';
+import { WaveWorkerMessage } from '../../interfaces/worker-message.interface';
 
 @Injectable()
 export class WaveGeneratorModule implements IGeneratorStrategy {
@@ -12,7 +14,10 @@ export class WaveGeneratorModule implements IGeneratorStrategy {
 
   private colorSchemes: ColorScheme[] = [];
 
-  constructor(private readonly palettesService: PalettesService) {
+  constructor(
+    private readonly palettesService: PalettesService,
+    private readonly workerPoolService?: WorkerPoolService,
+  ) {
     this.initializeColorSchemes();
   }
 
@@ -52,50 +57,82 @@ export class WaveGeneratorModule implements IGeneratorStrategy {
 
     const uniqueSeed = seed || uuidv4();
 
-    // Generate images for all required sizes (4n to 9n)
+    const sizes = [
+      { key: 'image_4n' as const, size: 16 },
+      { key: 'image_5n' as const, size: 32 },
+      { key: 'image_6n' as const, size: 64 },
+      { key: 'image_7n' as const, size: 128 },
+      { key: 'image_8n' as const, size: 256 },
+      { key: 'image_9n' as const, size: 512 },
+    ];
+
+    let imageBuffers: Record<string, Buffer>;
+
+    if (this.workerPoolService) {
+      try {
+        const tasks = sizes.map(({ key, size }) => {
+          const taskId = `${id}-${size}`;
+          const message: WaveWorkerMessage = {
+            type: 'wave',
+            taskId,
+            size,
+            primaryColor: finalPrimaryColor,
+            foreignColor: finalForeignColor,
+            seed: uniqueSeed,
+          };
+          return this.workerPoolService
+            .executeTask(message, 'wave-worker.js')
+            .then(buffer => ({ key, buffer }));
+        });
+
+        const results = await Promise.all(tasks);
+        imageBuffers = Object.fromEntries(results.map(r => [r.key, r.buffer]));
+      } catch (error) {
+        this.logger.warn(
+          `Parallel generation failed, falling back to sequential: ${error.message}`,
+        );
+        imageBuffers = await this.generateSequentially(
+          sizes,
+          finalPrimaryColor,
+          finalForeignColor,
+          uniqueSeed,
+        );
+      }
+    } else {
+      imageBuffers = await this.generateSequentially(
+        sizes,
+        finalPrimaryColor,
+        finalForeignColor,
+        uniqueSeed,
+      );
+    }
+
     const avatarObject: AvatarObject = {
       meta_data_name: id,
       meta_data_created_at: now,
-      image_4n: await this.generateImageForSize(
-        16,
-        finalPrimaryColor,
-        finalForeignColor,
-        uniqueSeed,
-      ), // 2^4 = 16
-      image_5n: await this.generateImageForSize(
-        32,
-        finalPrimaryColor,
-        finalForeignColor,
-        uniqueSeed,
-      ), // 2^5 = 32
-      image_6n: await this.generateImageForSize(
-        64,
-        finalPrimaryColor,
-        finalForeignColor,
-        uniqueSeed,
-      ), // 2^6 = 64
-      image_7n: await this.generateImageForSize(
-        128,
-        finalPrimaryColor,
-        finalForeignColor,
-        uniqueSeed,
-      ), // 2^7 = 128
-      image_8n: await this.generateImageForSize(
-        256,
-        finalPrimaryColor,
-        finalForeignColor,
-        uniqueSeed,
-      ), // 2^8 = 256
-      image_9n: await this.generateImageForSize(
-        512,
-        finalPrimaryColor,
-        finalForeignColor,
-        uniqueSeed,
-      ), // 2^9 = 512
+      image_4n: imageBuffers.image_4n,
+      image_5n: imageBuffers.image_5n,
+      image_6n: imageBuffers.image_6n,
+      image_7n: imageBuffers.image_7n,
+      image_8n: imageBuffers.image_8n,
+      image_9n: imageBuffers.image_9n,
     };
 
     this.logger.log(`Wave avatar generated with ID: ${id}`);
     return avatarObject;
+  }
+
+  private async generateSequentially(
+    sizes: Array<{ key: string; size: number }>,
+    primaryColor?: string,
+    foreignColor?: string,
+    seed?: string,
+  ): Promise<Record<string, Buffer>> {
+    const results: Record<string, Buffer> = {};
+    for (const { key, size } of sizes) {
+      results[key] = await this.generateImageForSize(size, primaryColor, foreignColor, seed);
+    }
+    return results;
   }
 
   private async generateImageForSize(
