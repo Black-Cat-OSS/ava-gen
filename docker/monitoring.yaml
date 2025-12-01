@@ -2,13 +2,11 @@ services:
   prometheus:
     image: prom/prometheus:latest
     container_name: avatar-gen-prometheus
-    profiles:
-      - prometheus
     ports:
-      - '0.0.0.0:9090:9090'
+      - '9090:9090'
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - prometheus_data:/prometheus
+      - ava-gen-dev_prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -24,16 +22,15 @@ services:
       start_period: 10s
     networks:
       - internal
+      - monitoring
 
   grafana:
     image: grafana/grafana:latest
     container_name: avatar-gen-grafana
-    profiles:
-      - grafana
     ports:
-      - '0.0.0.0:3001:3000'
+      - '3001:3000'
     volumes:
-      - grafana_data:/var/lib/grafana
+      - ava-gen-dev_grafana_data:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
       - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
     environment:
@@ -50,10 +47,19 @@ services:
       retries: 3
       start_period: 30s
     networks:
-      - internal
+      - monitoring
 
 volumes:
-  prometheus_data:
-    driver: local
-  grafana_data:
-    driver: local
+  ava-gen-dev_prometheus_data:
+    external: true
+  ava-gen-dev_grafana_data:
+    external: true
+
+networks:
+  internal:
+    external: true
+    name: avatar-gen-internal
+
+  monitoring:
+    external: true
+    name: avatar-gen-monitoring

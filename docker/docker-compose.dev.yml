@@ -32,6 +32,7 @@ services:
     networks:
       - internal-dev
       - backend-db
+      - backend-cache
 
   avatar-backend-dev-frontend:
     profiles:
@@ -60,6 +61,7 @@ services:
     networks:
       - internal-dev
       - backend-db
+      - backend-cache
 
   avatar-frontend:
     profiles:
@@ -89,7 +91,15 @@ networks:
     external: true
     name: avatar-gen-dev-external
 
-  internal:
+  internal-dev:
     driver: bridge
     internal: true
-    name: avatar-gen-internal
+    name: avatar-gen-internal-dev
+
+  backend-db:
+    external: true
+    name: avatar-gen-backend-db
+
+  backend-cache:
+    external: true
+    name: avatar-gen-backend-cache

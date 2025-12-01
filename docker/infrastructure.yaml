@@ -4,8 +4,10 @@ services:
       context: ../gateway
       dockerfile: Dockerfile
     container_name: avatar-gen-gateway
+    profiles:
+      - only-cloud
     ports:
-      - '0.0.0.0:12745:12745'
+      - '12745:12745'
     volumes:
       - ../gateway/configs/nginx.conf:/etc/nginx/nginx.conf:ro
       - ../gateway/configs/static:/usr/share/nginx/html/static:ro
@@ -23,65 +25,64 @@ services:
       - internal
       - external
 
-  gateway-dev:
-    profiles:
-      - i-am-fullstack
-    build:
-      context: ../gateway
-      dockerfile: Dockerfile
-    container_name: avatar-gen-gateway
-    ports:
-      - '0.0.0.0:12745:12745'
-    volumes:
-      - ../gateway/configs/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ../gateway/configs/static:/usr/share/nginx/html/static:ro
-      - ../gateway/logs:/var/log/nginx
-      - certbot_data:/etc/letsencrypt
-      - certbot_www:/var/www/certbot
-    restart: unless-stopped
-    healthcheck:
-      test: ['CMD', 'nginx', '-t']
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
-    networks:
-      - internal-dev
-      - external-dev
+  # gateway-dev:
+  #   profiles:
+  #     - i-am-fullstack
+  #   build:
+  #     context: ../gateway
+  #     dockerfile: Dockerfile
+  #   container_name: avatar-gen-gateway-dev
+  #   ports:
+  #     - '12745:12745'
+  #   volumes:
+  #     - ../gateway/configs/nginx.conf:/etc/nginx/nginx.conf:ro
+  #     - ../gateway/configs/static:/usr/share/nginx/html/static:ro
+  #     - ../gateway/logs:/var/log/nginx
+  #     - certbot_data:/etc/letsencrypt
+  #     - certbot_www:/var/www/certbot
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: ['CMD', 'nginx', '-t']
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 10s
+  #   networks:
+  #     - internal-dev
+  #     - external-dev
 
-  gateway-dev-frontend:
-    profiles:
-      - i-am-frontender
-    build:
-      context: ../gateway
-      dockerfile: Dockerfile
-    container_name: avatar-gen-gateway
-    ports:
-      - '0.0.0.0:15745:15745'
-      - '0.0.0.0:18650:18650'
-    volumes:
-      - ../gateway/configs/profiles/nginx.dev-frontend.conf:/etc/nginx/nginx.conf:ro
-      - ../gateway/configs/static:/usr/share/nginx/html/static:ro
-      - ../gateway/logs:/var/log/nginx
-      - certbot_data:/etc/letsencrypt
-      - certbot_www:/var/www/certbot
-    restart: unless-stopped
-    healthcheck:
-      test: ['CMD', 'nginx', '-t']
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
-    networks:
-      - internal-dev
-      - external-dev
+  # gateway-dev-frontend:
+  #   profiles:
+  #     - i-am-frontender
+  #   build:
+  #     context: ../gateway
+  #     dockerfile: Dockerfile
+  #   container_name: avatar-gen-gateway-dev-frontend
+  #   ports:
+  #     - '15745:15745'
+  #     - '18650:18650'
+  #   volumes:
+  #     - ../gateway/configs/profiles/nginx.dev-frontend.conf:/etc/nginx/nginx.conf:ro
+  #     - ../gateway/configs/static:/usr/share/nginx/html/static:ro
+  #     - ../gateway/logs:/var/log/nginx
+  #     - certbot_data:/etc/letsencrypt
+  #     - certbot_www:/var/www/certbot
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: ['CMD', 'nginx', '-t']
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 10s
+  #   networks:
+  #     - internal-dev
+  #     - external-dev
 
   postgres:
     image: postgres:17-alpine
     container_name: avatar-gen-postgres
     profiles:
       - postgresql
-      - i-am-frontender
       - backend-dev
       - i-am-fullstack
       - only-cloud
@@ -90,10 +91,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
       POSTGRES_INITDB_ARGS: '--encoding=UTF-8 --lc-collate=C --lc-ctype=C'
-    ports:
-      - '0.0.0.0:5432:5432'
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ava-gen-dev_postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U postgres -d avatar_gen']
@@ -103,7 +102,51 @@ services:
       start_period: 30s
     networks:
       - backend-db
-      - external
+
+  postgres-dev:
+    image: postgres:17-alpine
+    container_name: avatar-gen-postgres-dev
+    profiles:
+      - i-am-frontender
+    environment:
+      POSTGRES_DB: avatar_gen
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_INITDB_ARGS: '--encoding=UTF-8 --lc-collate=C --lc-ctype=C'
+    ports:
+      - '0.0.0.0:5432:5432'
+    volumes:
+      - ava-gen-dev_postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d avatar_gen']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - backend-db
+      - external-dev
+
+  redis-dev:
+    image: redis:7-alpine
+    container_name: avatar-gen-redis
+    profiles:
+      - i-am-frontender
+    ports:
+      - '0.0.0.0:6379:6379'
+    volumes:
+      - ava-gen-dev_redis_data:/data
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - backend-cache
       - external-dev
 
   redis:
@@ -112,9 +155,9 @@ services:
     profiles:
       - redis
     ports:
-      - '0.0.0.0:6379:6379'
+      - '6379:6379'
     volumes:
-      - redis_data:/data
+      - ava-gen-dev_redis_data:/data
     command: redis-server --appendonly yes
     restart: unless-stopped
     healthcheck:
@@ -144,14 +187,11 @@ services:
     networks:
       - backend-cache
 
-  minio:
+  minio-dev:
     image: minio/minio:latest
-    container_name: minio
+    container_name: avatar-gen-minio-dev
     profiles:
-      - i-am-fullstack
       - i-am-frontender
-      - backend-dev
-      - only-cloud
     environment:
       MINIO_ROOT_USER: test-access-key
       MINIO_ROOT_PASSWORD: test-secret-key
@@ -160,7 +200,7 @@ services:
       - '0.0.0.0:9000:9000'
       - '0.0.0.0:9001:9001'
     volumes:
-      - minio_data:/data
+      - ava-gen-dev_minio_data:/data
     command: server /data --console-address ":9001"
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
@@ -170,17 +210,43 @@ services:
       start_period: 10s
     networks:
       - internal
-      - external
+      - external-dev
+
+  minio:
+    image: minio/minio:latest
+    container_name: avatar-gen-minio
+    profiles:
+      - minio
+      - only-cloud
+    environment:
+      MINIO_ROOT_USER: test-access-key
+      MINIO_ROOT_PASSWORD: test-secret-key
+      MINIO_DEFAULT_BUCKETS: avatar-gen-test
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    volumes:
+      - ava-gen-dev_minio_data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - internal
+      - internal-dev
 
 volumes:
-  postgres_data:
-    driver: local
-  redis_data:
-    driver: local
+  ava-gen-dev_postgres_data:
+    external: true
+  ava-gen-dev_redis_data:
+    external: true
   memcached_data:
     driver: local
-  minio_data:
-    driver: local
+  ava-gen-dev_minio_data:
+    external: true
   certbot_data:
     driver: local
   certbot_www:
@@ -188,29 +254,25 @@ volumes:
 
 networks:
   backend-db:
-    driver: bridge
-    internal: true
+    external: true
     name: avatar-gen-backend-db
 
   backend-cache:
-    driver: bridge
-    internal: true
+    external: true
     name: avatar-gen-backend-cache
 
   external:
     external: true
     name: avatar-gen-external
 
-  external-dev:
-    external: true
-    name: avatar-gen-dev-external
-
   internal:
-    driver: bridge
-    internal: false
+    external: true
     name: avatar-gen-internal
 
   internal-dev:
-    driver: bridge
-    internal: true
-    name: avatar-gen-internal
+    external: true
+    name: avatar-gen-internal-dev
+
+  external-dev:
+    external: true
+    name: avatar-gen-dev-external

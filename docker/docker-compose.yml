@@ -47,3 +47,16 @@ services:
       start_period: 10s
     networks:
       - internal
+
+networks:
+  internal:
+    external: true
+    name: avatar-gen-internal
+
+  backend-db:
+    external: true
+    name: avatar-gen-backend-db
+
+  backend-cache:
+    external: true
+    name: avatar-gen-backend-cache
