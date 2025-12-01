@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [0.0.11] - 2025-12-01
 
 ### ✨ Added
 
@@ -145,6 +145,8 @@
 
 #### others
 
+- Updated changelog
+  ([2a76d9e](https://github.com/Black-Cat-OSS/ava-gen/commit/2a76d9ecfa1bd5987006a8b8e243b0229b1859e5))
 - Separate infrastructure and monitoring
   ([fde7bfa](https://github.com/Black-Cat-OSS/ava-gen/commit/fde7bfae66b42fd300476de6da43b897238aaaab))
 - Update launch configuration for debugging

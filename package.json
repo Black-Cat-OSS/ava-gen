@@ -1,6 +1,6 @@
 {
   "name": "avatar-gen",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "Avatar Generator API with frontend and backend",
   "private": true,
   "workspaces": [
