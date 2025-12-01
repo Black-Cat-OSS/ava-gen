@@ -15,6 +15,7 @@ interface WorkerTask {
 export class WorkerPoolService implements OnModuleDestroy {
   private readonly logger = new Logger(WorkerPoolService.name);
   private readonly maxWorkers: number;
+  private readonly isWorkersEnabled: boolean;
   private readonly workers: Map<string, Worker> = new Map();
   private readonly pendingTasks: Map<string, WorkerTask> = new Map();
   private readonly workerQueue: WorkerMessage[] = [];
@@ -23,15 +24,34 @@ export class WorkerPoolService implements OnModuleDestroy {
 
   constructor() {
     const cpuCount = cpus().length;
-    const defaultMaxWorkers = Math.max(1, Math.floor(cpuCount / 2));
-    const maxWorkersEnv = process.env.AVATAR_WORKER_MAX_THREADS;
-    this.maxWorkers = maxWorkersEnv ? Math.max(1, parseInt(maxWorkersEnv, 10)) : defaultMaxWorkers;
-    this.logger.log(
-      `Worker pool initialized with max ${this.maxWorkers} workers (CPU cores: ${cpuCount})`,
-    );
+    this.isWorkersEnabled = cpuCount > 1;
+
+    if (!this.isWorkersEnabled) {
+      this.maxWorkers = 0;
+      this.logger.warn(
+        `Worker pool disabled: only ${cpuCount} CPU core(s) detected. Sequential generation will be used.`,
+      );
+    } else {
+      const defaultMaxWorkers = Math.max(1, Math.floor(cpuCount / 2));
+      const maxWorkersEnv = process.env.AVATAR_WORKER_MAX_THREADS;
+      this.maxWorkers = maxWorkersEnv
+        ? Math.max(1, parseInt(maxWorkersEnv, 10))
+        : defaultMaxWorkers;
+      this.logger.log(
+        `Worker pool initialized with max ${this.maxWorkers} workers (CPU cores: ${cpuCount})`,
+      );
+    }
+  }
+
+  isEnabled(): boolean {
+    return this.isWorkersEnabled;
   }
 
   async executeTask(message: WorkerMessage, workerPath: string, timeout = 30000): Promise<Buffer> {
+    if (!this.isWorkersEnabled) {
+      throw new Error('Worker pool is disabled (single CPU core detected)');
+    }
+
     if (this.isShuttingDown) {
       throw new Error('Worker pool is shutting down');
     }

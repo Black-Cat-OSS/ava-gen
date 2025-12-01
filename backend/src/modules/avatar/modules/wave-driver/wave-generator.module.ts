@@ -68,7 +68,7 @@ export class WaveGeneratorModule implements IGeneratorStrategy {
 
     let imageBuffers: Record<string, Buffer>;
 
-    if (this.workerPoolService) {
+    if (this.workerPoolService?.isEnabled()) {
       try {
         const tasks = sizes.map(({ key, size }) => {
           const taskId = `${id}-${size}`;
