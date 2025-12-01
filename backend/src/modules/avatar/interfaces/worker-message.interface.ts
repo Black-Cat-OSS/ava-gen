@@ -42,6 +42,10 @@ export interface LowpolyWorkerMessage extends BaseWorkerMessage {
   type: 'lowpoly';
   imageBuffer: Buffer;
   size: number;
+  generatorType?: string;
+  primaryColor?: string;
+  foreignColor?: string;
+  angle?: number;
 }
 
 export type WorkerMessage =
