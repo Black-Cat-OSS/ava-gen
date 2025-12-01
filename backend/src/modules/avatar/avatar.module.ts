@@ -8,6 +8,7 @@ import { StorageModule } from '../storage/storage.module';
 import { FilterModule } from './pipelines/filters/filter.module';
 import { EmojiModule } from '../emoji';
 import { WorkerPoolService } from './utils/worker-pool.service';
+import { LowpolyFilterStep } from './pipelines/filters/lowpoly-filter.step';
 
 /**
  * Модуль для работы с сущностью Avatar
@@ -38,7 +39,7 @@ import { WorkerPoolService } from './utils/worker-pool.service';
     EmojiModule,
   ],
   controllers: [AvatarController],
-  providers: [AvatarService, WorkerPoolService],
+  providers: [AvatarService, WorkerPoolService, LowpolyFilterStep],
   exports: [TypeOrmModule, WorkerPoolService],
 })
 export class AvatarModule {}

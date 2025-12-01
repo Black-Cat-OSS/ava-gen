@@ -4,6 +4,7 @@ import { FilterService } from './filter.service';
 import { GrayscaleFilterStep } from './grayscale-filter.step';
 import { SepiaFilterStep } from './sepia-filter.step';
 import { NegativeFilterStep } from './negative-filter.step';
+import { LowpolyFilterStep } from './lowpoly-filter.step';
 
 /**
  * Модуль для фильтров изображений
@@ -15,7 +16,13 @@ import { NegativeFilterStep } from './negative-filter.step';
  */
 @Module({
   imports: [ConfigModule],
-  providers: [FilterService, GrayscaleFilterStep, SepiaFilterStep, NegativeFilterStep],
+  providers: [
+    FilterService,
+    GrayscaleFilterStep,
+    SepiaFilterStep,
+    NegativeFilterStep,
+    LowpolyFilterStep,
+  ],
   exports: [FilterService],
 })
 export class FilterModule {}

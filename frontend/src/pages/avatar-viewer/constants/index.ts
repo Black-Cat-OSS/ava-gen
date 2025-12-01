@@ -12,6 +12,7 @@ export const AVAILABLE_FILTERS = [
   { value: 'grayscale', label: 'Grayscale' },
   { value: 'sepia', label: 'Sepia' },
   { value: 'negative', label: 'Negative' },
+  { value: 'lowpoly', label: 'Lowpoly' },
 ];
 
 export const IMAGE_VIEW_SIZE = 512;

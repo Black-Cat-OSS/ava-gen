@@ -3,6 +3,7 @@ import { FilterType } from '../../../../common/enums/filter.enum';
 import { GrayscaleFilterStep } from './grayscale-filter.step';
 import { SepiaFilterStep } from './sepia-filter.step';
 import { NegativeFilterStep } from './negative-filter.step';
+import { LowpolyFilterStep } from './lowpoly-filter.step';
 
 /**
  * Сервис для применения фильтров к изображениям
@@ -20,6 +21,7 @@ export class FilterService {
     private readonly grayscaleFilterStep: GrayscaleFilterStep,
     private readonly sepiaFilterStep: SepiaFilterStep,
     private readonly negativeFilterStep: NegativeFilterStep,
+    private readonly lowpolyFilterStep: LowpolyFilterStep,
   ) {}
 
   /**
@@ -43,6 +45,9 @@ export class FilterService {
 
         case FilterType.NEGATIVE:
           return await this.negativeFilterStep.process(imageBuffer);
+
+        case FilterType.LOWPOLY:
+          return await this.lowpolyFilterStep.process(imageBuffer);
 
         default:
           throw new BadRequestException(`Unsupported filter type: ${filterType}`);
