@@ -12,13 +12,29 @@ Avatar Gen.
 Для production:
 
 ```bash
-docker compose -f docker-compose.yml -f monitoring.yaml --profile prometheus --profile grafana up -d
+docker compose -f docker-compose.yml -f infrastructure.yaml -f monitoring.yaml --profile prometheus --profile grafana up -d
 ```
 
 Для development:
 
 ```bash
-docker compose -f docker-compose.dev.yml -f monitoring.yaml --profile prometheus --profile grafana up -d
+docker compose -f docker-compose.dev.yml -f infrastructure.yaml -f monitoring.yaml --profile prometheus --profile grafana up -d
+```
+
+### Запуск с инфраструктурой
+
+Для запуска приложения с инфраструктурой (PostgreSQL, Redis и т.д.):
+
+Production:
+
+```bash
+docker compose -f docker-compose.yml -f infrastructure.yaml --profile postgresql --profile redis up -d
+```
+
+Development:
+
+```bash
+docker compose -f docker-compose.dev.yml -f infrastructure.yaml --profile postgresql --profile backend-dev up -d
 ```
 
 ### Доступ к сервисам
