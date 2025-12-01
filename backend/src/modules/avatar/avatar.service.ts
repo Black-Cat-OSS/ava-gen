@@ -616,7 +616,7 @@ export class AvatarService {
           await this.generateLowpolySequentially(
             avatarObject,
             sizes,
-            generatorType,
+            avatar.generatorType,
             avatar.primaryColor,
             avatar.foreignColor,
           );
@@ -626,7 +626,7 @@ export class AvatarService {
         await this.generateLowpolySequentially(
           avatarObject,
           sizes,
-          generatorType,
+          avatar.generatorType,
           avatar.primaryColor,
           avatar.foreignColor,
         );
