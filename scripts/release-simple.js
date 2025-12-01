@@ -51,7 +51,7 @@ function main() {
 
     // Генерируем changelog
     console.log('📋 Генерация changelog...');
-    execSync('pnpm run changelog:version', {
+    execSync('pnpm run changelog', {
       encoding: 'utf8',
       cwd: path.join(__dirname, '..'),
       stdio: 'inherit',
