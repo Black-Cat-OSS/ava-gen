@@ -22,8 +22,13 @@ export class WorkerPoolService implements OnModuleDestroy {
   private isShuttingDown = false;
 
   constructor() {
-    this.maxWorkers = Math.max(1, Math.floor(cpus().length / 2));
-    this.logger.log(`Worker pool initialized with max ${this.maxWorkers} workers`);
+    const cpuCount = cpus().length;
+    const defaultMaxWorkers = Math.max(1, Math.floor(cpuCount / 2));
+    const maxWorkersEnv = process.env.AVATAR_WORKER_MAX_THREADS;
+    this.maxWorkers = maxWorkersEnv ? Math.max(1, parseInt(maxWorkersEnv, 10)) : defaultMaxWorkers;
+    this.logger.log(
+      `Worker pool initialized with max ${this.maxWorkers} workers (CPU cores: ${cpuCount})`,
+    );
   }
 
   async executeTask(message: WorkerMessage, workerPath: string, timeout = 30000): Promise<Buffer> {
