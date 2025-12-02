@@ -52,7 +52,7 @@ const avatarViewerRoute = createRoute({
   path: '/avatar-viewer',
   validateSearch: (search: Record<string, unknown>) => ({
     id: (search.id as string) || undefined,
-    size: search.size ? Number(search.size) : undefined,
+    size: search.size ? (Number(search.size) as 4 | 5 | 6 | 7 | 8 | 9) : undefined,
     filter: (search.filter as string) || undefined,
   }),
   component: () => (

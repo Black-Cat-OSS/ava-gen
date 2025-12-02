@@ -4,6 +4,7 @@ import { Callout } from '@/shared/ui';
 import { Button } from '@/shared/ui';
 import { InputField } from '@/shared/ui';
 import { getImageUrl } from '@/shared/lib/utils/image';
+import type { ImageSizes, ImageFilters } from '@/shared/types/avatar';
 import type { AvatarLinkCopyProps } from '../types';
 import { IconSuccessCopy } from './IconSuccessCopy';
 import { IconCopy } from './IconCopy';
@@ -23,16 +24,16 @@ export const AvatarLinkCopy: React.FC<AvatarLinkCopyProps> = ({ avatarId, size, 
 
   const avatarUrl = useMemo(() => {
     const params: {
-      size?: 4 | 5 | 6 | 7 | 8 | 9;
-      filter?: 'grayscale' | 'sepia' | 'negative';
+      size?: ImageSizes;
+      filter?: ImageFilters;
     } = {};
     if (size !== undefined) {
-      params.size = size as 4 | 5 | 6 | 7 | 8 | 9;
+      params.size = size;
     } else {
       params.size = 8;
     }
-    if (filter && ['grayscale', 'sepia', 'negative'].includes(filter)) {
-      params.filter = filter as 'grayscale' | 'sepia' | 'negative';
+    if (filter) {
+      params.filter = filter;
     }
     return getImageUrl(avatarId, params);
   }, [avatarId, size, filter]);
