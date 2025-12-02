@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useSearch, useNavigate } from '@tanstack/react-router';
 import { Button, ErrorBoundary, Separator, Tabs, TabsList, TabsTrigger } from '@/shared/ui';
 import { Link } from '@tanstack/react-router';
+import type { ImageSizes, ImageFilters } from '@/shared/types/avatar';
 import { AVAILABLE_SIZES, AVAILABLE_FILTERS, IMAGE_VIEW_SIZE } from '../constants';
 import { AvatarDisplay } from './AvatarDisplay';
 import { AvatarLinkCopy } from '@/features/avatar-link-copy';
@@ -11,8 +12,10 @@ export const AvatarViewerPage = () => {
   const { t } = useTranslation();
   const search = useSearch({ from: '/avatar-viewer' });
   const navigate = useNavigate({ from: '/avatar-viewer' });
-  const [size, setSize] = useState<number>(search.size || 6);
-  const [filter, setFilter] = useState<string>(search.filter || '');
+  const [size, setSize] = useState<ImageSizes>((search.size as ImageSizes) || 6);
+  const [filter, setFilter] = useState<ImageFilters | ''>(
+    (search.filter as ImageFilters | '') || '',
+  );
   const isInternalUpdate = useRef(false);
 
   useEffect(() => {
@@ -22,26 +25,27 @@ export const AvatarViewerPage = () => {
     }
 
     if (search.size !== undefined && search.size !== size) {
-      setSize(search.size);
+      setSize(search.size as ImageSizes);
     }
     if (search.filter !== undefined && search.filter !== filter) {
-      setFilter(search.filter || '');
+      setFilter((search.filter as ImageFilters | '') || '');
     }
   }, [search.size, search.filter, size, filter]);
 
   const handleSizeChange = (newSize: number) => {
     isInternalUpdate.current = true;
-    setSize(newSize);
+    const sizeValue = newSize as ImageSizes;
+    setSize(sizeValue);
     navigate({
       search: prev => ({
         ...prev,
-        size: newSize,
+        size: sizeValue,
       }),
     });
   };
 
   const handleFilterChange = (newFilter: string) => {
-    const filterValue = newFilter === 'none' ? '' : newFilter;
+    const filterValue = newFilter === 'none' ? '' : (newFilter as ImageFilters | '');
     isInternalUpdate.current = true;
     setFilter(filterValue);
     navigate({
@@ -120,7 +124,7 @@ export const AvatarViewerPage = () => {
 
             <Separator className="my-8 bg-gray-300/70" />
 
-            <AvatarLinkCopy avatarId={search.id} size={size} filter={filter} />
+            <AvatarLinkCopy avatarId={search.id} size={size} filter={filter || undefined} />
           </div>
         </div>
       )}
