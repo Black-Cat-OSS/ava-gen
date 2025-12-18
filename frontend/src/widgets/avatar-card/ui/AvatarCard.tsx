@@ -33,14 +33,12 @@ export const AvatarCard = ({ avatar, showDetails = true, className = '' }: Avata
           <Link
             to="/avatar-viewer"
             search={{ id: avatar.id, size: undefined, filter: undefined }}
-            className="text-xs font-medium truncate text-primary hover:text-primary/80 transition-colors block"
+            className="text-xs font-medium truncate text-blue-500 hover:text-blue-500/50"
             title={avatar.id}
           >
             {t('pages.home.avatarId')}: {avatar.id.slice(0, 8)}...
           </Link>
-          <p className="text-xs text-muted-foreground">
-            {new Date(avatar.createdAt).toLocaleDateString()}
-          </p>
+          <p className="text-xs text-gray-400">{new Date(avatar.createdAt).toLocaleDateString()}</p>
         </div>
       )}
     </div>
