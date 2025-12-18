@@ -7,9 +7,39 @@ import { useMobileMenu } from '@/shared/lib/contexts';
 interface HeaderProps {
   className?: string;
   showLogin?: boolean;
+  showLogo?: boolean;
+  logoSize?: { width: number; height: number };
+  brand?: string;
 }
 
-export const Header = ({ className, showLogin = false }: HeaderProps) => {
+/**
+ * Header component
+ * @param className - The class name for the header
+ * @param showLogin - Whether to show the login button
+ * @param showLogo - Whether to show the logo
+ * @param logoSize - The size of the logo
+ * @param brand - Optional brand text
+ * @returns Header component
+ *
+ * @description Header component
+ * @example
+ * <Header showLogin={true} showLogo={true} />
+ * @example
+ * <Header showLogin={false} showLogo={false} />
+ * @example
+ * <Header showLogin={true} showLogo={false} />
+ * @example
+ * <Header showLogin={false} showLogo={true} />
+ * @example
+ * <Header brand="My Brand" />
+ */
+export const Header = ({
+  className,
+  showLogin = false,
+  showLogo = false,
+  logoSize = { width: 10, height: 10 },
+  brand,
+}: HeaderProps) => {
   const { t } = useTranslation();
   const { isOpen: isMobileMenuOpen, toggle: toggleMobileMenu } = useMobileMenu();
 
@@ -29,8 +59,18 @@ export const Header = ({ className, showLogin = false }: HeaderProps) => {
               >
                 <BurgerIcon isOpen={isMobileMenuOpen} />
               </button>
-              <NavigationLink to="/" className="text-xl font-bold text-foreground">
-                {t('header.brand')}
+              <NavigationLink
+                to="/"
+                className="flex items-center gap-2 text-xl font-bold text-foreground"
+              >
+                {showLogo && (
+                  <img
+                    src="/logo.svg"
+                    alt="Logo"
+                    className={`w-${logoSize.width} h-${logoSize.height}`}
+                  />
+                )}
+                {brand}
               </NavigationLink>
             </div>
 
