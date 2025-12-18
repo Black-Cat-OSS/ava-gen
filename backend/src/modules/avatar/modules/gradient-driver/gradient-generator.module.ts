@@ -8,6 +8,10 @@ import { convertNamedColorToHex } from '../../../../modules/palettes/utils/color
 import { WorkerPoolService } from '../../utils/worker-pool.service';
 import { GradientWorkerMessage } from '../../interfaces/worker-message.interface';
 import { PerformanceMonitor } from '../../utils/performance-monitor.util';
+import { AVATAR_SIZES } from '../../utils/avatar-sizes.util';
+import { initializeColorSchemes, resolveColorScheme } from '../../utils/color-scheme.util';
+import { createAvatarObject } from '../../utils/avatar-object.util';
+import type { AvatarSizeKey } from '../../utils/avatar-sizes.util';
 
 /**
  * Генератор градиентных аватаров
@@ -31,13 +35,7 @@ export class GradientGeneratorModule implements IGeneratorStrategy {
   }
 
   private async initializeColorSchemes(): Promise<void> {
-    try {
-      this.colorSchemes = await this.palettesService.getColorSchemes();
-      this.logger.log(`Loaded ${this.colorSchemes.length} color schemes from palettes service`);
-    } catch (error) {
-      this.logger.error(`Failed to load color schemes: ${error.message}`, error);
-      this.colorSchemes = [];
-    }
+    this.colorSchemes = await initializeColorSchemes(this.palettesService, this.logger);
   }
 
   async generateAvatar(
@@ -58,31 +56,14 @@ export class GradientGeneratorModule implements IGeneratorStrategy {
     PerformanceMonitor.start(operationId, activeWorkers, maxWorkers);
 
     try {
-      let finalPrimaryColor = primaryColor;
-      let finalForeignColor = foreignColor;
+      const { primaryColor: finalPrimaryColor, foreignColor: finalForeignColor } =
+        resolveColorScheme(this.colorSchemes, colorScheme, primaryColor, foreignColor);
 
-      if (colorScheme) {
-        const scheme = this.colorSchemes.find(s => s.name === colorScheme);
-        if (scheme) {
-          finalPrimaryColor = scheme.primaryColor;
-          finalForeignColor = scheme.foreignColor;
-        }
-      }
-
-      const sizes = [
-        { key: 'image_4n' as const, size: 16 },
-        { key: 'image_5n' as const, size: 32 },
-        { key: 'image_6n' as const, size: 64 },
-        { key: 'image_7n' as const, size: 128 },
-        { key: 'image_8n' as const, size: 256 },
-        { key: 'image_9n' as const, size: 512 },
-      ];
-
-      let imageBuffers: Record<string, Buffer>;
+      let imageBuffers: Record<AvatarSizeKey, Buffer>;
 
       if (this.workerPoolService?.isEnabled()) {
         try {
-          const tasks = sizes.map(({ key, size }) => {
+          const tasks = AVATAR_SIZES.map(({ key, size }) => {
             const taskId = `${id}-${size}`;
             const message: GradientWorkerMessage = {
               type: 'gradient',
@@ -98,37 +79,25 @@ export class GradientGeneratorModule implements IGeneratorStrategy {
           });
 
           const results = await Promise.all(tasks);
-          imageBuffers = Object.fromEntries(results.map(r => [r.key, r.buffer]));
+          imageBuffers = Object.fromEntries(results.map(r => [r.key, r.buffer])) as Record<
+            AvatarSizeKey,
+            Buffer
+          >;
         } catch (error) {
           this.logger.warn(
             `Parallel generation failed, falling back to sequential: ${error.message}`,
           );
           imageBuffers = await this.generateSequentially(
-            sizes,
             finalPrimaryColor,
             finalForeignColor,
             angle,
           );
         }
       } else {
-        imageBuffers = await this.generateSequentially(
-          sizes,
-          finalPrimaryColor,
-          finalForeignColor,
-          angle,
-        );
+        imageBuffers = await this.generateSequentially(finalPrimaryColor, finalForeignColor, angle);
       }
 
-      const avatarObject: AvatarObject = {
-        meta_data_name: id,
-        meta_data_created_at: now,
-        image_4n: imageBuffers.image_4n,
-        image_5n: imageBuffers.image_5n,
-        image_6n: imageBuffers.image_6n,
-        image_7n: imageBuffers.image_7n,
-        image_8n: imageBuffers.image_8n,
-        image_9n: imageBuffers.image_9n,
-      };
+      const avatarObject = createAvatarObject(id, now, imageBuffers);
 
       const metrics = PerformanceMonitor.stop(
         operationId,
@@ -152,13 +121,12 @@ export class GradientGeneratorModule implements IGeneratorStrategy {
   }
 
   private async generateSequentially(
-    sizes: Array<{ key: string; size: number }>,
     primaryColor?: string,
     foreignColor?: string,
     angle?: number,
-  ): Promise<Record<string, Buffer>> {
-    const results: Record<string, Buffer> = {};
-    for (const { key, size } of sizes) {
+  ): Promise<Record<AvatarSizeKey, Buffer>> {
+    const results: Record<AvatarSizeKey, Buffer> = {} as Record<AvatarSizeKey, Buffer>;
+    for (const { key, size } of AVATAR_SIZES) {
       results[key] = await this.generateImageForSize(size, primaryColor, foreignColor, angle);
     }
     return results;
