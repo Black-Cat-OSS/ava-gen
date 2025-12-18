@@ -193,6 +193,7 @@ export class AvatarService {
 
     try {
       // Validate UUID format
+      //TODO: move uud validation in zod
       const uuidRegex =
         /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
       if (!uuidRegex.test(id)) {
@@ -200,6 +201,7 @@ export class AvatarService {
       }
 
       // Validate size parameter
+      //TODO: move size validation in zod
       if (dto.size && (dto.size < 4 || dto.size > 9)) {
         throw new BadRequestException('Size must be between 4 and 9 (2^n where 4 <= n <= 9)');
       }

@@ -27,7 +27,7 @@ export class PalettesController {
    */
   @Get()
   async listPalettes(@Query() dto: ListPalettesDto) {
-    return await this.palettesService.listPalettes(dto.pick, dto.offset);
+    return await this.palettesService.listPalettes(dto);
   }
 
   /**

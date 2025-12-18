@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Palette } from './palette.entity';
 import { COLOR_PALETTES } from './constants/color-schemes.constants';
 import { ColorScheme } from '../../common/interfaces/avatar-object.interface';
+import { ListPalettesDto } from './dto/list-palettes.dto';
 
 /**
  * Service for managing color palettes
@@ -20,29 +21,29 @@ export class PalettesService {
   /**
    * Get paginated list of palettes
    */
-  async listPalettes(pick?: number, offset?: number) {
+  async listPalettes(dto: ListPalettesDto) {
     this.logger.log('Retrieving palette list with pagination');
 
-    const limit = pick || 10;
-    const skip = offset || 0;
+    const pick = dto.pick || 10;
+    const offset = dto.offset || 0;
 
     const [palettes, total] = await this.paletteRepository.findAndCount({
-      take: limit,
-      skip: skip,
+      take: pick,
+      skip: offset,
       order: {
         createdAt: 'ASC',
       },
     });
 
-    this.logger.log(`Retrieved ${palettes.length} palettes from ${skip} offset`);
+    this.logger.log(`Retrieved ${palettes.length} palettes from ${offset} offset`);
 
     return {
       items: palettes,
       pagination: {
         total,
-        offset: skip,
-        pick: limit,
-        hasMore: skip + limit < total,
+        offset,
+        pick,
+        hasMore: offset + pick < total,
       },
     };
   }
@@ -62,13 +63,13 @@ export class PalettesService {
    */
   async getPaletteById(id: string): Promise<Palette> {
     this.logger.log(`Getting palette by ID: ${id}`);
-    
+
     // Validate UUID format
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(id)) {
       throw new NotFoundException(`Invalid palette ID format: ${id}`);
     }
-    
+
     const palette = await this.paletteRepository.findOne({
       where: { id },
     });
@@ -94,7 +95,7 @@ export class PalettesService {
 
     this.logger.log('Seeding palettes from constants');
 
-    const palettesToSeed = COLOR_PALETTES.map((palette) =>
+    const palettesToSeed = COLOR_PALETTES.map(palette =>
       this.paletteRepository.create({
         name: palette.name,
         key: palette.key,
@@ -116,7 +117,7 @@ export class PalettesService {
       order: { createdAt: 'ASC' },
     });
 
-    return palettes.map((palette) => ({
+    return palettes.map(palette => ({
       name: palette.key,
       primaryColor: palette.primaryColor,
       foreignColor: palette.foreignColor,

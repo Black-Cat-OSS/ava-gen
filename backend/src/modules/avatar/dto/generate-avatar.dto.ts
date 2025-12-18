@@ -2,6 +2,7 @@ import { IsOptional, IsString, MaxLength, IsEnum, IsNumber, Min, Max } from 'cla
 import { ApiPropertyOptional, ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { FilterType } from '../../../common/enums/filter.enum';
+import { PaginationDto } from '../../../common/dto/pagination.dto';
 
 //TODO separate to files
 export class GenerateAvatarDto {
@@ -62,28 +63,4 @@ export class GetAvatarDto {
   size?: number;
 }
 
-export class ListAvatarsDto {
-  @ApiPropertyOptional({
-    description: 'Number of records to retrieve (default: 10)',
-    minimum: 1,
-    maximum: 100,
-    example: 10,
-  })
-  @IsOptional()
-  @Transform(({ value }) => parseInt(value))
-  @IsNumber()
-  @Min(1)
-  @Max(100)
-  pick?: number;
-
-  @ApiPropertyOptional({
-    description: 'Number of records to skip (default: 0)',
-    minimum: 0,
-    example: 0,
-  })
-  @IsOptional()
-  @Transform(({ value }) => parseInt(value))
-  @IsNumber()
-  @Min(0)
-  offset?: number;
-}
+export class ListAvatarsDto extends PaginationDto {}
