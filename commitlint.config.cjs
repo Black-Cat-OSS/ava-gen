@@ -56,6 +56,7 @@ module.exports = {
         'shared', // общие модули
         'changelog', // changelog
         "scripts", // скрипты
+        "react-sdk", // react sdk
       ],
     ],
 

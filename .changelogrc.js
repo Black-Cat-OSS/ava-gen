@@ -63,6 +63,7 @@ const SCOPE_ORDER = [
   'shared',
   'changelog',
   'scripts',
+  'reack-sdk',
 ];
 
 function getTypeOrder(type) {
