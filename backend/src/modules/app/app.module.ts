@@ -1,4 +1,6 @@
 import { Module, OnModuleInit, Logger } from '@nestjs/common';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 import { ConfigModule } from '../../config/config.module';
 import { LoggerModule } from '../logger/logger.module';
 import { DatabaseModule } from '../database';
@@ -20,6 +22,11 @@ import { PrometheusModule } from '../prometheus';
  */
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '..', '..', 'static'),
+      serveRoot: '/static',
+      exclude: ['/api*', '/swagger*'],
+    }),
     ConfigModule,
     LoggerModule,
     InitializationModule,

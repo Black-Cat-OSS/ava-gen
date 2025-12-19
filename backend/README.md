@@ -15,6 +15,7 @@ Backend service for generating and managing avatars similar to GitHub/GitLab.
 - 📚 OpenAPI/Swagger documentation
 - 🐳 Docker support
 - 🧪 Comprehensive test coverage
+- 📄 Static content serving (HTML, CSS, JS)
 
 ## Tech Stack
 
@@ -114,8 +115,15 @@ app:
 
 Once the application is running, visit:
 
-- **Swagger UI**: http://localhost:3000/api
-- **Health Check**: http://localhost:3000/health
+- **Swagger UI**: http://localhost:3000/swagger
+- **Health Check**: http://localhost:3000/api/health
+- **Static Content**: http://localhost:3000/static/index.html
+
+### Static Content
+
+The application serves static files (HTML, CSS, JavaScript) from the `static/` directory. All files are accessible via the `/static/` URL prefix.
+
+For more details, see [Static Content Documentation](./docs/STATIC_CONTENT.md).
 
 ## Docker Support
 
@@ -167,15 +175,18 @@ pnpm run typeorm:revert
 ## Project Structure
 
 ```
-src/
-├── modules/
-│   ├── avatar/          # Avatar generation and management
-│   ├── database/        # Database configuration and entities
-│   ├── storage/         # File storage services
-│   ├── health/          # Health check endpoints
-│   └── logger/          # Logging configuration
-├── config/              # Application configuration
-└── common/              # Shared utilities and decorators
+backend/
+├── src/
+│   ├── modules/
+│   │   ├── avatar/          # Avatar generation and management
+│   │   ├── database/        # Database configuration and entities
+│   │   ├── storage/         # File storage services
+│   │   ├── health/          # Health check endpoints
+│   │   └── logger/          # Logging configuration
+│   ├── config/              # Application configuration
+│   └── common/              # Shared utilities and decorators
+├── static/                  # Static content (HTML, CSS, JS)
+└── docs/                    # Project documentation
 ```
 
 ## Environment Variables
