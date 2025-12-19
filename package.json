@@ -8,7 +8,8 @@
     "frontend"
   ],
   "scripts": {
-    "build": "npm run build --workspaces",
+    "build": "npm run build --workspaces && rm -rf app/backend/dist/static/* && cp -r app/frontend/dist/* app/backend/static/",
+    "start": "npm run start --workspaces app/backend",
     "lint": "npm run lint --workspaces",
     "lint:fix": "npm run lint:fix --workspaces",
     "format": "prettier --write \"**/*.{js,ts,tsx,json,md,yml,yaml}\"",
@@ -76,6 +77,7 @@
     ]
   },
   "dependencies": {
+    "backend": "^0.0.0",
     "sqlite3": "^5.1.7"
   }
 }
