@@ -80,5 +80,6 @@
       "foreground": "#ffd1d5",
       "type": "text-and-comment"
     }
-  }
+  },
+  "postman.settings.dotenv-detection-notification-visibility": false
 }
