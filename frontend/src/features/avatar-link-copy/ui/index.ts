@@ -1,1 +1,0 @@
-export { AvatarLinkCopy } from './AvatarLinkCopy';

@@ -1,1 +1,0 @@
-export { ProfilePreview } from './ui';

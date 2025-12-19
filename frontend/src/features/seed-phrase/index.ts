@@ -1,1 +1,0 @@
-export { SeedPhrase } from './ui' 

@@ -1,1 +1,0 @@
-export { FailImage } from './FailImage'

@@ -1,1 +1,0 @@
-export { useAvatarShape } from './useAvatarShape';
