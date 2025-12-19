@@ -27,7 +27,7 @@ export class Avatar {
    * Дата и время создания записи
    * Устанавливается автоматически при создании
    */
-  @CreateDateColumn({ type: 'timestamp' })
+  @CreateDateColumn()
   createdAt: Date;
 
   /**

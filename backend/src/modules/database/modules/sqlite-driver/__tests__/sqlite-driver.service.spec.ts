@@ -70,13 +70,11 @@ describe('SqliteDriverService', () => {
 
       expect(result).toEqual({
         type: 'sqlite',
+        database: './test.db',
         entities: [],
         synchronize: true,
-        logging: true,
+        logging: false,
         logger: 'simple-console',
-        sqlite: {
-          databasePath: './test.db',
-        },
       });
     });
 
@@ -120,7 +118,7 @@ describe('SqliteDriverService', () => {
 
       const result = service.buildConfigs(mockYamlConfigService);
 
-      expect(result.sqlite?.databasePath).toBe('/absolute/path/to/database.db');
+      expect(result.database).toBe('/absolute/path/to/database.db');
       expect(result.logging).toBe(false);
     });
 
@@ -147,7 +145,7 @@ describe('SqliteDriverService', () => {
 
       const result = service.buildConfigs(mockYamlConfigService);
 
-      expect(result.sqlite?.databasePath).toBe('./data/test.db');
+      expect(result.database).toBe('./data/test.db');
       expect(result.synchronize).toBe(true);
     });
   });

@@ -32,11 +32,11 @@ export class SqliteDriverService implements IDataBaseDriver {
 
     const typeOrmConfig: IDatabaseConfig = {
       type: 'sqlite',
+      database: sqliteConfig.databasePath,
       entities: [],
       synchronize: true,
-      logging: false, // Отключаем логирование SQL запросов
+      logging: false,
       logger: 'simple-console',
-      sqlite: sqliteConfig,
     };
 
     this.logger.debug(`SQLite configuration built: databasePath=${sqliteConfig.databasePath}`);
