@@ -1,0 +1,30 @@
+app:
+  storage:
+    type: 'local'
+    local:
+      save_path: './storage/avatars'
+
+  server:
+    host: '0.0.0.0'
+    port: 3000
+
+  database:
+    driver: 'sqlite'
+    connection:
+      maxRetries: 3
+      retryDelay: 2000
+    sqlite_params:
+      url: 'file:./storage/database/database.sqlite'
+
+  cache:
+    type: 'disabled'
+
+  logging:
+    level: 'info'
+    verbose: false
+    pretty: true
+
+  prometheus:
+    enabled: false
+    path: '/metrics'
+    collectDefaultMetrics: false
