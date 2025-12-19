@@ -1,7 +1,7 @@
 # Backend Documentation
 
-**Версия:** 0.0.2  
-**Дата обновления:** 2025-10-03  
+**Версия:** 0.0.5  
+**Дата обновления:** 2025-12-19  
 **Статус:** ✅ Production Ready
 
 Документация backend приложения Avatar Generator - NestJS API сервер для генерации аватаров.
@@ -12,16 +12,16 @@
 # Установка зависимостей
 npm install
 
-# Генерация Prisma client и миграции
-npm run prisma:generate
-npm run prisma:migrate
+# Запуск миграций (если используется PostgreSQL)
+npm run typeorm:run
 
 # Запуск в dev режиме
 npm run start:dev
 ```
 
-→ API: http://localhost:3000  
-→ Swagger: http://localhost:3000/swagger
+→ API: http://localhost:3000/api  
+→ Swagger: http://localhost:3000/swagger  
+→ Frontend: http://localhost:3000/
 
 **Подробнее:** [Backend README](../README.md)
 
@@ -34,7 +34,7 @@ npm run start:dev
 **Документация модулей приложения**
 
 - [Database Module](./modules/database/) - Работа с БД (SQLite/PostgreSQL)
-  - Facade Pattern, Factory Provider
+  - TypeORM, Factory Provider
   - 100% покрытие критических операций
   - Автоматический retry
 - [Avatar Module](./modules/) - Генерация и управление аватарами
@@ -42,6 +42,8 @@ npm run start:dev
 - [Storage Module](./modules/) - Файловое хранилище
 - [Health Module](./modules/) - Health checks
 - [Initialization Module](../src/modules/initialization/) - Инициализация директорий
+- [Static Content](./STATIC_CONTENT.md) - Раздача статического контента
+- [React Integration](./REACT_INTEGRATION.md) - Интеграция с React приложением
 
 → [Перейти к модулям](./modules/README.md)
 
@@ -92,7 +94,7 @@ npm run start:dev
 ```
 NestJS 11
 ├── TypeScript 5.9
-├── Prisma 6.16
+├── TypeORM 0.3
 │   ├── SQLite (dev)
 │   └── PostgreSQL (prod)
 ├── Sharp 0.34 (image processing)
@@ -275,13 +277,12 @@ npm run test:cov        # С coverage
 npm run test:debug      # Debug режим
 npm run test:e2e        # E2E тесты
 
-# Prisma
-npm run prisma:generate # Генерация Prisma client (DATABASE_URL из YAML)
-npm run prisma:migrate  # Запуск миграций (DATABASE_URL из YAML)
-npm run prisma:deploy   # Деплой миграций в production
-npm run prisma:studio   # Prisma Studio (GUI)
-npm run prisma:reset    # Сброс БД (dev only)
-npm run prisma:deploy   # Deploy миграций (prod)
+# TypeORM Migrations
+npm run typeorm:generate -- src/migrations/MigrationName  # Генерация миграции
+npm run typeorm:run      # Запуск миграций
+npm run typeorm:revert   # Откат последней миграции
+npm run typeorm:create -- src/migrations/MigrationName    # Создание пустой миграции
+npm run migration        # Запуск миграций через CLI
 ```
 
 ## 🔗 Связанные документы
@@ -306,13 +307,20 @@ npm run prisma:deploy   # Deploy миграций (prod)
 
 ## 💡 Best Practices
 
-### 1. Использование DatabaseService
+### 1. Использование TypeORM Repository
 
 ```typescript
-constructor(private readonly db: DatabaseService) {}
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Avatar } from './avatar.entity';
+
+constructor(
+  @InjectRepository(Avatar)
+  private readonly avatarRepository: Repository<Avatar>,
+) {}
 
 async getData() {
-  return await this.db.avatar.findMany();
+  return await this.avatarRepository.find();
 }
 ```
 
@@ -340,10 +348,26 @@ this.logger.warn('Low disk space');
 ### 4. Транзакции
 
 ```typescript
-await this.db.$transaction(async tx => {
-  await tx.avatar.create({ data: avatar1 });
-  await tx.avatar.create({ data: avatar2 });
-});
+import { DataSource } from 'typeorm';
+
+constructor(private readonly dataSource: DataSource) {}
+
+async createMultipleAvatars() {
+  const queryRunner = this.dataSource.createQueryRunner();
+  await queryRunner.connect();
+  await queryRunner.startTransaction();
+  
+  try {
+    await queryRunner.manager.save(avatar1);
+    await queryRunner.manager.save(avatar2);
+    await queryRunner.commitTransaction();
+  } catch (error) {
+    await queryRunner.rollbackTransaction();
+    throw error;
+  } finally {
+    await queryRunner.release();
+  }
+}
 ```
 
 ## 🆘 Troubleshooting
@@ -374,25 +398,27 @@ npm run build
 
 ## 📝 Статус документации
 
-| Раздел    | Статус       | Обновлено  |
-| --------- | ------------ | ---------- |
-| Modules   | ✅ Актуально | 2025-10-03 |
-| Testing   | ✅ Актуально | 2025-10-03 |
-| Changelog | ✅ Актуально | 2025-10-03 |
-| Archive   | ✅ Актуально | 2025-10-03 |
+| Раздел            | Статус       | Обновлено  |
+| ----------------- | ------------ | ---------- |
+| Modules           | ✅ Актуально | 2025-12-19 |
+| Testing           | ✅ Актуально | 2025-10-03 |
+| Changelog         | ✅ Актуально | 2025-10-03 |
+| Archive           | ✅ Актуально | 2025-10-03 |
+| Static Content    | ✅ Актуально | 2025-12-19 |
+| React Integration | ✅ Актуально | 2025-12-19 |
 
-## 🎉 Что нового в v0.0.2
+## 🎉 Что нового в v0.0.5
 
-- ✅ 50 unit и E2E тестов с высоким покрытием
-- ✅ Factory Provider для Database Module
-- ✅ Реорганизация Docker структуры
-- ✅ Реорганизация документации
-- ✅ Обновлена лицензия (MIT)
-- ✅ Метаданные проекта в package.json
+- ✅ Миграция с Prisma на TypeORM
+- ✅ Поддержка раздачи статического контента
+- ✅ Интеграция с React приложением
+- ✅ Обновлена документация
+- ✅ Улучшена архитектура модулей
+- ✅ Добавлен Prometheus для метрик
 
 ---
 
 **License:** MIT  
 **Author:** letnull19a  
 **Repository:** https://github.com/letnull19A/avatar-gen  
-**Последнее обновление:** 2025-10-03
+**Последнее обновление:** 2025-12-19
