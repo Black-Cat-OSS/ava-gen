@@ -1,0 +1,66 @@
+import { IsOptional, IsString, MaxLength, IsEnum, IsNumber, Min, Max } from 'class-validator';
+import { ApiPropertyOptional, ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
+import { FilterType } from '../../../common/enums/filter.enum';
+import { PaginationDto } from '../../../common/dto/pagination.dto';
+
+//TODO separate to files
+export class GenerateAvatarDto {
+  @ApiPropertyOptional({ description: 'Primary color for avatar generation' })
+  @IsOptional()
+  @IsString()
+  primaryColor?: string;
+
+  @ApiPropertyOptional({ description: 'Foreign color for avatar generation' })
+  @IsOptional()
+  @IsString()
+  foreignColor?: string;
+
+  @ApiPropertyOptional({ description: 'Color scheme name' })
+  @IsOptional()
+  @IsString()
+  colorScheme?: string;
+
+  @ApiPropertyOptional({
+    description: 'Generation type (pixelize, wave, etc.)',
+    example: 'pixelize',
+  })
+  @IsOptional()
+  @IsString()
+  type?: string;
+
+  @ApiProperty({
+    description: 'Seed phrase for avatar generation (required, max 255 characters)',
+    maxLength: 255,
+    example: 'my-unique-seed-phrase',
+  })
+  @IsString()
+  @MaxLength(255, { message: 'Seed must not exceed 255 characters' })
+  seed: string;
+}
+
+export class GetAvatarDto {
+  @ApiPropertyOptional({
+    description: 'Filter to apply to the image',
+    enum: FilterType,
+    example: FilterType.GRAYSCALE,
+  })
+  @IsOptional()
+  @IsEnum(FilterType)
+  filter?: FilterType;
+
+  @ApiPropertyOptional({
+    description: 'Size parameter (2^n where 4 <= n <= 9)',
+    minimum: 4,
+    maximum: 9,
+    example: 6,
+  })
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value))
+  @IsNumber()
+  @Min(4)
+  @Max(9)
+  size?: number;
+}
+
+export class ListAvatarsDto extends PaginationDto {}
