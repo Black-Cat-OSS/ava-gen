@@ -1,1 +1,0 @@
-export { AvatarGeneratorProvider } from './AvatarGeneratorProvider';

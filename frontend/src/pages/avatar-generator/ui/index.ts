@@ -1,1 +1,0 @@
-export { AvatarGeneratorPage } from './AvatarGeneratorPage';

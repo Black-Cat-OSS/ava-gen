@@ -1,1 +1,0 @@
-export { AvatarPreviewShowcase } from './ui';

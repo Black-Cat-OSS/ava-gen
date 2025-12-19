@@ -1,1 +1,0 @@
-export { AvatarGeneratorForm } from './ui';
