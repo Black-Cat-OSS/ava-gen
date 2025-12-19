@@ -2,10 +2,9 @@
   "name": "avatar-gen",
   "version": "0.0.11",
   "description": "Avatar Generator API with frontend and backend",
-  "private": true,
   "workspaces": [
-    "backend",
-    "frontend"
+    "app/backend",
+    "app/frontend"
   ],
   "scripts": {
     "build": "npm run build --workspaces",
