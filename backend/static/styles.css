@@ -32,8 +32,15 @@ h1 {
 
 p {
     color: #666;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
     font-size: 1.1rem;
+}
+
+p.info {
+    color: #888;
+    font-size: 0.95rem;
+    font-style: italic;
+    margin-bottom: 2rem;
 }
 
 .links {

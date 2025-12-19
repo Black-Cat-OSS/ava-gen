@@ -24,7 +24,6 @@ import { PrometheusModule } from '../prometheus';
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', '..', 'static'),
-      serveRoot: '/static',
       exclude: ['/api*', '/swagger*'],
     }),
     ConfigModule,

@@ -117,13 +117,21 @@ Once the application is running, visit:
 
 - **Swagger UI**: http://localhost:3000/swagger
 - **Health Check**: http://localhost:3000/api/health
-- **Static Content**: http://localhost:3000/static/index.html
+- **Frontend Application**: http://localhost:3000/
 
-### Static Content
+### Static Content & React Integration
 
-The application serves static files (HTML, CSS, JavaScript) from the `static/` directory. All files are accessible via the `/static/` URL prefix.
+The application serves static files (HTML, CSS, JavaScript) from the `static/` directory directly from the root `/`. This allows you to place a built React application in the `static/` directory and access it at the root URL.
 
-For more details, see [Static Content Documentation](./docs/STATIC_CONTENT.md).
+**To deploy a React app:**
+1. Build your React app: `npm run build` (in frontend directory)
+2. Copy the contents of `dist/` or `build/` to `backend/static/`
+3. Rebuild backend: `npm run build`
+4. Your React app will be available at `http://localhost:3000/`
+
+For more details, see:
+- [Static Content Documentation](./docs/STATIC_CONTENT.md)
+- [React Integration Guide](./docs/REACT_INTEGRATION.md)
 
 ## Docker Support
 
