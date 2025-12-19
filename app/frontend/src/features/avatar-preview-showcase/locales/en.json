@@ -1,0 +1,57 @@
+{
+  "section": {
+    "title": "See Avatars in Action",
+    "subtitle": "Real-world examples of how avatars look in different contexts"
+  },
+  "shapeToggle": {
+    "circle": "Circular avatars",
+    "square": "Square avatars",
+    "ariaLabel": "Toggle avatar shape between circle and square"
+  },
+  "contexts": {
+    "comment": {
+      "title": "Comment Section",
+      "description": "Avatar in a blog comment (40px - compact size)",
+      "userName": "Jane Smith",
+      "text": "Great article! Thanks for sharing.",
+      "timestamp": "2 hours ago"
+    },
+    "profile": {
+      "title": "User Profile",
+      "description": "Avatar in a profile card (80px - medium size)",
+      "userName": "Alex Johnson",
+      "role": "Developer",
+      "location": "San Francisco, CA"
+    },
+    "userCard": {
+      "title": "User Card",
+      "description": "Avatar in a user card component (64px - balanced size)",
+      "userName": "Sarah Wilson",
+      "email": "sarah@partner.com",
+      "status": "Online"
+    },
+    "chatMessage": {
+      "title": "Chat Message",
+      "description": "Avatar in a chat interface (32px - compact size)",
+      "userName": "Mike Chen",
+      "text": "Hey team, great work on the project!",
+      "timestamp": "10:30 AM"
+    },
+    "userList": {
+      "title": "User List",
+      "description": "Avatar in a user list (24px - minimal size)",
+      "users": [
+        { "name": "Emma Davis", "role": "Designer" },
+        { "name": "Tom Brown", "role": "Manager" },
+        { "name": "Lisa Garcia", "role": "Developer" }
+      ]
+    },
+    "forumPost": {
+      "title": "Forum Post",
+      "description": "Avatar in a forum post (128px - large size)",
+      "userName": "David Kim",
+      "text": "What are your thoughts on this approach?",
+      "replies": "5 replies"
+    }
+  }
+}

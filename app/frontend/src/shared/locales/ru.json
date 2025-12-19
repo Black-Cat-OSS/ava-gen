@@ -1,0 +1,295 @@
+{
+  "common": {
+    "home": "Главная",
+    "about": "О нас",
+    "signIn": "Войти",
+    "login": "Вход",
+    "menu": "Меню",
+    "theme": "Тема",
+    "language": "Язык",
+    "close": "Закрыть"
+  },
+  "header": {
+    "brand": "Ava-gen",
+    "toggleMenu": "Открыть мобильное меню"
+  },
+  "mobileMenu": {
+    "title": "Ava-gen",
+    "closeMenu": "Закрыть меню"
+  },
+  "themeToggle": {
+    "switchToDark": "Переключить на темную тему",
+    "switchToLight": "Переключить на светлую тему"
+  },
+  "languageSwitcher": {
+    "selectLanguage": "Выберите язык",
+    "english": "English",
+    "russian": "Русский",
+    "spanish": "Español",
+    "german": "Deutsch",
+    "estonian": "Eesti"
+  },
+  "pages": {
+    "home": {
+      "title": "Галерея аватаров",
+      "subtitle": "Решение для вас",
+      "loading": "Загрузка аватаров...",
+      "error": "Ошибка загрузки",
+      "unknownError": "Неизвестная ошибка",
+      "noAvatars": "Аватары не найдены",
+      "noAvatarsDescription": "В вашей галерее пока нет аватаров. Создайте свой первый аватар!",
+      "avatarsFound": "Найдено аватаров",
+      "refresh": "Обновить",
+      "refreshing": "Загрузка...",
+      "avatarId": "ID",
+      "generateAvatar": "Создать аватар",
+      "createAvatar": "Создать аватар",
+      "loadMore": "Загрузить ещё"
+    },
+    "about": {
+      "title": "О ava-gen",
+      "subtitle": "Современное веб-приложение, построенное с чистой архитектурой",
+      "fsdArchitecture": {
+        "title": "FSD Архитектура",
+        "description": "Построено с использованием методологии Feature-Sliced Design для масштабируемой и поддерживаемой структуры кода."
+      },
+      "themeSystem": {
+        "title": "Система тем",
+        "description": "Полная поддержка темной/светлой темы с автоматическим определением системы и плавными переходами."
+      },
+      "technologyStack": {
+        "title": "Технологический стек",
+        "items": [
+          "React 19 с TypeScript",
+          "Vite для быстрой разработки",
+          "Tailwind CSS для стилизации",
+          "React Router для навигации",
+          "Zod для валидации",
+          "React Hook Form для форм"
+        ],
+        "viewDetails": "Подробнее"
+      }
+    },
+    "devStack": {
+      "title": "Стек разработки",
+      "subtitle": "Полный обзор технологий и инструментов, используемых в этом проекте",
+      "frontend": {
+        "title": "Frontend технологии",
+        "technologies": [
+          "React 19 с TypeScript",
+          "Vite для инструментов сборки",
+          "Tailwind CSS для стилизации",
+          "TanStack Router для маршрутизации",
+          "React Hook Form для форм",
+          "Zod для валидации",
+          "React i18next для интернационализации",
+          "Storybook для разработки компонентов"
+        ]
+      },
+      "backend": {
+        "title": "Backend технологии",
+        "technologies": [
+          ".NET 8 с C#",
+          "ASP.NET Core Web API",
+          "Entity Framework Core",
+          "База данных PostgreSQL",
+          "Keycloak для аутентификации",
+          "Docker для контейнеризации",
+          "OpenAPI/Swagger для документации"
+        ]
+      },
+      "devops": {
+        "title": "DevOps и инструменты",
+        "technologies": [
+          "Docker и Docker Compose",
+          "Обратный прокси Nginx",
+          "Git для контроля версий",
+          "pnpm для управления пакетами",
+          "ESLint для линтинга кода",
+          "TypeScript для типобезопасности",
+          "Jest для тестирования"
+        ]
+      },
+      "architecture": {
+        "title": "Обзор архитектуры",
+        "description": "Этот проект следует современным архитектурным паттернам с четким разделением ответственности и масштабируемыми принципами проектирования.",
+        "frontend": {
+          "title": "Frontend архитектура",
+          "description": "Построена с использованием методологии Feature-Sliced Design, обеспечивая поддерживаемые и масштабируемые React компоненты с правильным разделением ответственности."
+        },
+        "backend": {
+          "title": "Backend архитектура",
+          "description": "Модульная .NET архитектура с четким разделением между модулями, сервисами и слоями доступа к данным для оптимальной поддерживаемости."
+        }
+      },
+      "backToAbout": "Назад к О нас"
+    },
+    "avatarGenerator": {
+      "title": "Генератор аватаров",
+      "subtitle": "Создайте уникальный аватар с помощью настроек",
+      "description": "Настройте цвета и параметры для создания персонализированного аватара",
+      "generatorTypes": {
+        "classic": "Классический",
+        "emoji": "Эмодзи"
+      }
+    },
+    "avatarViewer": {
+      "title": "Обозреватель аватаров",
+      "subtitle": "Просматривайте и фильтруйте созданные аватары",
+      "size": "Размер",
+      "filter": "Фильтр",
+      "filterPlaceholder": "Поиск по названию или ID...",
+      "sortBy": "Сортировка",
+      "sortByDate": "По дате",
+      "sortByName": "По названию",
+      "showing": "Показано",
+      "of": "из",
+      "avatars": "аватаров",
+      "loading": "Загрузка аватаров...",
+      "error": "Ошибка загрузки",
+      "unknownError": "Неизвестная ошибка",
+      "noResults": "Аватары не найдены",
+      "imageFilter": "Фильтр изображения",
+      "search": "Поиск",
+      "currentSize": "Размер",
+      "currentFilter": "Фильтр",
+      "searching": "Поиск",
+      "backToGallery": "Назад к галерее",
+      "avatarNotFound": "Аватар не найден",
+      "noAvatarSelected": "Аватар не выбран",
+      "avatarInfo": "Информация об аватаре",
+      "avatarId": "ID аватара",
+      "createdAt": "Дата создания",
+      "primaryColor": "Основной цвет",
+      "foreignColor": "Дополнительный цвет",
+      "colorScheme": "Цветовая схема",
+      "seed": "Сид",
+      "avatarPreview": "Предпросмотр аватара",
+      "allSizes": "Все размеры",
+      "allFilters": "Все фильтры"
+    },
+    "palettes": {
+      "title": "Палитры"
+    }
+  },
+  "features": {
+    "counter": {
+      "count": "Счетчик",
+      "increment": "Увеличить счетчик"
+    },
+    "avatarGenerator": {
+      "primaryColor": "Основной цвет",
+      "foreignColor": "Дополнительный цвет",
+      "colorScheme": "Цветовая схема",
+      "seed": "Семя (Seed)",
+      "seedPlaceholder": "Введите уникальное семя",
+      "seedDescription": "Семя определяет уникальность аватара (макс. 255 символов)",
+      "generate": "Сгенерировать аватар",
+      "generating": "Генерация...",
+      "success": "Аватар успешно сгенерирован!",
+      "error": "Ошибка генерации",
+      "colorSchemes": {
+        "default": "По умолчанию",
+        "green": "Зеленый",
+        "blue": "Синий",
+        "red": "Красный",
+        "orange": "Оранжевый",
+        "purple": "Фиолетовый",
+        "teal": "Бирюзовый",
+        "indigo": "Индиго",
+        "pink": "Розовый",
+        "emerald": "Изумрудный",
+        "monochrome": "Монохром",
+        "vibrant": "Яркий",
+        "pastel": "Пастельный",
+        "ocean": "Океан",
+        "sunset": "Закат",
+        "forest": "Лес",
+        "royal": "Королевский"
+      },
+      "randomPalette": "Случайная палитра",
+      "generateSeed": "Сгенерировать фразу",
+      "currentPalette": "Текущая палитра",
+      "colorPalette": "Цветовая палитра",
+      "loadingColorPalettes": "Загрузка цветовых палитр...",
+      "failedToLoadColorPalettes": "Не удалось загрузить цветовые палитры",
+      "loadMore": "Загрузить ещё",
+      "loadingMore": "Загрузка...",
+      "colorPaletteError": {
+        "title": "Не удалось загрузить цветовые палитры",
+        "subtitle": "Невозможно получить данные цветовых палитр с сервера",
+        "description": "Пожалуйста, проверьте подключение к интернету и попробуйте обновить страницу. Если проблема сохраняется, обратитесь в службу поддержки."
+      },
+      "generatorType": "Тип генератора",
+      "generatorTypes": {
+        "pixelize": "Пиксельный",
+        "pixelizeDescription": "Классический пиксельный узор",
+        "wave": "Волновой",
+        "waveDescription": "Плавный волновой узор",
+        "gradient": "Градиент",
+        "gradientDescription": "Линейный градиентный узор",
+        "emoji": "Эмодзи",
+        "emojiDescription": "Создание аватаров с эмодзи на пользовательских фонах"
+      },
+      "angle": "Угол поворота",
+      "angleDescription": "Направление градиента (0-360°)",
+      "anglePresets": "Быстрые пресеты",
+      "dragToRotate": "Перетащите для поворота",
+      "emojiPicker": {
+        "label": "Выберите эмодзи",
+        "open": "Открыть",
+        "close": "Закрыть",
+        "selected": "Выбрано"
+      },
+      "backgroundType": {
+        "label": "Тип фона",
+        "solid": "Сплошной",
+        "solidDescription": "Одноцветный фон",
+        "linear": "Линейный",
+        "linearDescription": "Линейный градиентный фон",
+        "radial": "Радиальный",
+        "radialDescription": "Радиальный градиентный фон"
+      },
+      "emojiSize": {
+        "label": "Размер эмодзи",
+        "small": "Маленький",
+        "smallDescription": "40% от размера аватара",
+        "medium": "Средний",
+        "mediumDescription": "60% от размера аватара",
+        "large": "Большой",
+        "largeDescription": "80% от размера аватара"
+      },
+      "gradientAngle": "Угол градиента",
+      "generateEmojiAvatar": "Создать эмодзи аватар",
+      "healthCheck": {
+        "unavailable": "Сервис эмодзи недоступен",
+        "unavailableDescription": "Сервис эмодзи в настоящее время недоступен. Генерация эмодзи аватаров может работать некорректно.",
+        "checking": "Проверка сервиса...",
+        "retry": "Повторить проверку",
+        "lastChecked": "Последняя проверка"
+      }
+    }
+  },
+  "login": {
+    "title": "Вход в систему",
+    "subtitle": "Добро пожаловать! Пожалуйста, войдите в свой аккаунт.",
+    "fields": {
+      "email": "Адрес электронной почты",
+      "emailPlaceholder": "Введите ваш email",
+      "password": "Пароль",
+      "passwordPlaceholder": "Введите ваш пароль"
+    },
+    "rememberMe": "Запомнить меня",
+    "forgotPassword": "Забыли пароль?",
+    "signIn": "Войти",
+    "signingIn": "Вход в систему...",
+    "noAccount": "Нет аккаунта?",
+    "signUp": "Зарегистрироваться",
+    "validation": {
+      "emailRequired": "Email обязателен",
+      "emailInvalid": "Пожалуйста, введите корректный email",
+      "passwordRequired": "Пароль обязателен",
+      "passwordTooShort": "Пароль должен содержать минимум 6 символов"
+    }
+  }
+}

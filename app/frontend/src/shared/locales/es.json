@@ -1,0 +1,255 @@
+{
+  "common": {
+    "home": "Inicio",
+    "about": "Acerca de",
+    "signIn": "Iniciar Sesión",
+    "login": "Iniciar Sesión",
+    "menu": "Menú",
+    "theme": "Tema",
+    "language": "Idioma",
+    "close": "Cerrar"
+  },
+  "header": {
+    "brand": "Ava-gen",
+    "toggleMenu": "Alternar menú móvil"
+  },
+  "mobileMenu": {
+    "title": "Ava-gen",
+    "closeMenu": "Cerrar menú"
+  },
+  "themeToggle": {
+    "switchToDark": "Cambiar a modo oscuro",
+    "switchToLight": "Cambiar a modo claro"
+  },
+  "languageSwitcher": {
+    "selectLanguage": "Seleccionar idioma",
+    "english": "English",
+    "russian": "Русский",
+    "spanish": "Español",
+    "german": "Deutsch",
+    "estonian": "Eesti"
+  },
+  "pages": {
+    "home": {
+      "title": "Galería de Avatares",
+      "subtitle": "Solución para ti",
+      "loading": "Cargando avatares...",
+      "error": "Error de carga",
+      "unknownError": "Error desconocido",
+      "noAvatars": "No se encontraron avatares",
+      "noAvatarsDescription": "Tu galería está vacía. ¡Crea tu primer avatar!",
+      "avatarsFound": "Avatares encontrados",
+      "refresh": "Actualizar",
+      "refreshing": "Cargando...",
+      "avatarId": "ID",
+      "generateAvatar": "Crear Avatar",
+      "createAvatar": "Crear Avatar",
+      "loadMore": "Cargar Más"
+    },
+    "about": {
+      "title": "Acerca de ava-gen",
+      "subtitle": "Una aplicación web moderna construida con arquitectura limpia",
+      "fsdArchitecture": {
+        "title": "Arquitectura FSD",
+        "description": "Construida usando la metodología Feature-Sliced Design para una estructura de código escalable y mantenible."
+      },
+      "themeSystem": {
+        "title": "Sistema de Temas",
+        "description": "Soporte completo para tema oscuro/claro con detección automática del sistema y transiciones suaves."
+      },
+      "technologyStack": {
+        "title": "Stack Tecnológico",
+        "items": [
+          "React 19 con TypeScript",
+          "Vite para desarrollo rápido",
+          "Tailwind CSS para estilos",
+          "React Router para navegación",
+          "Zod para validación",
+          "React Hook Form para formularios"
+        ],
+        "viewDetails": "Ver Detalles"
+      }
+    },
+    "devStack": {
+      "title": "Stack de Desarrollo",
+      "subtitle": "Visión general completa de las tecnologías y herramientas utilizadas en este proyecto",
+      "frontend": {
+        "title": "Tecnologías Frontend",
+        "technologies": [
+          "React 19 con TypeScript",
+          "Vite para herramientas de construcción",
+          "Tailwind CSS para estilos",
+          "TanStack Router para enrutamiento",
+          "React Hook Form para formularios",
+          "Zod para validación",
+          "React i18next para internacionalización",
+          "Storybook para desarrollo de componentes"
+        ]
+      },
+      "backend": {
+        "title": "Tecnologías Backend",
+        "technologies": [
+          ".NET 8 con C#",
+          "ASP.NET Core Web API",
+          "Entity Framework Core",
+          "Base de datos PostgreSQL",
+          "Keycloak para autenticación",
+          "Docker para containerización",
+          "OpenAPI/Swagger para documentación"
+        ]
+      },
+      "devops": {
+        "title": "DevOps y Herramientas",
+        "technologies": [
+          "Docker y Docker Compose",
+          "Proxy inverso Nginx",
+          "Git para control de versiones",
+          "pnpm para gestión de paquetes",
+          "ESLint para linting de código",
+          "TypeScript para seguridad de tipos",
+          "Jest para pruebas"
+        ]
+      },
+      "architecture": {
+        "title": "Visión General de la Arquitectura",
+        "description": "Este proyecto sigue patrones arquitectónicos modernos con clara separación de responsabilidades y principios de diseño escalables.",
+        "frontend": {
+          "title": "Arquitectura Frontend",
+          "description": "Construida con metodología Feature-Sliced Design, asegurando componentes React mantenibles y escalables con adecuada separación de responsabilidades."
+        },
+        "backend": {
+          "title": "Arquitectura Backend",
+          "description": "Arquitectura .NET modular con clara separación entre módulos, servicios y capas de acceso a datos para una mantenibilidad óptima."
+        }
+      },
+      "backToAbout": "Volver a Acerca de"
+    },
+    "avatarGenerator": {
+      "title": "Generador de Avatares",
+      "subtitle": "Crea un avatar único con configuraciones personalizadas",
+      "description": "Configura colores y parámetros para crear un avatar personalizado"
+    },
+    "avatarViewer": {
+      "title": "Visor de Avatares",
+      "subtitle": "Explora y filtra avatares creados",
+      "size": "Tamaño",
+      "filter": "Filtro",
+      "filterPlaceholder": "Buscar por nombre o ID...",
+      "sortBy": "Ordenar por",
+      "sortByDate": "Por fecha",
+      "sortByName": "Por nombre",
+      "showing": "Mostrando",
+      "of": "de",
+      "avatars": "avatares",
+      "loading": "Cargando avatares...",
+      "error": "Error de carga",
+      "unknownError": "Error desconocido",
+      "noResults": "No se encontraron avatares",
+      "imageFilter": "Filtro de imagen",
+      "search": "Buscar",
+      "currentSize": "Tamaño",
+      "currentFilter": "Filtro",
+      "searching": "Buscando",
+      "backToGallery": "Volver a Galería",
+      "avatarNotFound": "Avatar no encontrado",
+      "noAvatarSelected": "Ningún avatar seleccionado",
+      "avatarInfo": "Información del Avatar",
+      "avatarId": "ID del Avatar",
+      "createdAt": "Fecha de Creación",
+      "primaryColor": "Color Primario",
+      "foreignColor": "Color Secundario",
+      "colorScheme": "Esquema de Colores",
+      "seed": "Semilla",
+      "avatarPreview": "Vista Previa del Avatar",
+      "allSizes": "Todos los Tamaños",
+      "allFilters": "Todos los Filtros"
+    },
+    "palettes": {
+      "title": "Paletas"
+    }
+  },
+  "features": {
+    "counter": {
+      "count": "Contador",
+      "increment": "Incrementar Contador"
+    },
+    "avatarGenerator": {
+      "primaryColor": "Color Principal",
+      "foreignColor": "Color Secundario",
+      "colorScheme": "Esquema de Colores",
+      "seed": "Semilla",
+      "seedPlaceholder": "Ingresa una semilla única",
+      "seedDescription": "La semilla determina la unicidad del avatar (máx. 255 caracteres)",
+      "generate": "Generar Avatar",
+      "generating": "Generando...",
+      "success": "¡Avatar generado exitosamente!",
+      "error": "Error de generación",
+      "colorSchemes": {
+        "default": "Por Defecto",
+        "green": "Verde",
+        "blue": "Azul",
+        "red": "Rojo",
+        "orange": "Naranja",
+        "purple": "Púrpura",
+        "teal": "Verde Azulado",
+        "indigo": "Índigo",
+        "pink": "Rosa",
+        "emerald": "Esmeralda",
+        "monochrome": "Monocromo",
+        "vibrant": "Vibrante",
+        "pastel": "Pastel",
+        "ocean": "Océano",
+        "sunset": "Atardecer",
+        "forest": "Bosque",
+        "royal": "Real"
+      },
+      "randomPalette": "Paleta aleatoria",
+      "generateSeed": "Generar frase",
+      "currentPalette": "Paleta Actual",
+      "loadingColorPalettes": "Cargando paletas de colores...",
+      "failedToLoadColorPalettes": "No se pudieron cargar las paletas de colores",
+      "loadMore": "Cargar Más",
+      "loadingMore": "Cargando...",
+      "colorPaletteError": {
+        "title": "No se pudieron cargar las paletas de colores",
+        "subtitle": "No se pudieron obtener los datos de paletas de colores del servidor",
+        "description": "Por favor, verifica tu conexión a internet e intenta actualizar la página. Si el problema persiste, contacta al soporte."
+      },
+      "generatorType": "Tipo de Generador",
+      "generatorTypes": {
+        "pixelize": "Pixelizado",
+        "pixelizeDescription": "Patrón clásico basado en píxeles",
+        "wave": "Onda",
+        "waveDescription": "Patrón suave basado en ondas",
+        "gradient": "Gradiente",
+        "gradientDescription": "Patrón de gradiente lineal"
+      },
+      "angle": "Ángulo de rotación",
+      "angleDescription": "Dirección del gradiente (0-360°)",
+      "anglePresets": "Configuraciones rápidas",
+      "dragToRotate": "Arrastra para rotar"
+    }
+  },
+  "login": {
+    "title": "Iniciar Sesión",
+    "subtitle": "¡Bienvenido de nuevo! Por favor, inicia sesión en tu cuenta.",
+    "fields": {
+      "email": "Dirección de Correo Electrónico",
+      "emailPlaceholder": "Ingresa tu correo electrónico",
+      "password": "Contraseña",
+      "passwordPlaceholder": "Ingresa tu contraseña"
+    },
+    "rememberMe": "Recordarme",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "signIn": "Iniciar Sesión",
+    "signingIn": "Iniciando sesión...",
+    "noAccount": "¿No tienes una cuenta?",
+    "signUp": "Registrarse",
+    "validation": {
+      "emailRequired": "El correo electrónico es obligatorio",
+      "emailInvalid": "Por favor, ingresa un correo electrónico válido",
+      "passwordRequired": "La contraseña es obligatoria",
+      "passwordTooShort": "La contraseña debe tener al menos 6 caracteres"
+    }
+  }
+}

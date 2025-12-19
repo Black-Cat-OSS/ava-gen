@@ -1,0 +1,52 @@
+{
+  "section": {
+    "title": "Ver Avatares en Acción",
+    "subtitle": "Ejemplos del mundo real de cómo se ven los avatares en diferentes contextos"
+  },
+  "contexts": {
+    "comment": {
+      "title": "Sección de Comentarios",
+      "description": "Avatar en un comentario de blog",
+      "userName": "Ana García",
+      "text": "¡Excelente artículo! Gracias por compartir.",
+      "timestamp": "hace 2 horas"
+    },
+    "profile": {
+      "title": "Perfil de Usuario",
+      "description": "Avatar en una tarjeta de perfil",
+      "userName": "Carlos López",
+      "role": "Desarrollador",
+      "location": "Madrid, España"
+    },
+    "userCard": {
+      "title": "Tarjeta de Usuario",
+      "description": "Avatar en un componente de tarjeta de usuario",
+      "userName": "Laura Martínez",
+      "email": "laura@partner.com",
+      "status": "En línea"
+    },
+    "chatMessage": {
+      "title": "Mensaje de Chat",
+      "description": "Avatar en una interfaz de chat",
+      "userName": "Pedro Sánchez",
+      "text": "¡Hola equipo, excelente trabajo en el proyecto!",
+      "timestamp": "10:30 AM"
+    },
+    "userList": {
+      "title": "Lista de Usuarios",
+      "description": "Avatar en una lista de usuarios",
+      "users": [
+        { "name": "Isabel Fernández", "role": "Diseñadora" },
+        { "name": "Roberto Jiménez", "role": "Gerente" },
+        { "name": "Carmen Ruiz", "role": "Desarrolladora" }
+      ]
+    },
+    "forumPost": {
+      "title": "Publicación en Foro",
+      "description": "Avatar en una publicación de foro",
+      "userName": "Antonio Díaz",
+      "text": "¿Qué opinan sobre este enfoque?",
+      "replies": "5 respuestas"
+    }
+  }
+}

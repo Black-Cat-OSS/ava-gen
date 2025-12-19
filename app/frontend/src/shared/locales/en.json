@@ -1,0 +1,295 @@
+{
+  "common": {
+    "home": "Home",
+    "about": "About",
+    "signIn": "Sign In",
+    "login": "Login",
+    "menu": "Menu",
+    "theme": "Theme",
+    "language": "Language",
+    "close": "Close"
+  },
+  "header": {
+    "brand": "Ava-gen",
+    "toggleMenu": "Toggle mobile menu"
+  },
+  "mobileMenu": {
+    "title": "Ava-gen",
+    "closeMenu": "Close menu"
+  },
+  "themeToggle": {
+    "switchToDark": "Switch to dark mode",
+    "switchToLight": "Switch to light mode"
+  },
+  "languageSwitcher": {
+    "selectLanguage": "Select language",
+    "english": "English",
+    "russian": "Русский",
+    "spanish": "Español",
+    "german": "Deutsch",
+    "estonian": "Eesti"
+  },
+  "pages": {
+    "home": {
+      "title": "Avatar Gallery",
+      "subtitle": "Solution for you",
+      "loading": "Loading avatars...",
+      "error": "Loading error",
+      "unknownError": "Unknown error",
+      "noAvatars": "No avatars found",
+      "noAvatarsDescription": "Your gallery is empty. Create your first avatar!",
+      "avatarsFound": "Avatars found",
+      "refresh": "Refresh",
+      "refreshing": "Loading...",
+      "avatarId": "ID",
+      "generateAvatar": "Create Avatar",
+      "createAvatar": "Create Avatar",
+      "loadMore": "Load More"
+    },
+    "about": {
+      "title": "About ava-gen",
+      "subtitle": "A modern web application built with clean architecture",
+      "fsdArchitecture": {
+        "title": "FSD Architecture",
+        "description": "Built using Feature-Sliced Design methodology for scalable and maintainable code structure."
+      },
+      "themeSystem": {
+        "title": "Theme System",
+        "description": "Complete dark/light theme support with automatic system detection and smooth transitions."
+      },
+      "technologyStack": {
+        "title": "Technology Stack",
+        "items": [
+          "React 19 with TypeScript",
+          "Vite for fast development",
+          "Tailwind CSS for styling",
+          "React Router for navigation",
+          "Zod for validation",
+          "React Hook Form for forms"
+        ],
+        "viewDetails": "View Details"
+      }
+    },
+    "devStack": {
+      "title": "Development Stack",
+      "subtitle": "Comprehensive overview of technologies and tools used in this project",
+      "frontend": {
+        "title": "Frontend Technologies",
+        "technologies": [
+          "React 19 with TypeScript",
+          "Vite for build tooling",
+          "Tailwind CSS for styling",
+          "TanStack Router for routing",
+          "React Hook Form for forms",
+          "Zod for validation",
+          "React i18next for internationalization",
+          "Storybook for component development"
+        ]
+      },
+      "backend": {
+        "title": "Backend Technologies",
+        "technologies": [
+          ".NET 8 with C#",
+          "ASP.NET Core Web API",
+          "Entity Framework Core",
+          "PostgreSQL database",
+          "Keycloak for authentication",
+          "Docker for containerization",
+          "OpenAPI/Swagger for documentation"
+        ]
+      },
+      "devops": {
+        "title": "DevOps & Tools",
+        "technologies": [
+          "Docker & Docker Compose",
+          "Nginx reverse proxy",
+          "Git for version control",
+          "pnpm for package management",
+          "ESLint for code linting",
+          "TypeScript for type safety",
+          "Jest for testing"
+        ]
+      },
+      "architecture": {
+        "title": "Architecture Overview",
+        "description": "This project follows modern architectural patterns with clear separation of concerns and scalable design principles.",
+        "frontend": {
+          "title": "Frontend Architecture",
+          "description": "Built with Feature-Sliced Design methodology, ensuring maintainable and scalable React components with proper separation of concerns."
+        },
+        "backend": {
+          "title": "Backend Architecture",
+          "description": "Modular .NET architecture with clean separation between modules, services, and data access layers for optimal maintainability."
+        }
+      },
+      "backToAbout": "Back to About"
+    },
+    "avatarGenerator": {
+      "title": "Avatar Generator",
+      "subtitle": "Create a unique avatar with custom settings",
+      "description": "Configure colors and parameters to create a personalized avatar",
+      "generatorTypes": {
+        "classic": "Classic",
+        "emoji": "Emoji"
+      }
+    },
+    "avatarViewer": {
+      "title": "Avatar Viewer",
+      "subtitle": "Browse and filter created avatars",
+      "size": "Size",
+      "filter": "Filter",
+      "filterPlaceholder": "Search by name or ID...",
+      "sortBy": "Sort by",
+      "sortByDate": "By date",
+      "sortByName": "By name",
+      "showing": "Showing",
+      "of": "of",
+      "avatars": "avatars",
+      "loading": "Loading avatars...",
+      "error": "Loading error",
+      "unknownError": "Unknown error",
+      "noResults": "No avatars found",
+      "imageFilter": "Image filter",
+      "search": "Search",
+      "currentSize": "Size",
+      "currentFilter": "Filter",
+      "searching": "Searching",
+      "backToGallery": "Back to Gallery",
+      "avatarNotFound": "Avatar not found",
+      "noAvatarSelected": "No avatar selected",
+      "avatarInfo": "Avatar Information",
+      "avatarId": "Avatar ID",
+      "createdAt": "Created At",
+      "primaryColor": "Primary Color",
+      "foreignColor": "Foreign Color",
+      "colorScheme": "Color Scheme",
+      "seed": "Seed",
+      "avatarPreview": "Avatar Preview",
+      "allSizes": "All Sizes",
+      "allFilters": "All Filters"
+    },
+    "palettes": {
+      "title": "Palettes"
+    }
+  },
+  "features": {
+    "counter": {
+      "count": "Count",
+      "increment": "Increment Count"
+    },
+    "avatarGenerator": {
+      "primaryColor": "Primary Color",
+      "foreignColor": "Foreign Color",
+      "colorScheme": "Color Scheme",
+      "seed": "Seed",
+      "seedPlaceholder": "Enter unique seed",
+      "seedDescription": "Seed determines avatar uniqueness (max 255 characters)",
+      "generate": "Generate Avatar",
+      "generating": "Generating...",
+      "success": "Avatar generated successfully!",
+      "error": "Generation error",
+      "colorSchemes": {
+        "default": "Default",
+        "green": "Green",
+        "blue": "Blue",
+        "red": "Red",
+        "orange": "Orange",
+        "purple": "Purple",
+        "teal": "Teal",
+        "indigo": "Indigo",
+        "pink": "Pink",
+        "emerald": "Emerald",
+        "monochrome": "Monochrome",
+        "vibrant": "Vibrant",
+        "pastel": "Pastel",
+        "ocean": "Ocean",
+        "sunset": "Sunset",
+        "forest": "Forest",
+        "royal": "Royal"
+      },
+      "randomPalette": "Random palette",
+      "generateSeed": "Generate phrase",
+      "currentPalette": "Current Palette",
+      "colorPalette": "Color Palette",
+      "loadingColorPalettes": "Loading color palettes...",
+      "failedToLoadColorPalettes": "Failed to load color palettes",
+      "loadMore": "Load More",
+      "loadingMore": "Loading...",
+      "colorPaletteError": {
+        "title": "Failed to load color palettes",
+        "subtitle": "Unable to fetch color palette data from the server",
+        "description": "Please check your internet connection and try refreshing the page. If the problem persists, contact support."
+      },
+      "generatorType": "Generator Type",
+      "generatorTypes": {
+        "pixelize": "Pixelize",
+        "pixelizeDescription": "Classic pixel-based pattern",
+        "wave": "Wave",
+        "waveDescription": "Smooth wave-based pattern",
+        "gradient": "Gradient",
+        "gradientDescription": "Linear gradient pattern",
+        "emoji": "Emoji",
+        "emojiDescription": "Create avatars with emoji on custom backgrounds"
+      },
+      "angle": "Rotation angle",
+      "angleDescription": "Gradient direction (0-360°)",
+      "anglePresets": "Quick presets",
+      "dragToRotate": "Drag to rotate",
+      "emojiPicker": {
+        "label": "Select Emoji",
+        "open": "Open",
+        "close": "Close",
+        "selected": "Selected"
+      },
+      "backgroundType": {
+        "label": "Background Type",
+        "solid": "Solid",
+        "solidDescription": "Single color background",
+        "linear": "Linear",
+        "linearDescription": "Linear gradient background",
+        "radial": "Radial",
+        "radialDescription": "Radial gradient background"
+      },
+      "emojiSize": {
+        "label": "Emoji Size",
+        "small": "Small",
+        "smallDescription": "40% of avatar size",
+        "medium": "Medium",
+        "mediumDescription": "60% of avatar size",
+        "large": "Large",
+        "largeDescription": "80% of avatar size"
+      },
+      "gradientAngle": "Gradient Angle",
+      "generateEmojiAvatar": "Generate Emoji Avatar",
+      "healthCheck": {
+        "unavailable": "Emoji Service Unavailable",
+        "unavailableDescription": "The emoji service is currently unavailable. Emoji avatar generation may not work properly.",
+        "checking": "Checking service...",
+        "retry": "Retry Check",
+        "lastChecked": "Last checked"
+      }
+    }
+  },
+  "login": {
+    "title": "Sign In",
+    "subtitle": "Welcome back! Please sign in to your account.",
+    "fields": {
+      "email": "Email Address",
+      "emailPlaceholder": "Enter your email",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password"
+    },
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot password?",
+    "signIn": "Sign In",
+    "signingIn": "Signing in...",
+    "noAccount": "Don't have an account?",
+    "signUp": "Sign up",
+    "validation": {
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email",
+      "passwordRequired": "Password is required",
+      "passwordTooShort": "Password must be at least 6 characters"
+    }
+  }
+}
