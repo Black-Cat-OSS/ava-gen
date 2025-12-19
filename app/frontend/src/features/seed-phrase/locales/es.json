@@ -1,0 +1,10 @@
+{
+  "seedPhrase": {
+    "label": "Semilla",
+    "placeholder": "Ingresa una semilla única",
+    "description": "La semilla determina la unicidad del avatar (máx. 255 caracteres)",
+    "generate": "Generar frase",
+    "generating": "Generando...",
+    "loading": "Cargando frase semilla..."
+  }
+}

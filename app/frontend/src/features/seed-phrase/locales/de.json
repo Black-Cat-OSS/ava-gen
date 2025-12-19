@@ -1,0 +1,10 @@
+{
+  "seedPhrase": {
+    "label": "Seed",
+    "placeholder": "Eindeutigen Seed eingeben",
+    "description": "Seed bestimmt die Einzigartigkeit des Avatars (max. 255 Zeichen)",
+    "generate": "Phrase generieren",
+    "generating": "Generierung...",
+    "loading": "Seed-Phrase wird geladen..."
+  }
+}

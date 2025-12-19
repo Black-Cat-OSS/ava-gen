@@ -1,0 +1,10 @@
+{
+  "seedPhrase": {
+    "label": "Seed",
+    "placeholder": "Enter unique seed",
+    "description": "Seed determines avatar uniqueness (max 255 characters)",
+    "generate": "Generate phrase",
+    "generating": "Generating...",
+    "loading": "Loading seed phrase..."
+  }
+}

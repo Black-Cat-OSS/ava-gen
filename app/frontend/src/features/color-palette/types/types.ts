@@ -1,0 +1,17 @@
+/**
+ * Interface for color palette data
+ */
+export interface ColorPalette {
+  key: string;
+  name: string;
+  primaryColor: string;
+  foreignColor: string;
+}
+
+/**
+ * Interface for color scheme option
+ */
+export interface ColorScheme {
+  value: string;
+  label: string;
+}

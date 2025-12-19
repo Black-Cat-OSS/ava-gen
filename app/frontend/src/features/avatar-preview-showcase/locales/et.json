@@ -1,0 +1,52 @@
+{
+  "section": {
+    "title": "Avaatrid tegevuses",
+    "subtitle": "Reaalse elu näited sellest, kuidas avaarid näevad välja erinevates kontekstides"
+  },
+  "contexts": {
+    "comment": {
+      "title": "Kommentaaride sektsioon",
+      "description": "Avatar blogi kommentaaris",
+      "userName": "Anna Tamm",
+      "text": "Suurepärane artikkel! Tänan jagamise eest.",
+      "timestamp": "2 tundi tagasi"
+    },
+    "profile": {
+      "title": "Kasutaja profiil",
+      "description": "Avatar profiilikaardis",
+      "userName": "Jaan Kask",
+      "role": "Arendaja",
+      "location": "Tallinn, Eesti"
+    },
+    "userCard": {
+      "title": "Kasutajakaart",
+      "description": "Avatar kasutajakaardi komponendis",
+      "userName": "Maria Saar",
+      "email": "maria@partner.com",
+      "status": "Võrgus"
+    },
+    "chatMessage": {
+      "title": "Vestluse sõnum",
+      "description": "Avatar vestluse liideses",
+      "userName": "Peeter Mets",
+      "text": "Tere meeskond, suurepärane töö projekti kallal!",
+      "timestamp": "10:30"
+    },
+    "userList": {
+      "title": "Kasutajate nimekiri",
+      "description": "Avatar kasutajate nimekirjas",
+      "users": [
+        { "name": "Kadri Pärn", "role": "Disainer" },
+        { "name": "Andres Lill", "role": "Juht" },
+        { "name": "Liina Kangur", "role": "Arendaja" }
+      ]
+    },
+    "forumPost": {
+      "title": "Foorumi postitus",
+      "description": "Avatar foorumi postituses",
+      "userName": "Mart Vald",
+      "text": "Mida arvate sellest lähenemisest?",
+      "replies": "5 vastust"
+    }
+  }
+}
