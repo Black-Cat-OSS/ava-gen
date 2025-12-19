@@ -9,8 +9,6 @@
   ],
   "scripts": {
     "build": "npm run build --workspaces",
-    "start": "npm run start --workspaces",
-    "dev": "npm run dev --workspaces",
     "lint": "npm run lint --workspaces",
     "lint:fix": "npm run lint:fix --workspaces",
     "format": "prettier --write \"**/*.{js,ts,tsx,json,md,yml,yaml}\"",
