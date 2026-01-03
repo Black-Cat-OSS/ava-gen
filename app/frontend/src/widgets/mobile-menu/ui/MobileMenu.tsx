@@ -113,13 +113,6 @@ export const MobileMenu = ({ showLogin = false }: MobileMenuProps) => {
                 {t('common.home')}
               </NavigationLink>
               <NavigationLink
-                to="/about"
-                className="block px-4 py-3 text-muted-foreground hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
-                onClick={onClose}
-              >
-                {t('common.about')}
-              </NavigationLink>
-              <NavigationLink
                 to="/avatar-generator"
                 className="block px-4 py-3 text-muted-foreground hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
                 onClick={onClose}
