@@ -83,7 +83,6 @@ export const Header = ({
             {/* Desktop Navigation - Hidden on mobile */}
             <nav className="hidden lg:flex items-center space-x-4">
               <NavigationLink to="/">{t('common.home')}</NavigationLink>
-              <NavigationLink to="/about">{t('common.about')}</NavigationLink>
               <NavigationLink to="/avatar-generator">
                 {t('pages.avatarGenerator.title')}
               </NavigationLink>

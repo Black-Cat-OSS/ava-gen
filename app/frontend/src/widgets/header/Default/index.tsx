@@ -18,7 +18,6 @@ export const HeaderDefault = ({
   className,
   brandText = 'ava-gen',
   homeText = 'Home',
-  aboutText = 'About',
   signInText = 'Login',
   onToggleMobileMenu,
   isMobileMenuOpen = false,
@@ -69,12 +68,6 @@ export const HeaderDefault = ({
               className="text-muted-foreground hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             >
               {homeText}
-            </a>
-            <a
-              href="/about"
-              className="text-muted-foreground hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-            >
-              {aboutText}
             </a>
             <LanguageSwitcher />
             <ThemeToggle />

@@ -1,5 +1,4 @@
 export * from './home';
-export * from './about';
 export * from './avatar-generator';
 export * from './avatar-viewer';
 export * from './dev-stack';

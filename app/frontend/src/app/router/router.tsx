@@ -1,6 +1,5 @@
 import { createRouter, createRoute, createRootRoute, Outlet } from '@tanstack/react-router';
 import { HomePage } from '@/pages';
-import { AboutPage } from '@/pages';
 import { AvatarGeneratorPage } from '@/pages';
 import { AvatarViewerPage } from '@/pages';
 import { DevStackPage } from '@/pages';
@@ -21,17 +20,6 @@ const indexRoute = createRoute({
   component: () => (
     <DefaultLayout>
       <HomePage />
-    </DefaultLayout>
-  ),
-});
-
-// Create the about route
-const aboutRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/about',
-  component: () => (
-    <DefaultLayout>
-      <AboutPage />
     </DefaultLayout>
   ),
 });
@@ -109,7 +97,6 @@ const paletesAddRoute = createRoute({
 // Create the route tree
 const routeTree = rootRoute.addChildren([
   indexRoute,
-  aboutRoute,
   avatarGeneratorRoute,
   avatarViewerRoute,
   devStackRoute,
