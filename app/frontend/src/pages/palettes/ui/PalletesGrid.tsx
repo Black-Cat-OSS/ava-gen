@@ -10,7 +10,7 @@ import { usePalletesSuspense } from '@/shared/lib/hooks';
  * @returns JSX элемент с сеткой палитр
  */
 const PalletesGrid = () => {
-  const { data } = usePalletesSuspense({ pick: 10, offset: 0 });
+  const { data } = usePalletesSuspense({ pick: 50, offset: 0 });
 
   return (
     <div className="container mx-auto">
