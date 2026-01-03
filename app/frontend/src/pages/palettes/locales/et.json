@@ -2,5 +2,6 @@
   "loadMore": "Laadi veel",
   "title": "Värvipaletid",
   "errorMessage": "Viga palettide laadimisel. Palun proovige hiljem uuesti.",
-  "createPalette": "Loo palett"
+  "createPalette": "Loo palett",
+  "refreshPalette": "Värskenda palette"
 }

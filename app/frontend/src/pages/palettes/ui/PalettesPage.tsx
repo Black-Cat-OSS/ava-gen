@@ -3,6 +3,7 @@ import { Button, ErrorBoundary } from '@/shared/ui';
 import { PalettesSkeleton } from './Skeleton';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
+import { RefreshIcon, usePalletesSuspense } from '@/shared';
 
 /**
  * Страница управления палитрами
@@ -15,6 +16,12 @@ export const PalettesPage = () => {
   const { t } = useTranslation('pagesPalettes');
   const navigate = useNavigate();
 
+  const { refetch, isRefetching } = usePalletesSuspense({ pick: 50, offset: 0 });
+
+  const handleRefresh = () => {
+    refetch();
+  };
+
   const handleCreatePalette = () => {
     navigate({ to: '/palettes-add' });
   };
@@ -24,9 +31,12 @@ export const PalettesPage = () => {
       <div className="mb-8 mt-8">
         <h1 className="text-3xl font-bold text-center">{t('title')}</h1>
       </div>
-      <div className="container mx-auto px-4 mb-6">
-        <Button onClick={handleCreatePalette} variant="default">
-          {t('createPalette')}
+      <div className="container mx-auto mb-6 flex gap-4">
+        <Button onClick={handleCreatePalette}>{t('createPalette')}</Button>
+        {/* TODO: move to widget */}
+        <Button onClick={handleRefresh} variant={'outline'} disabled={isRefetching}>
+          <RefreshIcon isRefreshing={isRefetching} className="mr-2" />
+          {t('refreshPalette')}
         </Button>
       </div>
       <ErrorBoundary

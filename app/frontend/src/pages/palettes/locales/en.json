@@ -2,5 +2,6 @@
   "loadMore": "Load More",
   "title": "Color Palettes",
   "errorMessage": "Error loading palettes. Please try again later.",
-  "createPalette": "Create Palette"
+  "createPalette": "Create Palette",
+  "refreshPalette": "Refresh Palettes"
 }
